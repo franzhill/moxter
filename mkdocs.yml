@@ -1,5 +1,5 @@
-site_name: PetClinic
-site_url: https://franzhill.github.io/PetClinic/
+site_name: Moxter
+site_url: https://franzhill.github.io/moxter/
 
 theme:
   name: material
@@ -8,11 +8,6 @@ theme:
 
 nav:
   - Home: index.md
-  - Design discussions:
-    - DTO vs Entity: design_discussions/dto_vs_entity.md
-    - Testing:       design_discussions/testing.md
-  - Hibernate:
-    - Profiling Hibernate-generated SQL queries: hibernate/profiling_hibernate.md
   - Moxter:
     - Introduction: moxter/index.md  # provide a "broader view" of the documentation is through the sidebar. This allows users to see all chapters from any page they are on.
     - State of unit testing: moxter/state_of_auto_testing.md
