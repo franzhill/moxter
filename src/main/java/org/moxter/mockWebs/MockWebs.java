@@ -1,8 +1,9 @@
-package org.mockWebs;
+package org.moxter.mockWebs;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.contains;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -480,31 +481,45 @@ public class MockWebs
      *                               is supposed to be broadcast(ed).
      * @param payloadClass           The expected class to deserialize the broadcast(ed) JSON payload
      *                               into (often {@code byte[].class} or a specific DTO).
+     * @param timeoutMillis          Max time to wait for the broadcast (0 for synchronous check).
      * @param <T>                    The type of the expected payload.
      * @return The captured broadcast(ed) payload, allowing possible further assertions to be performed
      *         on the exact data sent to other clients.
      * @throws Exception If no matching broadcast is found on the outbound channel, or if 
      *         deserialization fails.
      */
-    public <T> T verifyBroadcast(String expectedTopicSubstring, Class<T> payloadClass) throws Exception 
+    public <T> T verifyBroadcast(String expectedTopicSubstring, Class<T> payloadClass, long timeoutMillis) throws Exception 
     {
         // 1. Prepare Mockito interceptors to extract the exact arguments passed to the template
-        ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Object> payloadCaptor = ArgumentCaptor.forClass(Object.class);
 
-        // 2. Instantly check the Mockito ledger. 
-        // This asserts that the backend called template.convertAndSend() at least once during this test.
-        // It requires absolutely no time/waiting because the execution was synchronous.
-        verify(template, atLeastOnce()).convertAndSend(topicCaptor.capture(), payloadCaptor.capture());
+        // 2. Check the Mockito ledger. 
+        // 2.1. With a timeout: (this allows the test thread to poll the mock until the background 
+        // thread actually sends the broadcast)
+        if (timeoutMillis > 0) 
+        {   verify(template, timeout(timeoutMillis).atLeastOnce())
+                .convertAndSend(contains(expectedTopicSubstring), payloadCaptor.capture());
+        }
+        // 2.2. Immediatly (synchronously)
+        else 
+        {   verify(template, atLeastOnce())
+                .convertAndSend(contains(expectedTopicSubstring), payloadCaptor.capture());
+        }
 
-        // 3. Extract the last captured invocation from the ledger
-        String actualTopic = topicCaptor.getValue();
+        // 3. Extract the payload. 
+        // Because we used 'contains(topic)' in the verify call above, Mockito
+        // has already filtered out irrelevant broadcasts. The captor now 
+        // contains only the payload(s) from the matching topic.
         Object actualPayload = payloadCaptor.getValue();
+
+/* OLD: Topic assertion removed because Mockito already verified it via 'contains'
+        String actualTopic = topicCaptor.getValue();
 
         // 4. Verify the backend routed the message to the correct destination
         assertThat(actualTopic)
             .as("Expected the broadcast destination to contain '%s', but was '%s'", expectedTopicSubstring, actualTopic)
             .contains(expectedTopicSubstring);
+*/
 
         // 5. Deserialize the payload back into a strongly-typed object for test assertions
         if (payloadClass.isInstance(actualPayload)) {
@@ -518,6 +533,12 @@ public class MockWebs
         }
     }
 
-
+    /**
+     * Conveniance: Synchronous verification of the broadcast.
+     */
+    public <T> T verifyBroadcast(String expectedTopicSubstring, Class<T> payloadClass) throws Exception 
+    {
+        return verifyBroadcast(expectedTopicSubstring, payloadClass, 0L);
+    }
 
 }

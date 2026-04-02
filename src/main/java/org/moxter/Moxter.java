@@ -54,7 +54,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.mockWebs.MockWebs;
+
 import org.moxter.Moxter.Engine.BodyResolver;
 import org.moxter.Moxter.Engine.ExpectVerifier;
 import org.moxter.Moxter.Engine.IMoxTemplator;
@@ -65,6 +65,7 @@ import org.moxter.Moxter.IO.HierarchicalMoxLoader;
 import org.moxter.Moxter.IO.IMoxLoader;
 import org.moxter.Moxter.IO.MoxLinker;
 import org.moxter.Moxter.IO.MoxYamlMapper;
+import org.moxter.mockWebs.MockWebs;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -580,6 +581,7 @@ public final class Moxter
          */
         private Authentication callAuth = null;
 
+
         /**
          * @param moxter      The encompassing Engine.
          */
@@ -874,7 +876,9 @@ public final class Moxter
         // A simple internal record to carry both pieces of data
         private record InternalExecutionResult(
                 Wire.ResponseEnvelope env, 
-                Model.Moxture spec) {}
+                Model.Moxture spec,
+                Map<String, Object> deltaVars
+        ) {}
 
 
         /**
@@ -942,9 +946,12 @@ public final class Moxter
 
                 // 2. Create the result (this takes a safe snapshot of varOverrides)
                 if (res == null) {
-                    return new MoxtureResult(null, null, moxter, moxtureName, varOverrides);
+                    return new MoxtureResult(
+                        null, null, moxter, moxtureName, 
+                        varOverrides, Collections.emptyMap());
                 }
-                return new MoxtureResult(res.env(), res.spec(), moxter, moxtureName, varOverrides);
+                return new MoxtureResult(res.env(), res.spec(), moxter, moxtureName, 
+                        varOverrides, res.deltaVars());
             } 
             finally {
 
@@ -1026,6 +1033,11 @@ public final class Moxter
                                     && Boolean.TRUE.equals(finalSpec.getOptions()
                                                                     .getAllowFailure());
 
+            // Capture state before before extraction ('save' section) (For Diagnostics)
+            Map<String, Object> globalStateBefore = new HashMap<>(this.moxter.vars().view());
+            // Vars changed during this execution (For Daignostics)
+            Map<String, Object> deltaVars = new LinkedHashMap<>();
+
             try
             {
                 // -------------------------------------------------------------------------
@@ -1062,12 +1074,19 @@ public final class Moxter
                     this.moxter.extractor.extractAndSave(finalSpec, env, mergedVars, 
                                                          moxtureName, jsonPathConfig);
 
+                    // Compute vars delta:
+                    this.moxter.vars().view().forEach((k, v) -> {
+                        if (!globalStateBefore.containsKey(k) || !Objects.equals(globalStateBefore.get(k), v)) {
+                            deltaVars.put(k, v);
+                        }
+                    });
+
                     // -------------------------------------------------------------------------
                     // 9. Phase 9: Assertions 
                     // -------------------------------------------------------------------------
                     try {
-                        this.moxter.verifier.verifyExpectations(finalSpec, env, 
-                                            linked.baseDir, mergedVars, moxtureName, jsonPathConfig);
+                        this.moxter.verifier.verifyExpectations(resolved, env, 
+                                            linked.baseDir, mergedVars, deltaVars, moxtureName, jsonPathConfig);
                     } 
                     catch (AssertionError e) {
                         if (isAllowFailure) {
@@ -1079,14 +1098,14 @@ public final class Moxter
                         }
                     }
                 }
-                return new InternalExecutionResult(env, resolved);
+                return new InternalExecutionResult(env, resolved, deltaVars);
             }
             catch (Throwable t) 
             {
                 if (isAllowFailure) {
                     log.warn("[Moxter] (allowFailure) moxture '{}' failed. Cause: {}", 
                             moxtureName, t.toString());
-                    return new InternalExecutionResult(null, finalSpec);
+                    return new InternalExecutionResult(null, finalSpec, deltaVars);
                 }
                 if (t instanceof RuntimeException) throw (RuntimeException) t;
                 throw new RuntimeException("Error executing moxture '" + moxtureName + "'", t);
@@ -1151,6 +1170,10 @@ public final class Moxter
                                      && Boolean.TRUE.equals(spec.getOptions().getAllowFailure());
             String label = "group '" + groupName + "'" + (isAllowFailure ? " (allowFailure)" : "");
 
+            // Capture statue before the group runs
+            // This ensures the Group Result reflects every variable saved by its children.
+            Map<String, Object> stateBefore = new HashMap<>(this.moxter.vars().view());
+
             // Group Logic: Pass the successfully merged context down to all children
             for (String childName : spec.getMoxtures()) {
                 try {
@@ -1165,7 +1188,16 @@ public final class Moxter
                     }
                 }
             }
-            return new InternalExecutionResult(null, spec); // Groups do not return a response envelope
+
+            // Calculate the cumulative delta (the scenario consequence)
+            Map<String, Object> groupDelta = new LinkedHashMap<>();
+            this.moxter.vars().view().forEach((k, v) -> {
+                if (!stateBefore.containsKey(k) || !Objects.equals(stateBefore.get(k), v)) {
+                    groupDelta.put(k, v);
+                }
+            });
+
+            return new InternalExecutionResult(null, spec, groupDelta); // Groups do not return a response envelope
         }
 
         /**
@@ -1718,6 +1750,12 @@ public final class Moxter
          */
         private final Map<String, Object> callVars;
 
+        /** 
+         * Snapshot of exactly which variables were added or changed during this specific execution.
+         */
+        private final Map<String, Object> deltaVars;
+
+
         /**
          * @param envelope    The response wrapper containing status, body, and raw content.
          * @param moxtureName The name of the moxture that produced this result (for error context).
@@ -1727,7 +1765,8 @@ public final class Moxter
                              Model.Moxture spec,
                              Moxter moxter, 
                              String moxtureName,
-                             Map<String, Object> callVars) {
+                             Map<String, Object> callVars,
+                              Map<String, Object> deltaVars) {
             this.envelope    = envelope;
             this.moxter      = moxter;
             this.moxtureName = moxtureName;
@@ -1736,6 +1775,7 @@ public final class Moxter
             this.callVars    = (callVars == null) 
                                     ? Collections.emptyMap() 
                                     : Collections.unmodifiableMap(new LinkedHashMap<>(callVars));
+            this.deltaVars   = (deltaVars == null) ? Collections.emptyMap() : Map.copyOf(deltaVars);
         }
 
         /**
@@ -2004,7 +2044,7 @@ public final class Moxter
                 try {
                     assertion.run();
                 } catch (AssertionError e) {
-                    MoxDiagnostics.reportAndThrow(e, moxtureName, envelope, resolvedSpec, callVars);
+                    MoxDiagnostics.reportAndThrow(e, moxtureName, envelope, resolvedSpec, callVars, deltaVars);
                 }
             }
 
@@ -3133,6 +3173,7 @@ public final class Moxter
                     // Topic interpolation: e.g. /topic/ckeditor/field/${p.fieldName}/published
                     b.setTopic(resolveString(raw.getBroadcast().getTopic(), context, tpl));
                     b.setType(raw.getBroadcast().getType());
+                    b.setWait(raw.getBroadcast().getWait());
                     resolved.setBroadcast(b);
                 }
                 return resolved;
@@ -3310,14 +3351,19 @@ public final class Moxter
              * @param env            The network response envelope to be evaluated.
              * @param baseDir        The anchor directory for resolving any expected classpath payloads.
              * @param vars           The variable context used to template expected values.
+             * @param varsDelta      The variables that have changed during the call (for error reporting).
              * @param name           The name of the moxture (for error reporting).
              * @param jsonPathConfig The JsonPath configuration (strict or lax).
              * @throws Exception     If a systemic parsing error occurs.
              * @throws AssertionError If any expectation is violated.
              */
-            public void verifyExpectations(Model.Moxture spec, Wire.ResponseEnvelope env, 
-                                           String baseDir, Map<String,Object> vars, 
-                                           String name, Configuration jsonPathConfig) throws Exception 
+            public void verifyExpectations(Model.Moxture spec, 
+                                           Wire.ResponseEnvelope env, 
+                                           String baseDir, 
+                                           Map<String,Object> vars, 
+                                           Map<String,Object> varsDelta, 
+                                           String name, 
+                                           Configuration jsonPathConfig) throws Exception 
             {
                 if (spec.getExpect() == null) return;
 
@@ -3347,7 +3393,7 @@ public final class Moxter
                     verifyBroadcast(spec, vars);
                 } 
                 catch (AssertionError e) 
-                {   throw MoxDiagnostics.reportAndThrow(e, name, env, spec, vars);
+                {   throw MoxDiagnostics.reportAndThrow(e, name, env, spec, vars, varsDelta);
                 }
             }
 
@@ -3609,10 +3655,12 @@ public final class Moxter
                 String resolvedTopic = String.valueOf(tpl.apply(br.getTopic(), vars));
                 Class<?> payloadClass = "String".equalsIgnoreCase(br.getType()) ? String.class : byte[].class;
 
+                Long waitMilliseconds = br.getWaitMillis();
+
                 // 5. Execution & Contextual Error Handling
                 log.info("[Moxter] Verifying broadcast to topic: {}", resolvedTopic);
                 try {
-                    mockWebs.verifyBroadcast(resolvedTopic, payloadClass);
+                    mockWebs.verifyBroadcast(resolvedTopic, payloadClass, waitMilliseconds);
                 } catch (AssertionError e) {
                     throw new AssertionError(String.format("Moxture '%s' failed broadcast verification on topic [%s]: %s", 
                                              spec.getName(), resolvedTopic, e.getMessage()), e);
@@ -4764,6 +4812,7 @@ public final class Moxter
                                        Wire.ResponseEnvelope env, 
                                        Model.Moxture resolvedSpec, 
                                        Map<String, Object> vars, 
+                                       Map<String, Object> varsDelta,
                                        Throwable cause) 
         {
             String timestamp = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now());
@@ -4789,15 +4838,28 @@ public final class Moxter
 
             sb.append("--- [EXECUTION RESULT] ---\n");
             if (env != null) {
-                sb.append("Endpoint : [").append(env.method()).append("] ").append(env.uri()).append("\n");
+                sb.append("Endpoint : [").append(env.method()).append("] ")
+                                             .append(env.uri()).append("\n");
                 sb.append("Status   : ").append(env.status()).append("\n");
-                sb.append("Response :\n").append(Utils.Logging.previewNode(env.body())).append("\n\n");
+                sb.append("Response :\n").append(
+                        Utils.Logging.previewNode(env.body())).append("\n\n");
             } else {
                 sb.append("Result   : No response received (Connection error or timeout)\n\n");
             }
 
             sb.append("--- [VARIABLE CONTEXT] ---\n");
             sb.append(Utils.Logging.previewVars(vars)).append("\n\n");
+
+
+            sb.append("--- [VARIABLE CHANGES] ---\n");
+            if (varsDelta == null || varsDelta.isEmpty()) {
+                sb.append("No global variables were created or modified during this call.\n\n");
+            } else {
+                sb.append("The following variables were updated in the global context:\n");
+                varsDelta.forEach((k, v) -> sb.append("  + ")
+                                              .append(k).append(": ").append(v).append("\n"));
+                sb.append("\n");
+            }
 
             String fullReport = sb.toString();
 
@@ -4820,9 +4882,10 @@ public final class Moxter
                                                     String name, 
                                                     Wire.ResponseEnvelope env,
                                                     Model.Moxture resolvedSpec,
-                                                    Map<String, Object> vars) {
+                                                    Map<String, Object> vars,
+                                                    Map<String, Object> varsDelta) {
             // 1. Perform the dump (Console + File)
-            dumpFailure(name, env, resolvedSpec, vars, e);
+            dumpFailure(name, env, resolvedSpec, vars, varsDelta, e);
             
             // 2. Rethrow the original error to keep JUnit/TestNG happy
             throw e;
@@ -5535,6 +5598,7 @@ public final class Moxter
         {
             private JsonNode status;            // int | "2xx"/"3xx"/"4xx"/"5xx" | "201" | [ ... any of those ... ]
             private ExpectBodyDef body;
+            @JsonAlias("stomp")
             private ExpectBroadcastDef broadcast;
         }
 
@@ -5551,8 +5615,38 @@ public final class Moxter
         @Getter @Setter
         public static class ExpectBroadcastDef 
         {
+            @JsonAlias("destination")
             private String topic;
             private String type; // e.g., "byte[]", "json", "String"
+            private String wait; // e.g. "2 s", "2s", "2000ms", "2 m", "2 min"
+
+            /**
+             * Parses the 'wait' string into a millisecond value.
+             * Supports: ms, s, m (with or without spaces).
+             * Defaults to 0 if null/empty.
+             */
+            public long getWaitMillis() {
+                if (wait == null || wait.isBlank()) {
+                    return 0L;
+                }
+                // Regex: (numeric value) followed by optional (whitespace) followed by (unit)
+                Pattern pattern = Pattern.compile("(\\d+)\\s*(ms|s|m|min)?", Pattern.CASE_INSENSITIVE);
+                Matcher matcher = pattern.matcher(wait.trim());
+                if (matcher.matches()) {
+                    long value = Long.parseLong(matcher.group(1));
+                    String unit = matcher.group(2);
+                    if (unit == null || unit.toLowerCase().equals("ms")) {
+                        return value;
+                    }
+                    return switch (unit.toLowerCase()) {
+                        case "s"   -> value * 1000L;          // Seconds to Milliseconds
+                        case "m"   -> value * 60000L;         // Minutes to Milliseconds
+                        case "min" -> value * 60000L;         // Minutes to Milliseconds
+                        default  -> value;                  // Default to ms
+                    };
+                }
+                throw new IllegalArgumentException("Invalid duration format for expect.broadcast.wait: " + wait);
+            }
         }
 
         @Getter @Setter
