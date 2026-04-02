@@ -44,16 +44,16 @@ import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
-import org.fasterxml.jackson.annotation.JsonAlias;
-import org.fasterxml.jackson.annotation.JsonAnySetter;
-import org.fasterxml.jackson.annotation.JsonProperty;
-import org.fasterxml.jackson.core.JsonProcessingException;
-import org.fasterxml.jackson.databind.DeserializationFeature;
-import org.fasterxml.jackson.databind.JsonNode;
-import org.fasterxml.jackson.databind.ObjectMapper;
-import org.fasterxml.jackson.databind.SerializationFeature;
-import org.fasterxml.jackson.databind.node.ArrayNode;
-import org.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.mockWebs.MockWebs;
 import org.moxter.Moxter.Engine.BodyResolver;
 import org.moxter.Moxter.Engine.ExpectVerifier;
@@ -2862,7 +2862,7 @@ public final class Moxter
                 try {
                         // 1. Read into intermediate Map to allow manual structural modification
                         Map<String, Object> raw = wrappedMapper.readValue(in, 
-                                new org.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
+                                new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {});
 
                         // 2. Extract the Custom Registry (The .templates block)
                         // This acts as our "Header File" or "C-Directive" store

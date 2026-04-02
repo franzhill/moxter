@@ -1,8 +1,13 @@
 {
    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable",
-   
+
+   "files.autoSave": "afterDelay", //onFocusChange",
+   "files.autoSaveDelay": 1000,   // 1 second
+
    "yaml.schemas": {
-       "src/main/java/com/fhi/moxter/moxter-schema.json": "**/moxtures.yaml"
+      // Use the following schema : for the following files
+       "src/main/java/com/fhi/moxter/moxter-schema.json": "**/moxtures.yaml",
+       "src/main/java/org/moxter/moxter-schema.json": "**/moxtures.yaml"
    },
 
 
@@ -97,5 +102,6 @@
             }
          ]
       }
-   }
+   },
+   "java.configuration.updateBuildConfiguration": "interactive"
 }
