@@ -1,4 +1,4 @@
-package org.moxter;
+package dev.moxter;
 
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -55,17 +55,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import org.moxter.Moxter.Engine.BodyResolver;
-import org.moxter.Moxter.Engine.ExpectVerifier;
-import org.moxter.Moxter.Engine.IMoxTemplator;
-import org.moxter.Moxter.Engine.MoxResolver;
-import org.moxter.Moxter.Engine.MoxSimpleTemplator;
-import org.moxter.Moxter.Engine.VarExtractor;
-import org.moxter.Moxter.IO.HierarchicalMoxLoader;
-import org.moxter.Moxter.IO.IMoxLoader;
-import org.moxter.Moxter.IO.MoxLinker;
-import org.moxter.Moxter.IO.MoxYamlMapper;
-import org.moxter.mockWebs.MockWebs;
+import dev.moxter.Moxter.Engine.BodyResolver;
+import dev.moxter.Moxter.Engine.ExpectVerifier;
+import dev.moxter.Moxter.Engine.IMoxTemplator;
+import dev.moxter.Moxter.Engine.MoxResolver;
+import dev.moxter.Moxter.Engine.MoxSimpleTemplator;
+import dev.moxter.Moxter.Engine.VarExtractor;
+import dev.moxter.Moxter.IO.HierarchicalMoxLoader;
+import dev.moxter.Moxter.IO.IMoxLoader;
+import dev.moxter.Moxter.IO.MoxLinker;
+import dev.moxter.Moxter.IO.MoxYamlMapper;
+import dev.moxter.mockWebs.MockWebs;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

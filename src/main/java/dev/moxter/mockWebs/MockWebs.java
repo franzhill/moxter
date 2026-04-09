@@ -1,4 +1,4 @@
-package org.moxter.mockWebs;
+package dev.moxter.mockWebs;
 
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;

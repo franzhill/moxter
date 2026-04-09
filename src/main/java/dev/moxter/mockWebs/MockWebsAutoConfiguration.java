@@ -1,4 +1,4 @@
-package org.moxter.mockWebs;
+package dev.moxter.mockWebs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.Mockito;

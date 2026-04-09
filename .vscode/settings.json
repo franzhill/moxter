@@ -6,8 +6,8 @@
 
    "yaml.schemas": {
       // Use the following schema : for the following files
-       "src/main/java/com/fhi/moxter/moxter-schema.json": "**/moxtures.yaml",
-       "src/main/java/org/moxter/moxter-schema.json": "**/moxtures.yaml"
+      // "src/main/java/com/fhi/moxter/moxter-schema.json": "**/moxtures.yaml",
+       "src/main/java/dev/moxter/moxter-schema.json": "**/moxtures.yaml"
    },
 
 

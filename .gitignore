@@ -54,3 +54,6 @@ lombok.config
 *.swo
 target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+
+# === FHI ===
+Z-*

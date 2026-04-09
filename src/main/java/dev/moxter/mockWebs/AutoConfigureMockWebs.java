@@ -1,4 +1,4 @@
-package org.moxter.mockWebs;
+package dev.moxter.mockWebs;
 
 import org.springframework.context.annotation.Import;
 import java.lang.annotation.ElementType;
