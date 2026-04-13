@@ -15,6 +15,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,10 +25,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.x
-          cache: 'pip'
+          #cache: 'pip'   # if using this we need a **/requirements.txt or **/pyproject.toml file
 
       - name: Install dependencies
-        run: pip install mkdocs-material
+        run: pip install mkdocs-material pymdown-extensions
 
       - name: Build Documentation
         run: mkdocs build
