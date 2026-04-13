@@ -5,12 +5,42 @@ theme:
   name: material
   palette:
     primary: grey   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
-    accent: teal  # This handles all buttons, links, and highlights automatically
+    accent: blue  # This handles all buttons, links, and highlights automatically
+    scheme: slate  # slate = dark mode
+  features:
+    - navigation.tabs          # Top-level menu instead of just a sidebar
+    - navigation.tabs.sticky   # Menu stays visible when you scroll
+    - navigation.sections      # Groups the sidebar into clear blocks
+    - navigation.expand        # Keeps the sidebar open so users see the depth
+    - navigation.top           # Adds a "Back to Top" button
+    - toc.follow               # Highlighting the sidebar as you scroll
+# doesnt work
+#    - toc.integrate            # Moves the ToC to the left sidebar    
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - enumerate-headings:
+      toc_depth: 3     # Numbers will show up in the sidebar Table of Contents too
+      strict: false    # Avoid errors if a page skips a heading level
+
 
 markdown_extensions:
-  - pymdownx.tabbed:
+  - admonition
+  - pymdownx.tabbed:    # Enables tabs
       alternate_style: true 
-  - pymdownx.superfences: # Required for code blocks inside tabs
+  - pymdownx.superfences:  # Required for code blocks inside tabs
+        custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tasklist:  # Display a list as checkboxes with [x]
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
   - Home: moxter/index.md

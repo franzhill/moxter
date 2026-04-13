@@ -1,0 +1,84 @@
+/* Color and style headings */
+h1, h2, h3 {
+  /*color: var(--md-primary-fg-color);*/ /* Uses your primary Grey or Blue-Grey */
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.3rem;
+}
+
+h1 {
+  text-transform: uppercase;
+  font-size: 2rem;
+  margin-top: 2rem;
+}
+
+
+h2 {
+  border-left: 0px solid var(--md-primary-fg-color);
+  padding-left: 0rem;
+  border-bottom: none;
+}
+
+/* Title */
+article h1 {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  color: var(--md-primary-fg-color);
+  font-weight: 800;
+  font-size: 2.2em;
+  border-bottom: 4px solid var(--md-primary-fg-color--lightest);
+  padding-bottom: 0.3rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(90deg, var(--md-primary-fg-color), var(--md-accent-fg-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* H2: Section - Primary Color Theme */
+article h2 {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  border-left: 4px solid var(--md-primary-fg-color);
+  padding-left: 15px;
+  padding-right: 10px; /* Added for background balance */
+  margin-top: 3rem;    /* Add more space above headers to separate sections clearly */
+  font-weight: 700;
+  background: color-mix(in srgb, var(--md-primary-fg-color), transparent 96%); /* Faint background */
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-radius: 0 4px 4px 0; /* Smooths out the right edge */
+}
+
+/* H3: Sub-sections - Accent Color Theme */
+article h3 {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  border-left: 3px solid var(--md-accent-fg-color);
+  padding-left: 15px;
+  padding-right: 10px;
+  padding-top: 6px;    /* Added to house the background */
+  padding-bottom: 6px; /* Added to house the background */
+  font-weight: 700;
+  color: var(--md-accent-fg-color); 
+  background: color-mix(in srgb, var(--md-accent-fg-color), transparent 98%); /* Faint accent background */
+  margin-top: 2rem;   /* Add more space above headers to separate sections clearly */
+  letter-spacing: 0.01em;
+  border-radius: 0 4px 4px 0;
+}
+
+
+
+/* Tighten up spacing between list items */
+.md-content ul li, 
+.md-content ol li {
+  margin-bottom: 0.15rem; /* Adjust this value to your liking */
+}
+
+/* Remove extra bottom margin from paragraphs inside list items */
+.md-content li p {
+  margin-bottom: 0 !important;
+}
+
+/* Optional: Tighten space between the list and the preceding paragraph */
+.md-content ul, 
+.md-content ol {
+  margin-top: 0.5rem;
+}

@@ -1,141 +1,242 @@
-# Orchestrate, stop writing boilerplate!
+# YAML your API calls. Build great scenarios.
 
 
 
-Moxter turns verbose MockMvc boilerplate into declarative, reusable API calls. Define 
-your API interactions in YAML, orchestrate them in Java/JUnit, and keep your test intent 
-light and crystal clear. 
+**Moxter** turns verbose, boilerplate-heavy JUnit MockMvc tests into declarative API calls and lean, to-the-point scenarios. 
+
+- Define your API calls in YAML
+- Call them from Java/JUnit, and keep your test intent light and crystal clear
+- Shake, and run just like a good old JUnit test.
 
 
 
-## A first simple test example with Moxter
-
-The following example demonstrates writing a simple test scenario querying a succession of API 
-REST endpoints.
+## A first simple example
 
 ### The YAML definition
 Place a file named  `moxtures.yaml` in your test resources (e.g., 
 `src/test/resources/moxter/simple/`). 
 This file describes HTTP calls to your API backend.
 
-```yaml
-moxtures:
-  - name: create_pet
-    method: POST
-    endpoint: /api/pets
-    body:
-      firstName: "Thomas "
-      lastName : "O'Malley"
-      address  : "Alleyways and rooftops"
-      city     : "Paris"
-    save:
-      petId: $.id    # Capture the 'id' field from the JSON response body
-                     # (using JSonPath syntax) so it can be used either in 
-                     # another moxture, or inside the JUnit test.
-      petName: $.name 
-    expect:          # Section for assertions that will be automatically checked by Moxter.
-      status: 201    # Test will fail in case of a different return status code.
+=== "Lean"
+    ```yaml
+    moxtures:
+      - name: create_pet
+        method: POST
+        endpoint: /api/pets
+        body:
+          firstName: "Thomas "
+          lastName : "O'Malley"
+          address  : "Alleyways and rooftops"
+          city     : "Paris"
+        save:
+          petId: $.id
+          petName: $.name 
+        expect:
+          status: 201
 
 
-  - name: apply_shampoo
-    method: POST
-    endpoint: /api/pet/${petId}/shampoo   # We're re-using the petId variable recorded in 
-                                          # the moxture above. 
-    vars:
-      p.type     : "herbal type 3"   # defines a local variable usable in the moxture
-      p.duration : "5 min"
-    body:
-      type    : ${p.type}            # local variable used here.
-      strength: "mild"
-      duration: ${p.duration}
-      rinse   : "warm"
-    save:
-      petVitals: $.vitals    # Info on how the pet responds to the shampoo
-                             # We can perform further assertions on these
-                             # inside the JUnit code.
-    expect:
-      status: 2xx     # Flexible status matching (200, 201, 204)
-                      # Shampooing the pet should not raise any problem.
+      - name: apply_shampoo
+        method: POST
+        endpoint: /api/pet/${petId}/shampoo
+        vars:
+          p.type     : "herbal type 3"
+          p.duration : "5 min"
+        body:
+          type    : ${p.type}
+          strength: "mild"
+          duration: ${p.duration}
+          rinse   : "warm"
+        save:
+          petVitals: $.vitals
+        expect:
+          status: 2xx
+
+    
+      - name: all_in_one_shampoo_test
+        moxtures:
+          - create_pet
+          - apply_shampoo
+          - dry_pet
+          - return_pet_to_owner
+          - generate_invoice
+    ```
+
+=== "With comments"
+    ```yaml
+    moxtures:
+      - name: create_pet
+        method: POST
+        endpoint: /api/pets
+        body:
+          firstName: "Thomas "
+          lastName : "O'Malley"
+          address  : "Alleyways and rooftops"
+          city     : "Paris"
+        save:
+          petId: $.id    # Capture the 'id' field from the JSON response body
+                        # (using JSonPath syntax) so it can be used either in 
+                        # another moxture, or inside the JUnit test.
+          petName: $.name 
+        expect:          # Section for assertions that will be automatically checked by Moxter.
+          status: 201    # Test will fail in case of a different return status code.
 
 
-  # Orchestrating a scenario by grouping moxtures
-  - name: all_in_one_shampoo_test
-    moxtures:      # Calling this 'group' moxture will result in the chained 
-                   # execution of the programmed moxtures, in the given order:
-       - create_pet
-       - apply_shampoo
-       - dry_pet
-       - return_pet_to_owner
-       - generate_invoice
-       # ... add any other desired moxture
+      - name: apply_shampoo
+        method: POST
+        endpoint: /api/pet/${petId}/shampoo   # We're re-using the petId variable recorded in 
+                                              # the moxture above. 
+        vars:
+          p.type     : "herbal type 3"   # defines a local variable usable in the moxture
+          p.duration : "5 min"
+        body:
+          type    : ${p.type}            # local variable used here.
+          strength: "mild"
+          duration: ${p.duration}
+          rinse   : "warm"
+        save:
+          petVitals: $.vitals   # Info on how the pet responds to the shampoo
+                                # We can perform further assertions on these
+                                # inside the JUnit code.
+        expect:
+          status: 2xx     # Flexible status matching (200, 201, 204)
+                          # Shampooing the pet should not raise any problem.
 
-```
 
-<br /> 
+      # Orchestrating a scenario by grouping moxtures
+      - name: all_in_one_shampoo_test
+        moxtures:     # Calling this 'group' moxture will result in the chained 
+                      # execution of the programmed moxtures, in the given order:
+          - create_pet
+          - apply_shampoo
+          - dry_pet
+          - return_pet_to_owner
+          - generate_invoice
+          # ... add any other desired moxture
+    ```
+
 
 ### The Java JUnit test
-In your JUnit test, you build the engine and call the moxture by its symbolic name. Moxter handles the MockMvc execution, JSON serialization, and status assertions automatically.
+In your JUnit test, call the moxtures, easily grab portions from their return payload and enforce any kind of good old assertions. Moxter handles the MockMvc execution, JSON serialization, variable extraction and status assertions, automatically.
 
-```Java
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
-class PetIntegrationTest {
+=== "Lean"
 
-    @Autowired
-    private MockMvc mockMvc; // Injected by the Spring Test context
+    ```Java
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+    @AutoConfigureMockMvc
+    class ShampooIntegrationTest {
 
-    private static Moxter mx;  // Our moxture engine
+        @Autowired
+        private MockMvc mockMvc;
+        private static Moxter mx;
 
-    @BeforeAll
-    static void setup(@Autowired MockMvc mockMvc) {
-        // Build the engine for this test class
-        mx = Moxter.forTestClass(PetIntegrationTest.class)  
-                    // (this will let Moxter know which moxture file(s) to load)
-                   .mockMvc(mockMvc)
-                   // The mockMvc instace Moxter will be using to submit requests
-                   .build();
+        @BeforeAll
+        static void setup(@Autowired MockMvc mockMvc) {
+            mx = Moxter.forTestClass(PetIntegrationTest.class)  
+                      .mockMvc(mockMvc)
+                      .build();
+        }
+
+        @Test
+        @DisplayName("Make sure shampoo is safe for the pet")
+        void testShampooOnPet() {
+            mx.call("create_pet")
+              .assertBody("$.id").isNotNull().and()
+              .assertBody("$.status").isEqualTo("ACTIVE");
+
+            mx.caller()
+              .withVar("p.type", "tropical blossom")
+              .call("apply_shampoo")
+              .assertVar("petVitals")
+                .isNotNull().and()
+              .assertBody("$.message")
+                .isEqualToInterpolated("Shampoo applied to ${petName}").and()
+              .assertBody("$.vitals.heartRate").asString().contains("bpm").and()
+              .assertBody("$.isClean").asBoolean().isTrue();
+
+            var vitals = mx.vars().read("petVitals").asType(Map.class);
+
+            assert(vitals.get("temperature")).inBetween("35").and("40");
+            assertThat(vitals.get("heartRate")).inBetween("50").and("150");
+            assert(vitals.get("fur")) ... ;
+
+            ...
+        }
     }
+    ```
 
-    @Test
-    @DisplayName("Make sure shampoo is safe for the pet")
-    void testShampooOnPet() {
+=== "With comments"
 
-        // 1. First we'll need a pet => execute the dedicated moxture defined in the moxture file: 
-        mx.call("create_pet")
-          .assertBody("$.id").isNotNull().and()         // Directly chain some simple assertions
-          .assertBody("$.status").isEqualTo("ACTIVE");
+    ```Java
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
+    @AutoConfigureMockMvc
+    class ShampooIntegrationTest {
 
-        // (The return status code has automatically been asserted by Moxter.)
+        @Autowired
+        private MockMvc mockMvc;   // Injected by the Spring Test context
 
-        // 2. Then we'll apply the shampoo on the created pet.
-        //    Thanks to chaining, the pet id is automatically passed to 
-        //    the 'shampoo' moxture.
-        mx.caller()
-          .withVar("p.type", "tropical blossom")  // Override the moxture default variable
-          .call("apply_shampoo")
-          .assertVar("petVitals")   // assertion made on a saved variable
-             .isNotNull().and()
-          .assertBody("$.message")  // assertion made on the response body using JSonPath
-             .isEqualToInterpolated("Shampoo applied to ${petName}").and()
-          .assertBody("$.vitals.heartRate").asString().contains("bpm").and()
-          .assertBody("$.isClean").asBoolean().isTrue();
+        private static Moxter mx;  // Our moxture engine
 
-        // 3. Further possibly more complex assertions can be performed with standard JUnit/AssertJ:
-        // - Retrieve the extracted data captured by Moxter:
-        var vitals = mx.vars().read("petVitals").asType(Map.class);
-        // - Perform assertions:
-        assert(vitals.get("temperature")).inBetween("35").and("40");
-        assertThat(vitals.get("heartRate")).inBetween("50").and("150");
-        assert(vitals.get("fur")) ... ;
+        @BeforeAll
+        static void setup(@Autowired MockMvc mockMvc) {
+            // Build the engine for this test class
+            mx = Moxter.forTestClass(PetIntegrationTest.class)  
+                        // (this will let Moxter know which moxture file(s) to load)
+                      .mockMvc(mockMvc)
+                      // The mockMvc instace Moxter will be using to submit requests
+                      .build();
+        }
 
-        ...
+        @Test
+        @DisplayName("Make sure shampoo is safe for the pet")
+        void testShampooOnPet() {
+
+            // 1. First we'll need a pet => execute the dedicated moxture defined in the moxture file: 
+            mx.call("create_pet")
+              .assertBody("$.id").isNotNull().and()         // Directly chain some simple assertions
+              .assertBody("$.status").isEqualTo("ACTIVE");
+
+            // (The return status code has automatically been asserted by Moxter.)
+
+            // 2. Then we'll apply the shampoo on the created pet.
+            //    Thanks to chaining, the pet id is automatically passed to 
+            //    the 'shampoo' moxture.
+            mx.caller()
+              .withVar("p.type", "tropical blossom")  // Override the moxture default variable
+              .call("apply_shampoo")
+              .assertVar("petVitals")   // assertion made on a saved variable
+                .isNotNull().and()
+              .assertBody("$.message")  // assertion made on the response body using JSonPath
+                .isEqualToInterpolated("Shampoo applied to ${petName}").and()
+              .assertBody("$.vitals.heartRate").asString().contains("bpm").and()
+              .assertBody("$.isClean").asBoolean().isTrue();
+
+            // 3. Further possibly more complex assertions can be performed with standard JUnit/AssertJ:
+            // - Retrieve the extracted data captured by Moxter:
+            var vitals = mx.vars().read("petVitals").asType(Map.class);
+            // - Perform assertions:
+            assert(vitals.get("temperature")).inBetween("35").and("40");
+            assertThat(vitals.get("heartRate")).inBetween("50").and("150");
+            assert(vitals.get("fur")) ... ;
+
+            ...
+        }
     }
-}
+    ```
+
+
+
+### Run your Moxter test
+
+Just like any other good old Unit Test:
+
+```bash
+$ mvn test  -Dtest=ShampooIntegrationTest
 ```
-<br />
+
 
 
 ## How it works
+
 **Moxter** acts as a coordination layer between your declarative YAML files and the `Spring MockMvc` framework.
 
 - **Discovery**: The engine finds the moxtures.yaml based on your test's package name.
@@ -146,12 +247,11 @@ class PetIntegrationTest {
 
 
 
-<br />
-
-
 ## Without Moxter
 
 With just a simple test like this one, we already have saved ourselves tedious boilerplate code, while conveying clarity, separation of concern and reusability.
+
+
 
 ### Boilerplate and mixing concerns
 

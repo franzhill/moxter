@@ -28,7 +28,7 @@ jobs:
           #cache: 'pip'   # if using this we need a **/requirements.txt or **/pyproject.toml file
 
       - name: Install dependencies
-        run: pip install mkdocs-material pymdown-extensions
+        run: pip install mkdocs-material pymdown-extensions mkdocs-enumerate-headings-plugin
 
       - name: Build Documentation
         run: mkdocs build
