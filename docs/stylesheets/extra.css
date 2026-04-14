@@ -1,4 +1,43 @@
-/* Color and style headings */
+
+
+/* =======================================
+   BANNER
+   ======================================= */
+
+/* Remove the padding/margins from the logo container */
+.md-header__button.md-logo {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important; /* Ensure the logo doesn't have its own internal offset */
+    height: 48px; /* Matches the exact height of your md-header__inner */
+    display: flex;
+    align-items: center;
+}
+
+/* Force the image to the full height of the container */
+.md-header__button.md-logo img {
+    height: 96px !important; 
+    width: auto;
+    display: block;
+}
+
+/* Remove the 'auto' margins that center the header content */
+.md-header__inner.md-grid {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important; /* Optional: allows it to hit the very edge of the screen */
+    padding-left: 1rem; /* Keeps it from actually touching the browser bezel */
+}
+
+
+
+/* =======================================
+   HEADINGS 
+   ======================================= */
+
+
 h1, h2, h3 {
   /*color: var(--md-primary-fg-color);*/ /* Uses your primary Grey or Blue-Grey */
   font-weight: 700;
@@ -66,6 +105,10 @@ article h3 {
 
 
 
+/* =======================================
+   LISTS
+   ======================================= */
+
 /* Tighten up spacing between list items */
 .md-content ul li, 
 .md-content ol li {
@@ -82,3 +125,97 @@ article h3 {
 .md-content ol {
   margin-top: 0.5rem;
 }
+
+
+/* =======================================
+   TABLES 
+   ======================================= */
+
+/* Style the Header Row (Dark background, White text for both modes) */
+.md-typeset table thead {
+    background-color: #2e3b42; 
+}
+
+.md-typeset table thead th {
+    color: #ffffff !important; /* Forces white text on the dark header */
+    font-weight: 700;
+    /*text-transform: uppercase;*/
+    letter-spacing: 0.05em;
+}
+
+/* Style the Leftmost "Feature" Column */
+.md-typeset table tbody td:first-child {
+    font-weight: 700;
+    /* ADAPTIVE: Uses the theme's default text color (white in dark, black in light) */
+    color: var(--md-typeset-color); 
+    /* ADAPTIVE: A very subtle grey tint that works on both dark and light backgrounds */
+    background-color: rgba(128, 128, 128, 0.07); 
+    border-right: 1px solid var(--md-typeset-table-color);
+}
+
+/* Base style for regular cells - Forced contrast */
+.moxter-comparison table tbody td {
+    /* This adds a subtle "lift" regardless of your theme background */
+    background-color: rgba(128, 128, 128, 0.05) !important; 
+    border: 1px solid var(--md-typeset-table-color);
+    padding: 12px 16px !important;
+}
+
+
+/* Subtle Row Hover Effect */
+.md-typeset table tbody tr:hover {
+    background-color: rgba(128, 128, 128, 0.04);
+}
+
+/* Base style for all body cells in the comparison table */
+.md-typeset table tbody td {
+    /* Use a slightly different background than the page */
+    background-color: var(--md-default-fg-color--highest); 
+    /* Or use a manual subtle tint if the variable is too dark/light: */
+    /* background-color: rgba(128, 128, 128, 0.03); */
+    
+    border: 1px solid var(--md-typeset-table-color);
+    transition: background-color 0.2s ease;
+}
+
+/* Ensure the Feature Column (1st) remains distinct */
+.md-typeset  table tbody td:first-child {
+    background-color: rgba(128, 128, 128, 0.12) !important;
+    font-weight: 700;
+}
+
+/* Vertical Centering for All Table Cells */
+.md-typeset table th, 
+.md-typeset table td {
+    vertical-align: middle !important;
+}
+
+
+/* ----------------------------
+ * Moxter comparison table 
+ * ---------------------------- */
+
+
+.moxter-comparison table thead th {
+    text-transform: uppercase;
+}
+
+
+
+/* The Moxter Column (4th column) */
+/* Make the Moxter header stand out with depth */
+.moxter-comparison table th:nth-child(4) {
+    background-color: #3d5afe !important;   /* Brighter blue for the header */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    z-index: 1;
+}
+
+.moxter-comparison table td:nth-child(4) {
+    background-color: rgba(61, 90, 254, 0.1) !important; 
+  /* Add a very faint vertical border to separate the hero column */
+    border-left: 1px solid rgba(61, 90, 254, 0.2);
+    border-right: 1px solid rgba(61, 90, 254, 0.2);
+}
+

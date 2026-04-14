@@ -1,4 +1,4 @@
-# YAML your API calls. Build great scenarios.
+# Describe your API calls. Build great test scenarios.
 
 
 

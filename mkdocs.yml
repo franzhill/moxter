@@ -3,6 +3,7 @@ site_url: https://franzhill.github.io/moxter/
 
 theme:
   name: material
+  logo: assets/logo.png
   palette:
     primary: grey   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
     accent: blue  # This handles all buttons, links, and highlights automatically
@@ -18,7 +19,7 @@ theme:
 #    - toc.integrate            # Moves the ToC to the left sidebar    
     - content.code.copy        # Add a copy buton on code snippets
     - content.tabs.link        # Keeps tabs in sync across the page
-
+    - tables.sortable          # Allows users to sort
 
 extra_css:
   - stylesheets/extra.css
@@ -32,6 +33,8 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - attr_list   # add a css class to a markdown element with the syntax: {: .my_class}
+  - md_in_html  #
   - pymdownx.tabbed:    # Enables tabs
       alternate_style: true 
   - pymdownx.highlight:
@@ -58,26 +61,64 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
+
+
 nav:
   - Home: index.md
   - Getting started: getting_started.md
   - Your first Moxter test: your_first_moxter_test.md
   - Philosophy: philosophy.md
-  - Moxter:
-    - Introduction: moxter/index.md  # provide a "broader view" of the documentation is through the sidebar. This allows users to see all chapters from any page they are on.
-    - State of unit testing: moxter/state_of_auto_testing.md
-    - Philosophy: moxter/philosophy.md
-    - First Simple Example: moxter/first_simple_example.md
-    - Core Syntax: moxter/fixtures.md
+  - Comparison: comparison.md
+  - User Guide:
+      - YAML Moxture Files: user_guide/yaml_moxture_files.md
+
+#
+# Core
+#   The Moxture File
+#     Anatomy of a YAML fixture (Method, Path, Payload, Expectations).
+#     Import the json schema into your IDE
+#     Discovery & Lookup: Where to place YAML files and how Moxter resolves names across the classpath.
+#   Build the Moxter execution engine: settings etc. 
+#     Authentication & CSRF
+#   Variables
+#     Scope
+#     Retrieving variables inside the JUnit test (mx.vars() )
+#   Calling the moxture
+#     The fluent API
+#        override variables (withVar, withVars)
+#        override moxture assertions
+#        perform simple assertions
+#        lax mode etc.
+#   Group moxtures (chaining): start to write a scenario
+#   Extending moxtures
+#      BasedOn
+#      Payload inheritance
+#    Factorize repeated lines with __template__
+#    Multipart requests
+#    Websocket requests with MocckWebs
+#    Troubleshooting
+#    Logging & diagnostics
+#    Moxter v2: the upcoming features
+# Cookbook
+#   Use a parent class with the moxter engine and all the annotations
+#   Use beforeAll and AfterAll moxtures
+#   Use lax mode for teadowns
+#   Good practise: tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
+#   Examples 
+#
 
 
 
-    - Inheritance (basedOn): moxter/fixtures.md#basedon
-    - Variables: moxter/variables.md
-    - Features:
-       - Multipart: moxter/multipart.md
-       - Lax Modes: moxter/index.md#lax-mode
-    - Cookbook: moxter/examples.md
+
+
+
+#
+#    - Inheritance (basedOn): moxter/fixtures.md#basedon
+#    - Variables: moxter/variables.md
+#    - Features:
+#       - Multipart: moxter/multipart.md
+#       - Lax Modes: moxter/index.md#lax-mode
+#    - Cookbook: moxter/examples.md
 
 ## 1) YAML fixture file...
 ## 2) Where place the YAML files / YAML File discovery...
@@ -100,8 +141,7 @@ nav:
 ### 10.3) Templating with pre-seeded variables...
 ### 10.4) Cargo-cult payloads: YAML object, JSON string, classpath include...
 ### 10.5) basedOn to reuse, with deep-merge payloads (arrays replace)...
-### 10.6) Expect multiple acceptable statuses (2xx class or list)...
-### 10.7) Best-effort teardown with lax mode...
+### 10.6)
 ### 10.8) Save multiple values from arrays/objects (JsonPath)...
 ### 10.9) Query params & headers with templating...
 ### 10.10) Idempotent delete: allow 404 in strict mode...

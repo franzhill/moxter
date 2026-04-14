@@ -8,13 +8,18 @@ In many software projects, unit testing is the neglected stepchild of the develo
 
 Because good tests are actually -and surprisingly- difficult to craft, because they are tedious to write, and because nobody really cares as long as that pipeline turns green, they tend to evolve with a life of their own without any governance and direction.
 
-Without a clear framework or strategy, developers copy-paste setup logic, hardcode magic strings, create deeply nested helper methods, Mockito everything away ending up testing nothing more than the raw metal of the underlying frameworks. As long as "the tests pass", everybody turns a blind eye.
+Without a clear framework or strategy, developers copy-paste setup logic, hardcode magic strings, create deeply nested helper methods, Mockito everything away ending up testing nothing more than the bare metal of the underlying frameworks. As long as "the tests pass", everybody turns a blind eye.
 
 The result? A big folder of tests that take longer to code and maintain than actually developing the feature, and where nobody truly knows what a specific test is actually verifying or why its setup context is as it is.
 
 
 ## The false sense of security
- ???
+
+High test coverage percentages often act as a mask. You can have 90% coverage and still ship a critical bug because your mocks are "lying" to you. If you mock your service layer to return a success, your test will pass even if the real service would have crashed due to a database constraint or a null pointer.
+
+"Testing with mocks is often just testing that your mocks work."
+
+When tests are too isolated, they fail to catch State Corruptions. A unit test might prove that you can create a user, and another might prove you can delete a user, but they rarely prove that you can create, update, and then delete that same user in a single cohesive flow. This gap is where the most expensive production bugs hide.
 
 
 
@@ -40,29 +45,11 @@ TBy providing the means to easily define the building bricks (so-called "moxture
 
 
 
-## Where Moxter sits in the testing landscape
-<br />
 
-| Feature | JUnit + Mockito | JUnit + MockMvc | JUnit + **Moxter** | **Rest Assured** | Postman / Newman and clones |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Testing Level** | Unit (Isolated) | Web Slice/ Integration | **Web Slice / Integration** | Integration / E2E | E2E / System |
-| **Test "Border"** | Internal Logic | API Border | **API Border & Internal** | API Border | API Border |
-| **Main rationale** | Prove complex internal logic | Prove the API contract | **Prove the API contract** | Prove the API contract over the network | Prove the API contract in 'real-life' |
-| **Requires running HTTP server** | 🟢 No | 🟢 No (Mock Servlet) | 🟢 **No (Mock Servlet)** | 🔴 Yes (🟢 No with MockMvc extension) | 🔴 Yes |
-| **Close to Real-life?** | 🔴 No | 🟢 Closer  | 🟢 **Closer** | ⭐ Closest | ⭐ Closest |
-| **Testing stage** | ⭐ Early (Coding) | ⭐ Early (Coding) | ⭐ **Early (Coding)** | ⭐ Early (Coding) | 🔴 Late (Post-Deployment) |
-| **Execution Speed** | ⭐ Instant | 🟢 Fast | 🟢 **Fast** | 🟢 Fast to 🟡 Moderate | 🔴 Slow (Needs Server) |
-| **CI/CD Integration** | ⭐ Native | ⭐ Native | ⭐ **Native** | ⭐ Native | 🟡 Needs CLI/Wrappers |
-| **Real-life test scenarios?**| 🔴 No | 🟡 Manual | ⭐ **Good (chaining)** | 🟢 Good (Fluent API) | ⭐ Good (may need writing JS) |
-| **Checks (assertions)** | 🟢 Powerful (code) | 🟢 Powerful (code) | ⭐ **Powerful (code) and easy (YAML)** | ⭐ Powerful (DSL/Code) | 🟡 Requires writing JS |
-| **Reuse** | N/A | 🟡 through functions | 🟢 **Good (inheritance, variable overloading)** | 🟡 through functions | 🟢 Good (Collections/Scripts ... if not too complex) |
-| **Where Tests Live** | Alongside Code | Alongside Code | **Alongside Code** | Alongside Code | External Tool |
-| **Who can write tests?** | 🔴 Devs | 🔴 Devs | 🟡 **Devs and QA (YAML)** | 🔴 Devs | ⭐ Devs/External (QA, users...) |
-| **Who can run tests?** | 🔴 Devs | 🔴 Devs | 🟡 **Devs and QA** | 🔴 Devs | ⭐ Anybody (users, POs...) |
-| **Ease of Creation** | 🟡 Moderate | 🟡 Moderate (Boilerplate) | 🟢 **Easier** | 🟡 Moderate | ⭐ Easy (GUI) |
-| **Cost of Maintenance** | 🟡 Moderate | 🟡 Low (only if API contract changes) | 🟢 **Lower (only if API contract changes)** | 🟡 Low (only if API contract changes) | 🟢 Lower (only if API contract changes) |
-| **Documentation value** | Poor (Code only) | Poor (Code only) | 🟢 **Good (Readable)** | 🟡 Moderate (DSL) | ⭐ Very good (JSON/GUI) |
+## Further resources on the subject of testing
 
-
-![Alt text describing the image](/docs/img/test_pyramid.png "Optional hover title")
-
+* [TDD is Dead. Long live testing.](https://david.heinemeierhansson.com/2014/tdd-is-dead-long-live-testing.html) (DHH): A critique of how mock-heavy testing leads to "Test-Induced Design Damage," creating complex architectures just to satisfy isolation.
+* [TDD, Where Did It All Go Wrong?](https://www.youtube.com/watch?v=EZ05e7EMOLM) (Ian Cooper): A seminal talk arguing that a "unit" should be a cohesive business behavior, not a single class.
+* [Unit Test](https://martinfowler.com/bliki/UnitTest.html) (Martin Fowler): A breakdown of the "Sociable vs. Solitary" distinction, explaining why testing components together provides higher confidence.
+* [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html) (Martin Fowler): An analysis of the "London School" (Mockist) versus the "Detroit School" (Classicist) and how they define test boundaries.
+* [The Practical Test Pyramid](https://martinfowler.com/articles/practical-test-pyramid.html): Expert guidance on finding the "sweet spot" for integration tests to ensure your suite remains fast yet reliable.
