@@ -1,0 +1,19 @@
+  # ==================================================================
+  #
+  # This file being at the root of the hierarchy exposes moxtures available 
+  # to all JUnit test classes and all moxtures files (via basedOn/extends)
+  #
+  # So the idea is to keep them versatile, generic, and keep the 
+  # complex assertions out of them.
+  # ==================================================================
+
+moxtures:
+
+  - name: BeforeAll
+    method: GET
+    endpoint: /moxter-test/simple
+    save:
+      status: "$.status"
+    expect:
+      status: 2xx       # 2xx    also accepted
+

@@ -251,39 +251,33 @@ $ mvn test  -Dtest=ShampooIntegrationTest
 
 **Moxter** is designed to test a persisted Spring API to ensure tested scenarios retain state and actually mimick the end-user use cyle of the API. Think of it as sitting at the level between isolated unit tests (e.g. using Mockito) and E2E integration tests (e.g. using Selenium)
 
-Consequently Moxter requires/uses under the hood:
+Consequently **Moxter** requires/uses under the hood:
 
-- SpringBootTest
-- MockMvc
-- A persistence mechanism at test time (a common setup is to use an in-memory DB like H2)
-- JUnit to manage the test execution
+- **SpringBootTest**
+- **MockMvc**
+- A **persistence** mechanism at test time (a common setup is to use an in-memory DB like H2)
+- **JUnit** to manage the test execution
 
-Moxter then:
+**Moxter** then:
 
-- leverages MockMvc to perform the actual REST requests
-- requests are therefore sent through the full Spring stack. They hit your actual Controllers, Services, and Repositories (thus providing excellent coverage)
+- leverages **MockMvc** to perform the actual REST requests
+- requests are therefore sent through the **full Spring stack**. They hit your actual Controllers, Services, and Repositories (thus providing excellent coverage in the process)
 
-What Moxter brings on top of that:
+What **Moxter** brings on top of that:
 
-- Oganize your API calls in YAML moxture "collections"
-- Chain API calls to build scenarios
-- Extend a moxture to avoid duplicating it when slight variations are needed
-- Override moxture defaults at call time from the JUnit test
-- Easily extract and reuse data from the response body across all moxtures
-- Bake simple assertions into the actual moxture
-- More complex assertions can be exectued on the "Java side"- 
-- STOMP/WebSocket Support for event-driven testing
-
-
-
+- **Oganize** your API calls in YAML moxture "**collections**"
+- **Chain** API calls to build scenarios
+- **Extend** a moxture to avoid duplicating it when slight variations are needed
+- **Override** moxture defaults at call time from the JUnit test
+- Easily **extract** and **reuse** data from the response body across all moxtures
+- **Bake simple assertions** into the actual moxture
+- Enforce more complex assertions on the "**Java side**"- 
+- **STOMP/WebSocket** support for event-driven testing
 
 
 
 
 ## Without Moxter
-
-With just a simple test like this one, we already have saved ourselves tedious boilerplate code, while conveying clarity, separation of concern and reusability.
-
 
 
 ### Boilerplate and mixing concerns

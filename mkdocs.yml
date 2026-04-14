@@ -61,6 +61,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting started: getting_started.md
+  - Create your first Moxter test: your_first_moxter_test.md
   - Moxter:
     - Introduction: moxter/index.md  # provide a "broader view" of the documentation is through the sidebar. This allows users to see all chapters from any page they are on.
     - State of unit testing: moxter/state_of_auto_testing.md
