@@ -31,7 +31,9 @@ jobs:
         run: pip install mkdocs-material pymdown-extensions mkdocs-enumerate-headings-plugin
 
       - name: Build Documentation
-        run: mkdocs build
+        run: |
+          mkdocs build
+          #cp CNAME site/CNAME  # injects the domain file into the build folder
 
       # 3. Tell GitHub where the "cooked" website files are
       - name: Upload artifact
