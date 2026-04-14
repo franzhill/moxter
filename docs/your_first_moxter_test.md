@@ -3,23 +3,26 @@
 
 
 ## Create your first "Moxture"
-By default, Moxter looks for YAML files in `src/test/resources/moxtures`. Create a file there named `moxtures.yaml`:
+By default, Moxter looks for YAML files in `src/test/resources/moxtures`. Create a file there named `moxtures.yaml`.
+
+Let's say we want to verify the health check endpoint of your API.
+We'll create a moxture representing a call to that endpoint, assert it should return a 200 status, and extract the returned version from the return body.
 
 ```YAML
 # src/test/resources/moxtures/moxtures.yaml
 moxture:
-  name: "connectivity_check"
+  name: "health_check"
   method: GET
-  endpoint: /api/v1/status
+  endpoint: /api/v1/status    # an endpoint of your API
   save:
-    version: "${app.version}"
+    version: "${app.version}" # use jsonpath to extract a variable from the response
   expect:
     status: 200
 ```
 
 ## Call the moxture in a JUnit test
 
-Now, tell JUnit to execute that Moxture. You don't need to manually mock the MVC environment.
+Now, in the JUnit we just need to call the moxture. We'll then assert the returned version is as expected.
 
 ```Java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -39,7 +42,7 @@ class HelloWorldTest {
 
     @Test
     void shouldReturnHealthyStatus() {
-        mx.call("connectivity_check");
+        mx.call("health_check");
 
         // Perform assertions ...
         assertThat(mx.getVar("version")).isEqualTo("v1");
