@@ -16,26 +16,42 @@ theme:
     - toc.follow               # Highlighting the sidebar as you scroll
 # doesnt work
 #    - toc.integrate            # Moves the ToC to the left sidebar    
+    - content.code.copy        # Add a copy buton on code snippets
+    - content.tabs.link        # Keeps tabs in sync across the page
+
 
 extra_css:
   - stylesheets/extra.css
 
 plugins:
   - search
-  - enumerate-headings:
-      toc_depth: 3     # Numbers will show up in the sidebar Table of Contents too
-      strict: false    # Avoid errors if a page skips a heading level
+#  - enumerate-headings:
+#      toc_depth: 3     # Numbers will show up in the sidebar Table of Contents too
+#      strict: false    # Avoid errors if a page skips a heading level
 
 
 markdown_extensions:
   - admonition
   - pymdownx.tabbed:    # Enables tabs
       alternate_style: true 
-  - pymdownx.superfences:  # Required for code blocks inside tabs
-        custom_fences:
-          - name: mermaid
-            class: mermaid
-            format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true       # Enables clickable anchors for line numbers 
+                                  # so you can link to specific lines
+      line_spans: __span          # Wraps each line of code in a <span> tag 
+                                  # (helps with CSS and accessibility)
+      pygments_lang_class: true   # Adds a CSS class to the code block 
+                                  # based on the language (e.g., .language-xml)
+  - pymdownx.inlinehilite         # Allows you to use `backticks` for highlighted 
+                                  # code inside a sentence (inline)
+  - pymdownx.snippets             # Lets you insert content from other files into your 
+                                  # Markdown using the --8<-- syntax
+  - pymdownx.superfences:  # Enhances standard code blocks to allow for nesting 
+                           # and advanced content like diagrams
+                           # Required for code blocks inside tabs
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tasklist:  # Display a list as checkboxes with [x]
       custom_checkbox: true
   - pymdownx.emoji:
@@ -43,7 +59,8 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
-  - Home: moxter/index.md
+  - Home: index.md
+  - Getting started: getting_started.md
   - Moxter:
     - Introduction: moxter/index.md  # provide a "broader view" of the documentation is through the sidebar. This allows users to see all chapters from any page they are on.
     - State of unit testing: moxter/state_of_auto_testing.md
