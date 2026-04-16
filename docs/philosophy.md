@@ -10,6 +10,8 @@ Because good tests are actually -and surprisingly- difficult to craft, because t
 
 Without a clear framework or strategy, developers copy-paste setup logic, hardcode magic strings, create deeply nested helper methods, Mockito everything away ending up testing nothing more than the bare metal of the underlying frameworks. As long as "the tests pass", everybody turns a blind eye.
 
+Along the years libraries have popped up 
+
 The result? A big folder of tests that take longer to code and maintain than actually developing the feature, and where nobody truly knows what a specific test is actually verifying or why its setup context is as it is.
 
 
@@ -27,12 +29,11 @@ When tests are too isolated, they fail to catch State Corruptions. A unit test m
 
 **Moxter** was designed disrupt this cycle, by promoting real business value testing from "further up", and helping organize, automate, and build better, understandable and meaningful tests.
 
-**Moxter** is built on a "Black Box" testing philosophy. Rather than testing individual Java methods in isolation (standard unit tests), it encourages testing through the application's "natural" interface: the REST API (integration-style testing).
+**Moxter** pushes the "Black Box" testing philosophy. Rather than testing individual Java methods in isolation (standard so-called 'unit' tests), it encourages testing through the application's "natural" interface: the REST API (integration-style testing).
 
-Such a testing approach is achieved by leveraging the `@SpringBootTest` mechanism, allowing `JUnit` tests to be performed against a full `Spring` Application Context without the overhead of spinning up a real HTTP server. This makes them a powerful, yet still efficient, alternative to pure isolated unit tests all within the standard `mvn test` phase.
-
-TBy providing the means to easily define the building bricks (so-called "moxtures"), **Moxter** allows developers to painlessly design and orchestrate larger, more meaningful test scenarios, while keeping their test intent clear and devoid of boilerplate code.
-
+Such a testing approach is already made possible by existing tools such as Spring's native `@SpringBootTest`, which allows `JUnit` tests to be performed against a full `Spring` Application Context without the overhead of spinning up a real HTTP server, or `MockMvc`, which runs through the whole stack straight from the Controller.
+ 
+Moxter does not reinvent the wheel. Rather it seeks to make the most of what is already out there. By building on top of them, and providing the means to easily define test building bricks (so-called "moxtures"), **Moxter** allows developers to painlessly design and orchestrate larger, sleeker, more meaningful test scenarios.
 
 
 ## Why use Moxter?
