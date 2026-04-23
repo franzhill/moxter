@@ -1,4 +1,4 @@
-# Getting started
+# Setting up
 
 
 Getting Moxter up and running takes less time than mixing a proper martini. Follow these three steps to run your first declarative API test.

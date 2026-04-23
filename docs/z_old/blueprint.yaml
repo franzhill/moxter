@@ -38,8 +38,7 @@ moxtures:
                         # Useful in case this moxture is only "best effort" and we don't
                         # want to fail the whole test if this one fails.
 
-      verbose: true     # TODO 
-                        # Bypasses global logger thresholds (e.g., logging at
+      verbose: true     # Bypasses global logger thresholds (e.g., logging at
                         # INFO level) to provide surgical inspection of this 
                         # specific moxture without flooding the logs.
                         # Optional. Default is false.

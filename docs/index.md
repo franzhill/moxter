@@ -1,8 +1,9 @@
-# Describe your API calls. Build great test scenarios.
+# Blueprint your API test calls. Write just the business scenarios.
+<!-- Blueprint for your API tests. Forget the boilerplate, write just the scenarios. -->
+<!-- Build great scenarios -->
 
 
-
-**Moxter** turns verbose, boilerplate-heavy JUnit MockMvc tests into declarative API calls and lean, to-the-point scenarios. 
+***Moxter*** turns verbose, boilerplate-heavy JUnit MockMvc tests into declarative API calls and lean, to-the-point scenarios. 
 
 - Define your API calls in YAML
 - Call them from Java/JUnit, and keep your test intent light and crystal clear
@@ -251,16 +252,16 @@ $ mvn test  -Dtest=ShampooIntegrationTest
 
 ### Under the hood
 
-**Moxter** is designed to test a persisted Spring API (so that tested scenarios retain state between calls), at `mvn test` phase.
+***Moxter*** is designed to test a persisted Spring API (so that tested scenarios retain state between calls), at `mvn test` phase.
 
-Under the hood, **Moxter** uses or requires:
+Under the hood, ***Moxter*** uses or requires:
 
 - **@SpringBootTest**
 - **MockMvc**
 - A mock **persistence** mechanism at test time (a common setup is to use an in-memory DB like H2)
 - **JUnit** to manage the test execution
 
-**Moxter** then:
+***Moxter*** then:
 
 - leverages MockMvc to **perform the actual REST requests**
 - therefore seding requests through the **full Spring stack**. They hit your actual Controllers, Services, and Repositories (thus providing excellent coverage in the process)
@@ -269,7 +270,7 @@ Under the hood, **Moxter** uses or requires:
 
 ### The Moxter promise
 
-What **Moxter** brings on top of that:
+What ***Moxter*** brings on top of that:
 
 - **Oganize** your API calls in reusable, highly tunable YAML moxtures, inside YAML config files
 - **Chain** API calls to build scenarios

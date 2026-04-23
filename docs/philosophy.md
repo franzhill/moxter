@@ -2,7 +2,7 @@
 
 ## The state of unit testing
 
-Moxter was born from one realization: on any given project, unit tests are usually a mess.
+***Moxter*** was born from one realization: on any given project, unit tests are usually a mess.
 
 In many software projects, unit testing is the neglected stepchild of the development lifecycle. While production code is scrutinized for clean architecture, design patterns, and performance, the test concern, while proudly exposed through flattering metrics and indicators, is often left to grow wild, resulting in a "Big Tangled Ball of Spaghetti" that provides a false sense of safety and a long groan of dread whenever a developer has to "add test coverage".
 
@@ -27,18 +27,18 @@ When tests are too isolated, they fail to catch State Corruptions. A unit test m
 
 ## Where Moxter comes in
 
-**Moxter** was designed disrupt this cycle, by promoting real business value testing from "further up", and helping organize, automate, and build better, understandable and meaningful tests.
+***Moxter*** was designed disrupt this cycle, by promoting real business value testing from "further up", and helping organize, automate, and build better, understandable and meaningful tests.
 
-**Moxter** pushes the "Black Box" testing philosophy. Rather than testing individual Java methods in isolation (standard so-called 'unit' tests), it encourages testing through the application's "natural" interface: the REST API (integration-style testing).
+***Moxter*** pushes the "Black Box" testing philosophy. Rather than testing individual Java methods in isolation (standard so-called 'unit' tests), it encourages testing through the application's "natural" interface: the REST API (integration-style testing).
 
 Such a testing approach is already made possible by existing tools such as Spring's native `@SpringBootTest`, which allows `JUnit` tests to be performed against a full `Spring` Application Context without the overhead of spinning up a real HTTP server, or `MockMvc`, which runs through the whole stack straight from the Controller.
  
-Moxter does not reinvent the wheel. Rather it seeks to make the most of what is already out there. By building on top of them, and providing the means to easily define test building bricks (so-called "moxtures"), **Moxter** allows developers to painlessly design and orchestrate larger, sleeker, more meaningful test scenarios.
+***Moxter*** does not reinvent the wheel. Rather it seeks to make the most of what is already out there. By building on top of them, and providing the means to easily define test building bricks (so-called "moxtures"), ***Moxter*** allows developers to painlessly design and orchestrate larger, sleeker, more meaningful test scenarios.
 
 
 ## Why use Moxter?
-- **The Sweet Spot**: sitting in between isolated unit tests and external API testing tools, **Moxter** allows you to test real-world scenarios during the standard mvn test phase.
-- **Shorter, Cleaner, Meaningful Tests**: **Moxter** will hide all the boilerplate involved in performing MockMVC calls to your application API, letting Your JUnit tests focus purely on the cinematics of the test scenarios and still exerting standard assertions at will.
+- **The Sweet Spot**: sitting in between isolated unit tests and external API testing tools, ***Moxter*** allows you to test real-world scenarios during the standard mvn test phase.
+- **Shorter, Cleaner, Meaningful Tests**: ***Moxter*** will hide all the boilerplate involved in performing MockMVC calls to your application API, letting Your JUnit tests focus purely on the cinematics of the test scenarios and still exerting standard assertions at will.
 - **Readability**: "Moxtures" (MockMvc calls) are configured in YAML files thus providing clean, human-readable and reusable bricks.
 - **Maintainability**: When an API endpoint changes, you update the YAML "moxture" in one place rather than hunting through dozens of Java test files.
 - **Reusability**: "Moxtures" can be shared across multiple test classes 

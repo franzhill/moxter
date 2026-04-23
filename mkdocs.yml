@@ -65,47 +65,70 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting started: getting_started.md
-  - Your first Moxter test: your_first_moxter_test.md
-  - Philosophy: philosophy.md
-  - Comparison: comparison.md
+  - Getting started:
+    - Setting up: setting_up.md
+    - Your first Moxter test: your_first_moxter_test.md
+  - Concepts:
+    - Philosophy: philosophy.md
+    - Comparison: comparison.md
   - User Guide:
-      - YAML Moxture Files: user_guide/yaml_moxture_files.md
+    - Core:
+      # Where to place YAML files and how Moxter resolves names across the classpath.
+      - The YAML moxture file: user_guide/moxture_file.md
+      - Moxtures:
+        # (Method, Path, Payload, Expectations).
+        - Anatomy of a moxture: user_guide/moxture_anat.md
+        - Group moxtures: user_guide/group_moxtures.md
+        - Import the moxture json schema into your IDE: user_guide/json_schema.md
+        - Reference: user_guide/moxture_reference.md
+      # Settings etc. 
+      - Building the Moxter execution engine:
+        - Authentication & CSRF: user_guide/authentication.md
+      - Variables: user_guide/variables.md
+        #- Scope: user_guide/todo10.md
+        #  (mx.vars() )
+        #- Retrieving variables inside the JUnit test: user_guide/todo11.md
+      - Calling the moxture: 
+        - Calling moxtures: calling_moxtures.md
+        - The fluent API:
+          # (withVar, withVars)
+          - override variables: user_guide/todo12.md
+          - override moxture assertions: user_guide/todo13.md
+          - perform simple assertions: user_guide/todo14.md
+          - lax mode etc.: user_guide/todo15.md
+      # start to write a scenario
+      - Group moxtures (chaining): user_guide/todo16.md
+      - Extending moxtures: 
+        - General: user_guide/extending_moxtures.md
+        - BasedOn: user_guide/todo17.md
+        - Payload inheritance: user_guide/todo18.md
+        - Factorize repeated lines with __template__: user_guide/todo19.md
+        - Multipart requests: user_guide/todo20.md
+      - Websocket requests with MockWebs: user_guide/mockwebs.md
+      - Troubleshooting: user_guide/todo22.md
+      - Logging & diagnostics: user_guide/todo23.md
+      - Cookbook: 
+        - Use a parent class with the moxter engine and all the annotations: user_guide/todo24.md
+        - Use beforeAll and AfterAll moxtures: user_guide/todo25.md
+        - Use lax mode for teadowns: user_guide/todo26.md
+        - Simulating interaction between several users: user_guide/todo27.md
+        # tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
+        - Good practises: user_guide/todo28.md
+        - Organizing your moxture files: user_guide/todo29.md
+# Global Defaults: Put common calls (like login or health_check) in the root moxtures.yaml.
+# Local Overrides: If a specific test needs a login call with different headers, 
+# simply define a moxture with the same name in that test's specific folder. The closest file always takes precedence.
+# 
+      - Examples: user_guide/todo30.md
+  - What's next:
+    - Release notes: release_notes.md
+    - Roadmap: roadmap.md
 
-#
-# Core
-#   The Moxture File
-#     Anatomy of a YAML fixture (Method, Path, Payload, Expectations).
-#     Import the json schema into your IDE
-#     Discovery & Lookup: Where to place YAML files and how Moxter resolves names across the classpath.
-#   Build the Moxter execution engine: settings etc. 
-#     Authentication & CSRF
-#   Variables
-#     Scope
-#     Retrieving variables inside the JUnit test (mx.vars() )
-#   Calling the moxture
-#     The fluent API
-#        override variables (withVar, withVars)
-#        override moxture assertions
-#        perform simple assertions
-#        lax mode etc.
-#   Group moxtures (chaining): start to write a scenario
-#   Extending moxtures
-#      BasedOn
-#      Payload inheritance
-#    Factorize repeated lines with __template__
-#    Multipart requests
-#    Websocket requests with MocckWebs
-#    Troubleshooting
-#    Logging & diagnostics
-#    Moxter v2: the upcoming features
-# Cookbook
-#   Use a parent class with the moxter engine and all the annotations
-#   Use beforeAll and AfterAll moxtures
-#   Use lax mode for teadowns
-#   Good practise: tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
-#   Examples 
-#
+
+
+
+ 
+
 
 
 
