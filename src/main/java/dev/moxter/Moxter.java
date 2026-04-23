@@ -92,6 +92,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+
 /**
  * See readme.md file.
  */
@@ -104,7 +105,7 @@ public final class Moxter
     // =====================================================================
 
     /** The current version of Moxter. */
-    public static final String VERSION = "1.0.0-SNAPSHOT";
+    public static final String VERSION = "0.9.1";
 
     // Classpath root under which moxtures live (no leading/trailing slash).
     private static final String DEFAULT_MOXTURES_ROOT_PATH = "moxtures";
@@ -3174,6 +3175,9 @@ public final class Moxter
                     b.setTopic(resolveString(raw.getBroadcast().getTopic(), context, tpl));
                     b.setType(raw.getBroadcast().getType());
                     b.setWait(raw.getBroadcast().getWait());
+                    if (raw.getBroadcast().getSave() != null) {
+                       b.setSave(new LinkedHashMap<>(raw.getBroadcast().getSave()));
+                    }
                     resolved.setBroadcast(b);
                 }
                 return resolved;
@@ -3647,8 +3651,9 @@ public final class Moxter
                 if (this.mockWebs == null) {
                     throw new IllegalStateException(String.format(
                         "Moxture '%s' defines a broadcast expectation, but the STOMP/WebSocket " +
-                        "testing infrastructure is not configured. Did you forget @AutoConfigureMockWebs " +
-                        "or .mockWebs(webs) in the Moxter builder?", spec.getName()));
+                        "@AutoConfigureMockWebs testing infrastructure is not configured. " +
+                        "Did you forget or .mockWebs(webs) in the Moxter builder?",
+                        spec.getName()));
                 }
 
                 // 4. Resolve Topic and Type
@@ -3659,13 +3664,45 @@ public final class Moxter
 
                 // 5. Execution & Contextual Error Handling
                 log.info("[Moxter] Verifying broadcast to topic: {}", resolvedTopic);
-                try {
-                    mockWebs.verifyBroadcast(resolvedTopic, payloadClass, waitMilliseconds);
-                } catch (AssertionError e) {
-                    throw new AssertionError(String.format("Moxture '%s' failed broadcast verification on topic [%s]: %s", 
-                                             spec.getName(), resolvedTopic, e.getMessage()), e);
-                } catch (Exception e) {
-                    throw new RuntimeException("Internal error during broadcast verification for: " + resolvedTopic, e);
+                try 
+                {   Object signal = mockWebs.verifyBroadcast(resolvedTopic, payloadClass, waitMilliseconds);
+                    // Do the extraction into variables as per the 'broadcast.save' YAML instruction
+                    if (signal != null && br.getSave() != null && !br.getSave().isEmpty()) 
+                    {   
+                        br.getSave().forEach((varName, pathOrInstruction) -> 
+                        {
+                            String instruction = pathOrInstruction.trim();
+
+                            // CASE 1: Raw Capture ("$") - No JSON assumption
+                            if ("$".equals(instruction)) {
+                                vars.put(varName, signal);
+                            } 
+                            // CASE 2: Surgical Capture ("$.path") - Assume JSON
+                            else {
+                                try {
+                                    // Convert signal to String for JsonPath extraction
+                                    String rawStr = (signal instanceof byte[] bytes) 
+                                                    ? new String(bytes, java.nio.charset.StandardCharsets.UTF_8) 
+                                                    : String.valueOf(signal);
+                                    
+                                    // Use existing JSON extractor
+                                    vars.put(varName, Utils.Json.extract(
+                                            rawStr, instruction, spec.getName() + " (broadcast)"));
+                                } catch (Exception e) {
+                                    log.warn("[Moxter] Warning: Failed to extract '{}' from signal in moxture '{}'. Signal may not be valid JSON.", 
+                                            instruction, (spec.getName() != null ? spec.getName() : "<unnamed>"));
+                                }
+                            }
+                        });
+                    }
+                } 
+                catch (AssertionError e) 
+                {   throw new AssertionError(String.format(
+                        "Moxture '%s' failed broadcast verification on topic [%s]: %s", 
+                        spec.getName(), resolvedTopic, e.getMessage()), e);
+                } 
+                catch (Exception e) 
+                {   throw new RuntimeException("Internal error during broadcast verification for: " + resolvedTopic, e);
                 }
             }
 
@@ -5619,6 +5656,9 @@ public final class Moxter
             private String topic;
             private String type; // e.g., "byte[]", "json", "String"
             private String wait; // e.g. "2 s", "2s", "2000ms", "2 m", "2 min"
+
+            // Extract from the broadcasted material, into global scope variables
+            private Map<String, String> save;
 
             /**
              * Parses the 'wait' string into a millisecond value.
