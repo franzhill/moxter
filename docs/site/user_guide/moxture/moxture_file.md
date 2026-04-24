@@ -37,12 +37,12 @@ moxtures:
 
 ## How to organise your `moxtures.yaml` files
 
-***Moxter*** expects your `moxtures.yaml` files to be placed somewhere under the moxture root folder `src/test/resources/moxtures/`. Depending on your project size, you can choose between a simple setup or a hierarchical one.
+***Moxter*** expects your `moxtures.yaml` files to be placed somewhere under the Moxture Root Folder `src/test/resources/moxtures/`. Depending on your project size, you can choose between a simple setup or a hierarchical one.
 
 
 ### One moxture file
 
-If you are just starting or have a small project, place a single `moxtures.yaml` directly inside the moxture root folder:  
+If you are just starting or have a small project, place a single `moxtures.yaml` directly inside the Moxture Root Folder:  
 `src/test/resources/moxtures/moxtures.yaml`.
 
 Moxtures in this file will be available to every test in your suite.
@@ -54,14 +54,14 @@ Moxtures in this file will be available to every test in your suite.
 
 #### Follow the package structure
 
-`moxtures.yaml` files are still placed under the moxture root folder, but inside a further subfolder structure that mirrors the Java package folder structure of your *JUnit* tests. 
+`moxtures.yaml` files are still placed under the Moxture Root Folder, but inside a further subfolder structure that mirrors the Java package folder structure of your *JUnit* tests. 
 
 
 #### The "walk-Up" visibility
 When a *JUnit* test references a moxture, ***Moxter*** performs a hierarchical search:
 - It looks for a moxture file inside a folder mirroring you test class' package folder
 - If it doesn't find the requested moxture inside that file, or if the file does not exist, it will check the parent package folder.
-- It continues walking up the tree until it reaches the moxture root folder.
+- It continues walking up the tree until it reaches the Moxture Root Folder.
 
 
 #### Example

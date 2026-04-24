@@ -81,11 +81,11 @@ nav:
         - YAML Validation & Autocomplete: site/user_guide/moxture/yaml_validation.md
         - Reference: site/user_guide/moxture/reference.md
       # Settings etc. 
-      - Building the Moxter execution engine:
-        - Basics: site/user_guide/engine/basics.md
+      - Building the Moxter engine:
+        - Setup: site/user_guide/engine/setup.md
         # Authentication & CSRF
         - Reference: site/user_guide/engine/reference.md
-      - Variables: site/user_guide/variables.md
+      - Variables: site/user_guide/variables/variables.md
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
         #- Retrieving variables inside the JUnit test: user_guide/todo11.md
@@ -124,7 +124,7 @@ nav:
 # simply define a moxture with the same name in that test's specific folder. The closest file always takes precedence.
 # 
       - Examples: site/user_guide/todo30.md
-  - What's next:
+  - What's up:
     - Release notes: site/release_notes.md
     - Roadmap: site/roadmap.md
 

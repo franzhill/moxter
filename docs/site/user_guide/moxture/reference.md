@@ -5,7 +5,7 @@
 
 ### extends
 - **Alias**: basedOn
-- **Type**: String
+- **Type**: `String`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: no
@@ -17,14 +17,14 @@ Points to another ***moxture*** name to inherit its configuration. The engine pe
 
 Inheritance is resolved during the loading phase (prior variable interpolation), so the parent name must be a literal string.
 
-See chapter [Extending moxtures](user_guide/extending_moxtures.md).
+See chapter [Extending moxtures](../extending_moxtures.md).
 
 ### basedOn
 - **Alias**: extends
 
 
 ### options.verbose
-- **Type**: Boolean
+- **Type**: `Boolean`
 - **Optional**: yes
 - **Default value**: false
 - **Supports variable interpolation**: no
@@ -33,7 +33,7 @@ Toggles high-visibility console feedback for a specific call. When enabled, the 
 
 
 ### options.allowFailure
-- **Type**: Boolean
+- **Type**: `Boolean`
 - **Optional**: yes
 - **Default value**: false
 - **Supports variable interpolation**: no
@@ -41,7 +41,7 @@ Toggles high-visibility console feedback for a specific call. When enabled, the 
 Determines if an expectation failure (e.g., a status mismatch) should terminate the JUnit test. If set to `true`, the error is logged as a warning and the execution continues. This is intended for non-critical steps or optional cleanup moxtures.
 
 ### protocol
-- **Type**: String
+- **Type**: `String`
 - **Optional**: yes
 - **Default value**: `HTTP`
 - **Values**: `HTTP`, `STOMP`
@@ -50,7 +50,7 @@ Determines if an expectation failure (e.g., a status mismatch) should terminate 
 Defines the underlying execution engine. `HTTP` dispatches the request to **MockMvc** for standard REST calls; `STOMP` routes the interaction through the **MockWebs** executor for WebSocket flows.
 
 ### method
-- **Type**: String
+- **Type**: `String`
 - **Optional**: no
 - **Default value**: `GET` (for HTTP)
 - **Values**: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `SEND`, `SUBSCRIBE`
@@ -59,7 +59,7 @@ Defines the underlying execution engine. `HTTP` dispatches the request to **Mock
 The action to perform. For **HTTP**, it accepts standard verbs (`GET`, `POST`...). For **STOMP**, it accepts action verbs like `SEND` or `SUBSCRIBE`.
 
 ### endpoint
-- **Type**: String
+- **Type**: `String`
 - **Optional**: no
 - **Default value**: N/A
 - **Supports variable interpolation**: yes
@@ -67,7 +67,7 @@ The action to perform. For **HTTP**, it accepts standard verbs (`GET`, `POST`...
 The destination URI for the call. For HTTP moxtures, this is the relative path fed to the `MockMvc` builder. It supports full interpolation, allowing for dynamic paths like `/api/pets/${p.id}`.
 
 ### headers
-- **Type**: Map
+- **Type**: `Map`
 - **Optional**: yes
 - **Default value**: 
     - `Content-Type: application/json` (if `body` is present)
@@ -78,7 +78,7 @@ A collection of HTTP headers. While the keys are literal strings, the values sup
 For HTTP protocol calls, the engine automatically applies the defaults to ensure compatibility with modern REST APIs. You only need to define these headers explicitly if you wish to override them.
 
 ### query
-- **Type**: Map
+- **Type**: `Map`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: yes (values only)
@@ -86,7 +86,7 @@ For HTTP protocol calls, the engine automatically applies the defaults to ensure
 A map of query parameters appended to the URI (e.g., `?key=val`). Values are automatically URL-encoded by the engine during the resolution phase.
 
 ### vars
-- **Type**: Map
+- **Type**: `Map`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: yes (values only)
@@ -94,15 +94,19 @@ A map of query parameters appended to the URI (e.g., `?key=val`). Values are aut
 Definitions of variables local to the moxture. These values shadow global variables and are often used to provide default values for the `body` or `endpoint`. 
 
 ### body
-- **Type**: Object | String
+- **Type**: `Object` | `String`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: yes
 
-The request payload. If the moxture `extends` another, this field is **deep-merged** with the parent's body. The engine resolves the payload in three ways: **Native YAML** (defined directly in the file), **Inline JSON** (usually via the `|` literal block), or an **External File** (a string starting with `classpath:path/to/file.json`).
+The request payload. If the moxture `extends` another, this field is **deep-merged** with the parent's body.  
+The engine resolves the payload in three ways: 
+- **Native YAML** (defined directly in the file), 
+- **Inline JSON** (usually via the `|` literal block), or an
+- **External File** (a string starting with `classpath:path/to/file.json`).
 
 ### save
-- **Type**: Map
+- **Type**: `Map`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: no
@@ -110,7 +114,7 @@ The request payload. If the moxture `extends` another, this field is **deep-merg
 Extracts data from the response body into the global context for use in subsequent steps. The **key** is the variable name; the **value** is a **JsonPath** expression (e.g., `new_pet_id: "$.id"`). Extraction occurs after the call is executed but before expectations are verified.
 
 ### expect.status
-- **Type**: Integer | List | String
+- **Type**: `Integer` | `List` | `String`
 - **Optional**: yes
 - **Default value**: `200`
 - **Supports variable interpolation**: yes
@@ -118,7 +122,7 @@ Extracts data from the response body into the global context for use in subseque
 The expected HTTP status code. Validations support **Exact matches** (`201`), a **List of valid codes** (`[200, 201]`), or **Wildcards** (`"2xx"` or `"4xx"`).
 
 ### expect.body.match
-- **Type**: Object
+- **Type**: `Object`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: yes (within `content`)
@@ -126,7 +130,7 @@ The expected HTTP status code. Validations support **Exact matches** (`201`), a 
 Performs a structural comparison of the response body. The `content` field defines the target JSON/YAML structure to match against, while `ignorePaths` provides a list of JsonPaths to exclude from the comparison (useful for fields like `$.timestamp`).
 
 ### expect.body.assert
-- **Type**: Map
+- **Type**: `Map`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: yes (values only)
@@ -134,7 +138,7 @@ Performs a structural comparison of the response body. The `content` field defin
 A map of **JsonPath** keys to expected literal values. It performs a strict equality check. Listing a path here implicitly asserts that the path must exist in the response body.
 
 ### expect.stomp
-- **Type**: Object
+- **Type**: `Object`
 - **Optional**: yes
 - **Default value**: N/A
 - **Supports variable interpolation**: yes
@@ -145,7 +149,7 @@ Validates asynchronous WebSocket broadcasts. The `topic` defines the destination
 ## Group moxtures
 
 ### moxtures
-- **Type**: List of Strings
+- **Type**: List of `String`s
 - **Optional**: no
 - **Default value**: N/A
 - **Supports variable interpolation**: no

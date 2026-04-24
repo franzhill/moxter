@@ -81,18 +81,27 @@ ${listPetIds[last]}
     listPetIds : []  # clears the list
 ```
 
+---
+### Extract variable from header
+
+```yaml
+save:
+  new_pet_id: "$.id"               # Extracts from JSON body
+  session_id: "header:Set-Cookie"  # Extracts from response header
+```
 
 ---
 ### as(...) support in assertions
 
+```java
      mx.caller().withAuth(getAuthenticationFor(userA))
                  .withVars(commonVars)
                  .withVar("p.userLockId", "lock-A")
                  .call("stomp.ck_lock_field")
-  ---->          .as("the call should be successful")
+                 .as("the call should be successful")
                  .assertJsonPath("$.success",    x -> x.isEqualTo(true))
                  .assertJsonPath("$.userLockId", x -> x.isEqualTo("lock-A"));
-
+```
 
 ---
 ### User Authentication: be able to do it in YAML (config vs java)

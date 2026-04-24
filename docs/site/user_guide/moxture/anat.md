@@ -6,7 +6,7 @@
 
 A ***moxture*** is a declarative YAML blueprint of a tailored API or WebSocket interaction with added capabilities that can be executed directly from a *JUnit* test or chained together to form multiple-step test scenarios.
 
-Technically, these calls are executed natively within your *Spring* application context and dispatched to *MockMvc* for REST or [*MockWebs*](user_guide/mockwebs.md) for STOMP/WebSocket interactions.
+Technically, these calls are executed natively within your *Spring* application context and dispatched to *MockMvc* for REST or [*MockWebs*](../mockwebs.md) for STOMP/WebSocket interactions.
 
 Beyond describing standard request parameters, a ***moxture*** provides configuration for built-in logic such as: 
 - declarative assertions: define what success looks like (status codes, full/partial/surgical JSON matching...) directly in the YAML.
@@ -25,7 +25,7 @@ mx.caller()
      .isEqualTo("Rex");
 ```
 
-<!-- All features regarding calling ***moxtures*** will be examined in detail in the [Calling moxtures](user_guide/calling_moxtures.md) chapter. -->
+<!-- All features regarding calling ***moxtures*** will be examined in detail in the [Calling moxtures](../calling_moxtures.md) chapter. -->
 
 
 ## YAML overview
@@ -102,7 +102,7 @@ moxtures:
 
 ```
 
-For a detailed explanation on each item, please refer to the chapter [Reference](user_guide/moxture/moxture_reference.md)
+For a detailed explanation on each item, please refer to the chapter [Reference](../moxture/moxture_reference.md)
 
 
 ## Variable interpolation
@@ -111,7 +111,7 @@ Many fields in a ***moxture*** support dynamic placeholders using the `${variabl
 
 This allows you to inject data into calls at runtime—such as tokens, keys, or scenario-specific values—or reuse variables extracted from a previous ***moxture*** execution.
 
-***Moxter*** "bakes" these placeholders into their final literal values just before the ***moxture*** gets executed. The scope and management of these variables is explored in further detail in the [Variables](user_guide/variables.md) chapter.
+***Moxter*** "bakes" these placeholders into their final literal values just before the ***moxture*** gets executed. The scope and management of these variables is explored in further detail in the [Variables](../variables.md) chapter.
 
 
 ## Group Moxtures

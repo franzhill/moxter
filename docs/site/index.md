@@ -25,9 +25,9 @@ This file describes HTTP calls to your API backend.
         method: POST
         endpoint: /api/pets
         body: |
-          { "firstName": "Thomas "
-            "lastName" : "O'Malley"
-            "address"  : "Alleyways and rooftops"
+          { "firstName": "Thomas ",
+            "lastName" : "O'Malley",
+            "address"  : "Alleyways and rooftops",
             "age"      : 13
           }
         save:
