@@ -122,6 +122,16 @@ But what if we wanted to do pure config (YAML) tests how would we
 achieve that?
 
 
+---
+### User management
+
+@Test
+@WithMockUser(roles = "VET_ADMIN")
+void should_delete_visit() {
+    mx.caller().call("delete_visit"); // Executed with VET_ADMIN privileges
+}
+
+
 
 ---
 ### Loading rules

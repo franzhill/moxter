@@ -1,6 +1,6 @@
 # Building the execution engine
 
-To use ***Moxter***, you must instantiate the engine within your Spring Boot test classes. The engine acts as the coordinator between your YAML blueprints and the Spring *MockMvc* environment (or *MockWebs* for websocket interaction).
+To use ***Moxter***, you must instantiate the engine within your *Spring Boot* test classes. The engine acts as the coordinator between your YAML blueprints and the Spring *MockMvc* environment (or *MockWebs* for websocket interaction).
 
 ## Basic setup
 
@@ -26,7 +26,6 @@ class PetApiTest {
         mx = Moxter.builder()
                 .mockMvc(mockMvc)
                 .objectMapper(objectMapper)
-                .basePath("moxtures/petApi") // Root folder in src/test/resources
                 .build();
     }
 

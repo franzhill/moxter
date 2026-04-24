@@ -64,67 +64,69 @@ markdown_extensions:
 
 
 nav:
-  - Home: index.md
+  - Home: site/index.md
   - Getting started:
-    - Setting up: setting_up.md
-    - Your first Moxter test: your_first_moxter_test.md
+    - Setting up: site/setting_up.md
+    - Your first Moxter test: site/your_first_moxter_test.md
   - Concepts:
-    - Philosophy: philosophy.md
-    - Comparison: comparison.md
+    - Philosophy: site/philosophy.md
+    - Comparison: site/comparison.md
   - User Guide:
     - Core:
       # Where to place YAML files and how Moxter resolves names across the classpath.
-      - The YAML moxture file: user_guide/moxture_file.md
+      - The YAML moxture file: site/user_guide/moxture/moxture_file.md
       - The moxture:
         # (Method, Path, Payload, Expectations).
-        - Anatomy of a moxture: user_guide/moxture/moxture_anat.md
-        - YAML Validation & Autocomplete: user_guide/moxture/yaml_validation.md
-        - Reference: user_guide/moxture/moxture_reference.md
+        - Anatomy of a moxture: site/user_guide/moxture/anat.md
+        - YAML Validation & Autocomplete: site/user_guide/moxture/yaml_validation.md
+        - Reference: site/user_guide/moxture/reference.md
       # Settings etc. 
       - Building the Moxter execution engine:
-        - Basics: user_guide/engine/basics.md
+        - Basics: site/user_guide/engine/basics.md
         # Authentication & CSRF
-        - Reference: user_guide/engine/advanced.md
-      - Variables: user_guide/variables.md
+        - Reference: site/user_guide/engine/reference.md
+      - Variables: site/user_guide/variables.md
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
         #- Retrieving variables inside the JUnit test: user_guide/todo11.md
       - Calling the moxture: 
-        - Calling moxtures: calling_moxtures.md
+        - Calling moxtures: site/user_guide/call/calling_moxtures.md
         - The fluent API:
           # (withVar, withVars)
-          - override variables: user_guide/todo12.md
-          - override moxture assertions: user_guide/todo13.md
-          - perform simple assertions: user_guide/todo14.md
-          - lax mode etc.: user_guide/todo15.md
+          - override variables: site/user_guide/call/todo12.md
+          - override moxture assertions: site/user_guide/call/todo13.md
+          - perform simple assertions: site/user_guide/call/todo14.md
+          - lax mode etc.: site/user_guide/call/todo15.md
+        - Caller configuration:
+           - user simulation: site/user_guide/call/user .md
       # start to write a scenario
-      - Group moxtures (chaining): user_guide/todo16.md
+      - Group moxtures (chaining): site/user_guide/todo16.md
       - Extending moxtures: 
-        - General: user_guide/extending_moxtures.md
-        - BasedOn: user_guide/todo17.md
-        - Payload inheritance: user_guide/todo18.md
-        - Factorize repeated lines with __template__: user_guide/todo19.md
-        - Multipart requests: user_guide/todo20.md
-      - Websocket requests with MockWebs: user_guide/mockwebs.md
-      - Troubleshooting: user_guide/todo22.md
-      - Logging & diagnostics: user_guide/todo23.md
+        - General: site/user_guide/extending_moxtures.md
+        - BasedOn: site/user_guide/todo17.md
+        - Payload inheritance: site/user_guide/todo18.md
+        - Factorize repeated lines with __template__: site/user_guide/todo19.md
+        - Multipart requests: site/user_guide/todo20.md
+      - Websocket requests with MockWebs: site/user_guide/mockwebs.md
+      - Troubleshooting: site/user_guide/todo22.md
+      - Logging & diagnostics: site/user_guide/todo23.md
       - Cookbook: 
-        - Use a parent class with the moxter engine and all the annotations: user_guide/todo24.md
-        - Use beforeAll and AfterAll moxtures: user_guide/todo25.md
-        - Use lax mode for teadowns: user_guide/todo26.md
-        - Simulating interaction between several users: user_guide/todo27.md
+        - Use a parent class with the moxter engine and all the annotations: site/user_guide/todo24.md
+        - Use beforeAll and AfterAll moxtures: site/user_guide/todo25.md
+        - Use lax mode for teadowns: site/user_guide/todo26.md
+        - Simulating interaction between several users: site/user_guide/todo27.md
         # tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
-        - Good practises: user_guide/todo28.md
-        - Organizing your moxture files: user_guide/todo29.md
-        - Strategies for sharing an engine across multiple tests for faster suites: user_guide/cookbook/share_engine.md
+        - Good practises: site/user_guide/todo28.md
+        - Organizing your moxture files: site/user_guide/todo29.md
+        - Strategies for sharing an engine across multiple tests for faster suites: site/user_guide/cookbook/share_engine.md
 # Global Defaults: Put common calls (like login or health_check) in the root moxtures.yaml.
 # Local Overrides: If a specific test needs a login call with different headers, 
 # simply define a moxture with the same name in that test's specific folder. The closest file always takes precedence.
 # 
-      - Examples: user_guide/todo30.md
+      - Examples: site/user_guide/todo30.md
   - What's next:
-    - Release notes: release_notes.md
-    - Roadmap: roadmap.md
+    - Release notes: site/release_notes.md
+    - Roadmap: site/roadmap.md
 
 
 

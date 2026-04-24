@@ -1,6 +1,6 @@
 
 
-# Moxtures
+# Anatomy of a moxture
 
 ## In a nutshell
 
