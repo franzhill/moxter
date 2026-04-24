@@ -32,62 +32,77 @@ mx.caller()
 
 ```YAML
 moxtures:
+
+  # --- Single moxture ---
   - name: create_pet             # Unique identifier used by mx.caller().call(...)
     extends : create_generic     # Optional. 
                                  # Lets us build on 'top' of another existing
-                                 # moxture.
+                                 #  moxture.
 
     # --- Runtime Options ---
-    options:                     # Tweak engine behavior
-      verbose: true              # Force log request/response to console
+    options:                     # Tweak engine behavior.
+      verbose: true              # Force log request/response to console.
       allowFailure: false        # If the call fails, should the test fail?
                                  # If 'true', a warning only will be issued.
 
     # --- Call configuration ---
     protocol: HTTP               # Optional. 
-                                 # Default is 'HTTP' (=> REST request)
+                                 # Default is 'HTTP' (=> REST request).
                                  # 'STOMP' will make it a Websocket request.
     method: POST                 # 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' 
                                  #    for 'HTTP'
                                  # 'SEND' | 'SUBSCRIBE' for STOMP')
-    endpoint: /api/pets          # The relative URI for the call (as fed to MockMvc)
-    headers:                     # Map of HTTP headers
+    endpoint: /api/pets          # The relative URI for the call (as fed to 
+                                 #  MockMvc).
+    headers:                     # Map of HTTP headers.
       Content-Type: application/json   # Example.
       Authorization: "Bearer ${token}" # Example.
-    query:                          # Map of query parameters (?key=val)
-      firstCreation: true           # Example.
-    vars:                           # Local variables for this moxture only.
-      p.name: "Snowy"               # The "p." prefix is a just makeshift namespace ("p" is 
-                                    # for "parameter").
-    body: |                         # Request payload (given here as inline JSON)
-      { "name"   : "${p.name}"
-        "lastName" : "O'Malley"
+    query:                       # Map of query parameters (?key=val)
+      firstCreation: true        # Example.
+    vars:                        # Local variables for this moxture only.
+      p.name: "Snowy"            # The "p." prefix is a just makeshift 
+                                 #  namespace ("p" is for "parameter").
+      p.age: 13                                    
+    body: |                      # Request payload (given here as inline JSON).
+      { "name"     : "${p.name}"
         "address"  : "Alleyways and rooftops"
-        "age"      : 13
-        }                           # The payload can also be provided as native YAML.
+        "age"      : ${p.age}
+        }                        # The payload can also be provided as native 
+                                 #  YAML.
     
     # --- Return processing ---
-    save:                           # Extract response data into Moxter global variables
-      new_pet_id: "$.id"            # varName: "<JsonPath>"
+    save:                        # Extract response data into Moxter global 
+                                 #  variables.
+      new_pet_id: "$.id"         # varName: "<JsonPath>"
     
     # --- Expectations ---
-    expect:                         # Moxter will automatically assert these.
-      status: 201                   # int, list ([201, 202]), or wildcards ("2xx")
-      body:                         # Body assertions
-        match:                      # Full structural comparison
-          content: { status: "OK" } # The expected JSON
-          ignorePaths: ["$.date"]   # Paths to skip in comparison
-        assert:                     # Surgical JsonPath checks
-          $.name: "${p.name}"       # <JsonPath>: value (Exact value check) 
-      stomp:                        # Verify async side-effects (broadcasts)
-        topic: /topic/pets          # The WebSocket topic to watch. (Aka 'destination')
-        wait: "2s"                  # How long to wait for the message
-        save:                       # Save parts of the message using JsonPath.
+    expect:                     # Moxter will automatically assert these.
+      status: 201               # int, list ([201, 202]), or wildcards ("2xx").
+      body:                     # Body assertions.
+        match:                  # Full structural comparison.
+          content: { status: "OK" } # The expected JSON.
+          ignorePaths: ["$.date"]   # Paths to skip in comparison.
+        assert:                 # Surgical JsonPath checks.
+          $.name: "${p.name}"   # <JsonPath>: value (Exact value check) 
+      stomp:                    # Verify async side-effects (broadcasts).
+        topic: /topic/pets      # The WebSocket topic to watch.
+                                #  (Aka 'destination')
+        wait: "2s"              # How long to wait for the message.
+        save:                   # Save parts of the message using JsonPath.
           broadcasted_message: "$"  # Saving the whole message into this variable.
+
+  # --- Group moxture ---
+  # Executed in the same way as a single moxture.
+  - name: create_pet_and_process  # Unique identifier
+    moxtures:                   # List of moxtures to execute sequentially.
+      - create_pet              # Saves the id in var 'pet_id' (e.g.)
+      - process_pet_1           # Uses the var 'pet_id' in its input (e.g.)
+      - process_pet_2
+      - ...
 
 ```
 
-For a detailed explanation on each item, please refer to the chapter [Reference](user_guide/moxture_reference.md)
+For a detailed explanation on each item, please refer to the chapter [Reference](user_guide/moxture/moxture_reference.md)
 
 
 ## Variable interpolation
@@ -98,3 +113,6 @@ This allows you to inject data into calls at runtime—such as tokens, keys, or 
 
 ***Moxter*** "bakes" these placeholders into their final literal values just before the ***moxture*** gets executed. The scope and management of these variables is explored in further detail in the [Variables](user_guide/variables.md) chapter.
 
+
+## Group Moxtures
+Group moxtures allow you to chain several interactions into a single named sequence. This is the primary tool for building Business Test Scenarios.

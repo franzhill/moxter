@@ -75,15 +75,16 @@ nav:
     - Core:
       # Where to place YAML files and how Moxter resolves names across the classpath.
       - The YAML moxture file: user_guide/moxture_file.md
-      - Moxtures:
+      - The moxture:
         # (Method, Path, Payload, Expectations).
-        - Anatomy of a moxture: user_guide/moxture_anat.md
-        - Group moxtures: user_guide/group_moxtures.md
-        - Import the moxture json schema into your IDE: user_guide/json_schema.md
-        - Reference: user_guide/moxture_reference.md
+        - Anatomy of a moxture: user_guide/moxture/moxture_anat.md
+        - YAML Validation & Autocomplete: user_guide/moxture/yaml_validation.md
+        - Reference: user_guide/moxture/moxture_reference.md
       # Settings etc. 
       - Building the Moxter execution engine:
-        - Authentication & CSRF: user_guide/authentication.md
+        - Basics: user_guide/engine/basics.md
+        # Authentication & CSRF
+        - Reference: user_guide/engine/advanced.md
       - Variables: user_guide/variables.md
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
@@ -115,6 +116,7 @@ nav:
         # tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
         - Good practises: user_guide/todo28.md
         - Organizing your moxture files: user_guide/todo29.md
+        - Strategies for sharing an engine across multiple tests for faster suites: user_guide/cookbook/share_engine.md
 # Global Defaults: Put common calls (like login or health_check) in the root moxtures.yaml.
 # Local Overrides: If a specific test needs a login call with different headers, 
 # simply define a moxture with the same name in that test's specific folder. The closest file always takes precedence.
