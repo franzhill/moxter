@@ -32,25 +32,25 @@ Sets a default *Spring Security Authentication* object for the engine. All reque
 Beyond the standard `UsernamePasswordAuthenticationToken` used in the setup chapter, here are other ways to generate an `Authentication` object to pass to this method, depending on how your *Spring Security Filter* is set up.
 
 ```Java
-    /**
-     * If you don't need credentials (password) and just want a lightweight object
-     * specifically designed for unit tests, Spring provides this utility.
-     */
-    private Authentication getTestAuthentication_light() {
-        return new TestingAuthenticationToken("admin", "principal", "ROLE_ADMIN");
-    }
+  /**
+   * If you don't need credentials (password) and just want a lightweight 
+   * object specifically designed for unit tests, Spring provides this utility.
+   */
+  private Authentication getTestAuthentication_light() {
+      return new TestingAuthenticationToken("admin", "principal", "ROLE_ADMIN");
+  }
 
-    /**
-     * If your security logic is very complex and you only need to satisfy the 
-     * method signature without actually checking roles, you can mock the 
-     * interface.
-     */
-    private Authentication getTestAuthentication_mocked() {
-        Authentication auth = Mockito.mock(Authentication.class);
-        Mockito.when(auth.getName()).thenReturn("mockUser");
-        Mockito.when(auth.isAuthenticated()).thenReturn(true);
-        return auth;
-    }
+  /**
+   * If your security logic is very complex and you only need to satisfy the 
+   * method signature without actually checking roles, you can mock the 
+   * interface.
+   */
+  private Authentication getTestAuthentication_mocked() {
+      Authentication auth = Mockito.mock(Authentication.class);
+      Mockito.when(auth.getName()).thenReturn("mockUser");
+      Mockito.when(auth.isAuthenticated()).thenReturn(true);
+      return auth;
+  }
 ```
 
 
@@ -59,7 +59,7 @@ Beyond the standard `UsernamePasswordAuthenticationToken` used in the setup chap
 - **Required**: yes
 - **Applicable**: all moxtures
 
-Used for JSON/YAML serialization and JsonPath evaluations. Using the application's existing bean (typically the one configured by Spring Boot) ensures consistent data formatting and property naming strategies (e.g., snake_case vs camelCase).
+Used for JSON/YAML serialization and JsonPath evaluations. Using the application's existing bean (typically the one configured by *Spring Boot*) ensures consistent data formatting and property naming strategies (e.g., snake_case vs camelCase).
 
 
 ## .basePath()
@@ -70,7 +70,7 @@ Used for JSON/YAML serialization and JsonPath evaluations. Using the application
 
 Defines the Moxture Root Folder (relative to your test resources folder). For example; If your YAMLs are located at `src/test/resources/myPetProject/moxtures`, then specify the the base path as `myPetProject/moxtures`.  
 Use this method only if you did not instantiate the builder with `.forTestClass(getClass())`.
-See chapter [The Moxture File](../moxture/moxture_file.md) for more information on the Moxture Root Folder
+See chapter [The Moxture File](../moxture/moxture_file.md) for more information on the Moxture Root Folder.
 
 
 ## .withCsrf()

@@ -81,8 +81,8 @@ nav:
         - YAML Validation & Autocomplete: site/user_guide/moxture/yaml_validation.md
         - Reference: site/user_guide/moxture/reference.md
       # Settings etc. 
-      - Building the Moxter engine:
-        - Setup: site/user_guide/engine/setup.md
+      - The Moxter engine:
+        - Setup: site/user_guide/engine/build.md
         # Authentication & CSRF
         - Reference: site/user_guide/engine/reference.md
       - Variables: site/user_guide/variables/variables.md

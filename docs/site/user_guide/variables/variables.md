@@ -7,10 +7,10 @@ Variables allow you to render moxture calls dynamic and reusable. They enable da
 ***Moxter*** uses the `${variable_name}` syntax for string interpolation inside YAML moxtures. Before a moxture is executed, the engine replaces these placeholders with their current values from the variable context.
 
 Variables can be used in many moxture fields, for example:
-* **Endpoint**: `/api/pets/${petId}`
-* **Body**: `{"name": "${pet_name}"}`
-* **Headers**: `X-Pet-Type: ${type}`
-* **Expectations**: `$.name: "${pet_name}"`
+- **Endpoint**: `/api/pets/${petId}`
+- **Body**: `{"name": "${pet_name}"}`
+- **Headers**: `X-Pet-Type: ${type}`
+- **Expectations**: `$.name: "${pet_name}"`
 
 > Note: the mustache-style `{{variable_name}}` syntax is also supported.
 
@@ -24,6 +24,7 @@ The Global Scope is tied to the Moxter engine instance. It acts as the persisten
 - **Source**: defined via `Moxter.builder().withVar(...)` or captured during a moxture execution as defined by the `save` block.  
 - **Lifetime**: persists as long as the engine instance exists. If you use a shared engine (e.g. set up in a `@BeforeAll` method), variables saved in Test_A are available in Test_B.  
 - **Purpose**: storing state that needs to "travel" between different moxture calls (e.g., `auth_token`, `new_pet_id`...).
+
 
 ### The Call Scope
 The Call Scope is transient. It is created at the start of a moxture call (`mx.call(moxture)`) and destroyed as soon as the call finishes.
@@ -84,6 +85,7 @@ mx.caller()
   .call("create_pet");
 ```
 
+
 ### Set as global in the Moxter engine
 
 To define "constants" or environment-level defaults that should be available to every moxture call, use the builder. These live in the Global Scope.
@@ -97,6 +99,7 @@ mx = Moxter.builder()
         ))
         .build();
 ```
+
 
 ## Variable precedence
 
@@ -144,19 +147,20 @@ You can interact with the variable context programmatically through the Moxter e
 Accessing variables from Java is always made against the Global Scope. Because the Call Scope is transient (it is created and destroyed within the mx.call() lifecycle), it is logically impossible to retrieve a "call variable" once the execution has returned to your Java test method.
 
 ```Java
-private Moxter mx;   //  <-- our Moxter engine
-
 ...
-// --- Inside the test: ---
+    // --- Inside the test class: ---
+    private Moxter mx;   //  <-- our Moxter engine
+...
+        // --- Inside the test: method: ---
+        // Execute the moxture that saves 'new_pet_id'
+        mx.caller().call("create_pet");
 
-// Execute the moxture that saves 'new_pet_id'
-mx.caller().call("create_pet");
+        // Retrieve the value from the Global Scope for use in Java
+        Integer petId = mx.getVar("new_pet_id"); 
 
-// Retrieve the value from the Global Scope for use in Java
-Integer petId = mx.getVar("new_pet_id"); 
-
-// Example: Using the variable in a standard JUnit assertion
-assertNotNull(petId, "The pet ID should have been saved to the Global Scope");
+        // Example: Using the variable in a standard JUnit assertion
+        assertNotNull(petId, "The pet ID should have been saved to the Global Scope");
+...
 ```
 
 
@@ -164,7 +168,7 @@ assertNotNull(petId, "The pet ID should have been saved to the Global Scope");
 
 Since the Global Scope persists for the lifetime of the engine instance, you have methods to inspect and reset the state.
 
-- `mx.getVars()`: returns a Map<String, Object> containing every variable currently held in the Global Scope.
+- `mx.getVars()`: returns a `Map<String, Object>` containing every variable currently held in the Global Scope.
 - `mx.clearVars()`: wipes the Global Scope completely. This is the "reset button."
 
 > **Vigilance Note**  

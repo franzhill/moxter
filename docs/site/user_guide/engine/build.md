@@ -4,7 +4,7 @@ To use ***Moxter***, you must instantiate the engine within your *Spring Boot* t
 
 ## Recommended setup
 
-The engine is typically instantiated in a `@BeforeEach` method. By using `forTestClass(getClass())`, ***Moxter*** automatically sets the base path to match your test class's package, keeping your resources organized.
+The engine is typically instantiated in a `@BeforeEach` method. By using `forTestClass(getClass())`, ***Moxter*** automatically returns a builder that sets the moxture base path to match your test class's package and therefore activating the moxture file hierarchy mechanism.
 
 ### Example
 
@@ -24,8 +24,8 @@ class PetApiTest {
     @BeforeEach
     void setUp() {
         mx = Moxter.forTestClass(getClass())  // sets the "walk-up" base path 
-                                              // for moxture files to
-                                              // mirror this class' package hierarchy.
+                                              // for moxture files to mirror
+                                              // this class' package hierarchy.
                    .mockMvc(mockMvc)
                    .mockWebs(mockWebs)  // if testing STOMP interaction
                    .authentication(getTestAuthentication())
