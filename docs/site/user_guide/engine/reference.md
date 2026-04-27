@@ -54,16 +54,14 @@ Beyond the standard `UsernamePasswordAuthenticationToken` used in the setup chap
 ```
 
 
-## .objectMapper()
-- **Argument Type**: `ObjectMapper` 
+## .objectMapper(ObjectMapper mapper)
 - **Required**: yes
 - **Applicable**: all moxtures
 
 Used for JSON/YAML serialization and JsonPath evaluations. Using the application's existing bean (typically the one configured by *Spring Boot*) ensures consistent data formatting and property naming strategies (e.g., snake_case vs camelCase).
 
 
-## .basePath()
-- **Argument Type**: `String` 
+## .basePath(String path)
 - **Required**: no
 - **Default**: `moxtures`
 - **Applicable**: all moxtures
@@ -81,16 +79,15 @@ See chapter [The Moxture File](../moxture/moxture_file.md) for more information 
 Enables automatic CSRF token inclusion for all HTTP requests. The engine applies the *Spring Security* csrf() request post-processor during execution via *MockMvc*, satisfying security requirements for state-changing operations (POST, PUT, DELETE) without requiring manual token management.
 
 
-## .header()
-- **Argument Type**: (`String` name, `String` value)
+## .header(String name, String value)
 - **Required**: no
 - **Applicable**: HTTP moxtures
 
-Adds a permanent HTTP header to every HTTP request dispatched by the engine. This is useful for static authentication or custom headers required by your gateway/proxy.
+Adds a permanent HTTP header to every HTTP request dispatched by the engine. This is useful for static authentication or custom headers required by your gateway/proxy.  
+Call multiple times to set multiple headers.
 
 
-## .withVars()
-- **Argument Type**: `Map<String, Object>`
+## .withVars(Map<String, Object> vars)
 - **Required**: no
 - **Applicable**: all moxtures
 

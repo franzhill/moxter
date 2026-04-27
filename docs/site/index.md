@@ -5,11 +5,11 @@ Moxter externalizes API interactions into reusable, stateful building blocks and
 -->
 
 
-***Moxter*** turns verbose *JUnit MockMvc* tests into collections of reusable API calls and lean, stateful scenarios. 
+***Moxter*** turns verbose *JUnit MockMvc* tests into collections of reusable, chainable API calls to let you write lean, business-centric scenarios. 
 
 - Define your API calls in YAML **once**, *with* their expectations
-- Call them from Java/JUnit, let them **pass the state between them**, and keep your test intent light and crystal clear
-- Shake, and run just like a good old JUnit test.
+- Call them from *Java/JUnit*, **chain** them together to forward state, and keep your test intent **light and crystal clear**
+- Shake, and run just like a good old *JUnit* test.
 
 
 
@@ -123,7 +123,7 @@ This file describes HTTP calls to your API backend.
 
 
 ### The Java JUnit test
-In your JUnit test, call the moxtures, easily grab portions from their return payload and enforce any kind of good old JUnit/AssertJ assertions. Moxter handles the MockMvc execution, JSON serialization, variable extraction and status assertions, automatically.
+In your *JUnit* test, call the moxtures, easily grab portions from their return payload and enforce any kind of good old JUnit/AssertJ assertions. Moxter handles the *MockMvc* execution, JSON serialization, variable extraction and status assertions, automatically.
 
 === "Lean"
 
@@ -254,23 +254,23 @@ $ mvn test  -Dtest=ShampooIntegrationTest
 
 ### Under the hood
 
-***Moxter*** is designed to test a persisted Spring API (so that tested scenarios retain state between calls), at `mvn test` phase.
+***Moxter*** is designed to test a persisted *Spring* API (so that test scenarios retain state between moxture calls), at `mvn test` phase.
 
-Under the hood, ***Moxter*** uses or requires:
+Under the hood, ***Moxter*** works with and uses:
 
-- **@SpringBootTest**
+- **@SpringBootTest** annotated *JUnit* tests
 - **MockMvc**
-- A mock **persistence** mechanism at test time (a common setup is to use an in-memory DB like H2)
-- **JUnit** to manage the test execution
+- A mock **persistence** mechanism at test time (a common setup is to use an in-memory DB like *H2*)
+
 
 ***Moxter*** then:
 
-- leverages MockMvc to **perform the actual REST requests**
-- therefore seding requests through the **full Spring stack**. They hit your actual Controllers, Services, and Repositories (thus providing excellent coverage in the process)
+- leverages *MockMvc* to **perform the actual REST requests**
+- therefore sending requests through the **full Spring stack**. They hit your actual Controllers, Services, and Repositories (thus providing excellent coverage in the process)
 - accomplishes **YAML configured assertions**
 
 
-### The Moxter promise
+### The Moxter value
 
 What ***Moxter*** brings on top of that:
 
@@ -291,7 +291,7 @@ What ***Moxter*** brings on top of that:
 
 ### Boilerplate and mixing concerns
 
-Without Moxter, our test would have looked like follows, heavily mixing 
+Without ***Moxter***, our test would have looked like follows, heavily mixing 
 test **configuration** with test **intent**:
 
 ```java
@@ -358,9 +358,7 @@ void testShampooOnPet_MANUAL() throws Exception {
 
 ### Reusability
 
-By extracting the configuration details of the REST request into a YAML configuration, we have 
-made it easy for tests to call that request again and again, while at the same time giving them
-the possibility of overriding some of its configurations at call time.
+By extracting the configuration details of the REST request into a YAML configuration, we have made it easy for tests to call that request again and again, while at the same time giving them the possibility of overriding some of its configurations at call time.
 
 ```java
     
@@ -383,5 +381,4 @@ the possibility of overriding some of its configurations at call time.
 
 ### Maintenance
 
-If an endpoint URL changes (e.g., adding /v2/), no need to go hunting for the calls in dozens of 
-Java files. Just update the moxture in the YAML file, and you're good to go.
+If an endpoint URL changes (e.g., adding `/v2/`), no need to go hunting for the calls in dozens of Java files. Just update the moxture in the YAML file, and you're good to go.

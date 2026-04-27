@@ -138,7 +138,7 @@ With the examples given above, the resolved (interpolated) moxture would hence b
 
 ## Accessing the variables in the Variable Context
 
-While you mostly interact with variables inside your YAML moxtures, you frequently need to pull that data back into your Java code—perhaps to perform a custom assertion or to use a generated ID in a different part of your test suite.
+While you often interact with variables inside your YAML moxtures, you may find yourself needing to pull these variables back into your Java code, perhaps to perform a custom assertion for example, or manually having to set variables for the purpose of a specific test configuration.
 
 You can interact with the variable context programmatically through the Moxter engine instance.
 
@@ -155,35 +155,48 @@ Accessing variables from Java is always made against the Global Scope. Because t
         // Execute the moxture that saves 'new_pet_id'
         mx.caller().call("create_pet");
 
-        // Retrieve the value from the Global Scope for use in Java
-        Integer petId = mx.getVar("new_pet_id"); 
+        // Retrieve the variable from the Global Scope
+        Long petId = mx.vars().read("new_pet_id").asLong(); 
 
         // Example: Using the variable in a standard JUnit assertion
         assertNotNull(petId, "The pet ID should have been saved to the Global Scope");
 ...
 ```
 
+#### Type-safe Extraction (read)
+While accessing the raw context variable map (via getVars()) returns plain Objects, the read() method allows you to extract and cast variables in a single, type-safe operation. This is the preferred way to interact with your data from Java.
 
-### Managing the Context Lifecycle
+- First access the variable fom the variable context via: `vars().read("var_name")`.
+- Then chain the caster method: `.as(<Class>)`, `.asLong()`, `.asString()`, `.asBoolean()` ... The value will automatically converted/cast to the desired type using Moxter's ObjectMapper.
 
-Since the Global Scope persists for the lifetime of the engine instance, you have methods to inspect and reset the state.
+Example:
 
-- `mx.getVars()`: returns a `Map<String, Object>` containing every variable currently held in the Global Scope.
-- `mx.clearVars()`: wipes the Global Scope completely. This is the "reset button."
+```Java
+// Extracting a nested field from a JSON object saved in 'last_response':
+String petName = mx.read("pet_name").asString();  // E.g. saved in the "create_pet" moxture
+
+// Extracting a numeric ID and ensuring it is a Long:
+Long ownerId = mx.read("owner_id").as(Long.class); // Eliminates manual casting and provides 
+                                                   // clearer error messages if a type mismatch 
+                                                   // occurs.
+
+// Mapping a saved JSON variable to a Java Object
+Pet myPet = mx.read("saved_pet_data").as(Pet.class);
+```
+
+See page [Reference](site/user_guide/variables/reference.md) for the full list of extraction methods.
+
+
+
+
+### Managing the Variable Context Lifecycle
+
+Since the Global Scope persists for the lifetime of the engine instance by default, resetting the state (wiping out all variables) can be performed manually:
+
+- `mx.vars().clear()`: wipes the Global Scope completely. This is the "reset button."
 
 > **Vigilance Note**  
-> It is highly recommended to call this in an `@AfterEach` method if you are using a shared engine across multiple tests. This prevents "state leaking" where Test_A's variables accidentally satisfy the requirements of Test_B.
-
-### Reference
-
-All functions are called on the `Moxter` object.
-
-| Method | Description | Scope Target |
-| :--- | :--- | :--- |
-| **`getVar(String name)`** | Retrieves a single variable value. | Global |
-| **`getVars()`** | Returns the entire variable map. | Global |
-| **`clearVars()`** | Removes all variables from the engine memory. | Global |
-
+> It is highly recommended to call `mx.clearVars()` in an `@AfterEach` method if you are using a shared engine across multiple tests. This prevents "state leaking" where Test_A's variables accidentally satisfy the requirements of Test_B.
 
 
 ## A word of caution

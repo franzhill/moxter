@@ -85,7 +85,9 @@ nav:
         - Setup: site/user_guide/engine/build.md
         # Authentication & CSRF
         - Reference: site/user_guide/engine/reference.md
-      - Variables: site/user_guide/variables/variables.md
+      - Variables:
+        - Using variables: site/user_guide/variables/variables.md
+        - Reference: site/user_guide/variables/reference.md
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
         #- Retrieving variables inside the JUnit test: user_guide/todo11.md
