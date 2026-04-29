@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * Dedicated test configuration that provisions the MockWebSocket engine
@@ -52,7 +53,8 @@ public class MockWebsAutoConfiguration {
    @Bean
    public MockWebs mockWebSocket(ApplicationContext context, 
                                  SimpMessagingTemplate template, 
-                                 ObjectMapper mapper) {
-        return new MockWebs(context, template, mapper);
+                                 ObjectMapper mapper,
+                                 ApplicationEventPublisher eventPublisher) {
+        return new MockWebs(context, template, mapper, eventPublisher);
    }
 }

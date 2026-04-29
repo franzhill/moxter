@@ -1,9 +1,17 @@
 
+# CHANGELOG
+
+## v0.9.1
 
 
-### 2026.04.17 - v0.9.1
+### MockWebs: authentication session in Spring session registry
 
-Added support for extracting variables out of the broadcasted message
+2026.04.27 
+
+MockWebs: when providing an authentication, publish a SessionConnectedEvent to "trick" the Spring context into saving the session in its session registry.
+
+### Added support for extracting variables out of the broadcasted message
+2026.04.17
 
 ```YAML
     expect:  # expect the return to be...

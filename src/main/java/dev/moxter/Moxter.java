@@ -44,28 +44,6 @@ import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import dev.moxter.Moxter.Engine.BodyResolver;
-import dev.moxter.Moxter.Engine.ExpectVerifier;
-import dev.moxter.Moxter.Engine.IMoxTemplator;
-import dev.moxter.Moxter.Engine.MoxResolver;
-import dev.moxter.Moxter.Engine.MoxSimpleTemplator;
-import dev.moxter.Moxter.Engine.VarExtractor;
-import dev.moxter.Moxter.IO.HierarchicalMoxLoader;
-import dev.moxter.Moxter.IO.IMoxLoader;
-import dev.moxter.Moxter.IO.MoxLinker;
-import dev.moxter.Moxter.IO.MoxYamlMapper;
-import dev.moxter.mockWebs.MockWebs;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -81,6 +59,27 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import dev.moxter.Moxter.Engine.BodyResolver;
+import dev.moxter.Moxter.Engine.ExpectVerifier;
+import dev.moxter.Moxter.Engine.IMoxTemplator;
+import dev.moxter.Moxter.Engine.MoxResolver;
+import dev.moxter.Moxter.Engine.MoxSimpleTemplator;
+import dev.moxter.Moxter.Engine.VarExtractor;
+import dev.moxter.Moxter.IO.HierarchicalMoxLoader;
+import dev.moxter.Moxter.IO.IMoxLoader;
+import dev.moxter.Moxter.IO.MoxLinker;
+import dev.moxter.Moxter.IO.MoxYamlMapper;
+import dev.moxter.mockWebs.MockWebs;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -91,7 +90,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * See readme.md file.
@@ -1432,11 +1430,11 @@ public final class Moxter
          * @return The stored value
          * @throws IllegalStateException if the variable does not exist
          */
-        public VarAccessor read(String key) {
+        public VarReader read(String key) {
             if (!targetMap.containsKey(key)) {
                 throw new IllegalStateException("Var '" + key + "' does not exist");
             }
-            return new VarAccessor(key, targetMap.get(key));
+            return new VarReader(key, targetMap.get(key));
         }
 
         /**
@@ -1486,12 +1484,12 @@ public final class Moxter
          * <p>Provides safe casting and parsing methods to retrieve the 
          * variable in the desired format.
          */
-        public static class VarAccessor 
+        public static class VarReader 
         {
             private final String key;
             private final Object val;
 
-            protected VarAccessor(String key, Object val) {
+            protected VarReader(String key, Object val) {
                 this.key = key;
                 this.val = val;
             }
@@ -1522,13 +1520,20 @@ public final class Moxter
 
             /** 
              * Returns the variable as a String. 
+             * Character set used if necessary, is UTF-8.
              */
             public String asString() {
                 Object target = val;
+
                 // Auto-unboxing for lists of one item
                 if (target instanceof List<?> list && list.size() == 1) {
                     target = list.get(0);
                 }
+
+                if (target instanceof byte[] bytes) {
+                    return new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                }
+
                 return target == null ? null : String.valueOf(target);
             }
 
@@ -1556,6 +1561,21 @@ public final class Moxter
                     }
                 }
                 throw new IllegalStateException("Var '" + key + "' is not a number (actual: " + target.getClass().getSimpleName() + ")");
+            }
+
+            /**
+             * Returns the variable as a Jackson JsonNode.
+             */
+            public JsonNode asJsonNode() 
+            {
+                String json = asString();
+                if (json == null) return null;
+                try {
+                    // Use this static Moxter Mapper
+                    return Moxter.JSON_MAPPER.readTree(json);
+                } catch (Exception e) {
+                    throw new RuntimeException("Var '" + key + "' cannot be parsed as JSON: " + json, e);
+                }
             }
 
             /** 
@@ -1836,7 +1856,7 @@ public final class Moxter
         /**
          * Extracts a value from the response body using a JsonPath and saves it 
          * into the global variables context.
-         * * <p>This is useful for extracting IDs or tokens from one call to be used 
+         * <p>This is useful for extracting IDs or tokens from one call to be used 
          * in subsequent calls via the {@code {{varName}}} syntax in YAML.</p>
          * 
          * <p> <b>Example Usage:</b></p>
@@ -2126,13 +2146,15 @@ public final class Moxter
             /**
              * Returns the {@link MoxtureResult} context to allow for chaining 
              * assertions on different JSON paths or variables.
-             * * <p><b>Example:</b></p>
+             * 
+             * <p><b>Example:</b></p>
              * <pre>{@code
              *      mx.call("get_pet")
              *        .assertBody("$.id").isNotNull().and()
              *        .assertBody("$.name").isEqualTo("Snowy");
              * }</pre>
-             * * @return The original {@link MoxtureResult} caller.
+             * 
+             * @return The original {@link MoxtureResult} caller.
              */
             public MoxtureResult and() { 
                 return MoxtureResult.this; 
@@ -2141,7 +2163,8 @@ public final class Moxter
             /**
              * Switches the assertion context to a {@link StringChain}.
              * This "unlocks" string-specific assertions like {@code contains()} or {@code startsWith()}.
-             * * @return A {@link StringChain} bridge for fluent string assertions.
+             * 
+             * @return A {@link StringChain} bridge for fluent string assertions.
              */
             public StringChain asString() {
                 var engine = (StringAssert) Assertions.assertThat(String.valueOf(val)).as(d);
@@ -2151,7 +2174,8 @@ public final class Moxter
             /**
              * Switches the assertion context to a {@link BooleanChain}.
              * This "unlocks" boolean-specific assertions like {@code isTrue()} or {@code isFalse()}.
-             * * @return A {@link BooleanChain} bridge for fluent boolean assertions.
+             * 
+             * @return A {@link BooleanChain} bridge for fluent boolean assertions.
              * @throws AssertionError if the underlying value is not a {@link Boolean}.
              */
             public BooleanChain asBoolean() {
@@ -2165,7 +2189,8 @@ public final class Moxter
             /**
              * Switches the assertion context to a {@link ListChain}.
              * This "unlocks" list-specific assertions like {@code hasSize()} or {@code contains()}.
-             * * @return A {@link ListChain} bridge for fluent list assertions.
+             * 
+             * @return A {@link ListChain} bridge for fluent list assertions.
              * @throws AssertionError if the underlying value is not a {@link java.util.List}.
              */
             @SuppressWarnings("unchecked")
@@ -2269,11 +2294,13 @@ public final class Moxter
 
             /**
              * Resolves a moxture definition by name on-demand.
-             * * <p>This method implements the "Anti-Zombie" logic: it only searches paths 
+             * 
+             * <p>This method implements the "Anti-Zombie" logic: it only searches paths 
              * relevant to the current strategy (e.g., package ancestors or explicit includes). 
              * If a faulty file exists elsewhere in the project, it is ignored unless 
-             * strictly required by the resolution path.</p>
-             * * @param name           The name of the moxture to find (e.g., for a 'basedOn' or 'call' resolution).
+             * strictly required by the resolution path.
+             * 
+             * @param name           The name of the moxture to find (e.g., for a 'basedOn' or 'call' resolution).
              * @param currentBaseDir The directory of the file currently being processed, used as a starting point for relative lookups.
              * @return A {@link RawMoxture} containing the unmaterialized definition, or {@code null} if not found.
              */
@@ -2291,7 +2318,8 @@ public final class Moxter
 
             /**
              * Container for a raw, unmaterialized moxture discovered during on-demand resolution.
-             * * @param moxt        The raw moxture definition exactly as it appears in the YAML file.
+             * 
+             * @param moxt        The raw moxture definition exactly as it appears in the YAML file.
              * @param baseDir     The directory where this specific moxture's file resides.
              * @param displayPath A human-readable path (e.g., "classpath:/my/pkg/moxtures.yaml") used for DX-friendly error reporting.
              */
@@ -3010,10 +3038,10 @@ public final class Moxter
         /**
          * <b>Phase 4: The MoxResolver (Snapshot Resolution)</b>
          *
-         * <p> The MoxResolver is the "Brain" of the execution pipeline. Its sole responsibility 
+         * <p> The MoxResolver is the brain of the execution pipeline. Its sole responsibility 
          * is to transform a dynamic {@link Model.Moxture} (full of placeholders and inheritance 
          * stacks) into a <b>Resolved Moxture</b>—a literal, executable snapshot where every 
-         * variable has been "baked" into its final literal value.
+         * variable has been baked into its final literal value.
          *
          * <p> <b>Architectural Role:</b>
          * By centralizing interpolation here, we enforce a strict <b>Resolution Boundary</b>. 
@@ -4534,7 +4562,7 @@ public final class Moxter
          *   JsonPath assertions (via the {@code expect} block) against the final message content 
          *   as it was seen by the messaging subsystem.
          * 
-         * * @see IProtocolExecutor
+         * @see IProtocolExecutor
          */
         @Slf4j
         static final class StompExecutor implements IProtocolExecutor {
@@ -4941,6 +4969,7 @@ public final class Moxter
         public static class Classpath {
             /**
              * Generates a list of paths by walking up from the startPath to the limitPath.
+             * 
              * @param startPath The deepest directory to start from (e.g., "moxtures/com/fhi/app/MyTest").
              * @param limitPath The boundary to stop at (e.g., "moxtures").
              * @param fileName  The name of the file to append to each directory (e.g., "moxtures.yaml").

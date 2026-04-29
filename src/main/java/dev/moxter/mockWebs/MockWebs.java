@@ -1,9 +1,9 @@
 package dev.moxter.mockWebs;
 
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.contains;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,20 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.authorization.method.PreAuthorizeAuthorizationManager;
 import org.springframework.security.core.Authentication;
@@ -35,6 +38,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -67,7 +74,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MockWebs 
 {
-
     /**
     * The mocked or spied messaging template.
     * Used as a wiretap to intercept and verify outbound broadcast(ed) messages.
@@ -79,6 +85,19 @@ public class MockWebs
     * Used to manually deserialize incoming JSON payloads and outgoing broadcast(ed) messages.
     */
    private final ObjectMapper mapper;
+
+   /**
+    * Spring's event bus, used to simulate WebSocket lifecycle events.
+    * 
+    * <p>Because {@code MockWebs} bypasses the real STOMP broker and TCP stack, 
+    * the standard "Handshake" never occurs. Consequently, Spring's internal 
+    * {@code SimpUserRegistry} remains empty.
+    * 
+    * <p>This publisher allows us to manually fire {@code SessionConnectedEvent} 
+    * and {@code SessionDisconnectEvent}, forcing Spring to register our mock users.
+    */
+   private final ApplicationEventPublisher eventPublisher;
+
 
    /**
     * Spring's built-in tool for matching ant-style URLs.
@@ -120,10 +139,16 @@ public class MockWebs
     *                   broadcast(ed) messages sent by the backend.
     *                   If a real bean is passed, outbound verification will fail 
     *                   (with a {@code NotAMockException}).
+    * @param eventPublisher The Spring event publisher. This is used to trigger 
+     *                  WebSocket lifecycle events (CONNECT/DISCONNECT) to synchronize stateful 
+     *                  components like the {@code SimpUserRegistry} with our mock sessions.
     * @param mapper     The Jackson ObjectMapper used to deserialize the captured broadcast(ed) 
     *                   payloads back into strongly-typed Java objects for test assertions.
     */
-    public MockWebs(ApplicationContext context, SimpMessagingTemplate template, ObjectMapper mapper)
+    public MockWebs(ApplicationContext context, 
+                    SimpMessagingTemplate template, 
+                    ObjectMapper mapper,
+                    ApplicationEventPublisher eventPublisher)
     {
         // Fail Fast Guard: Enforce Mockito contract
         if (!Mockito.mockingDetails(template).isMock() && !Mockito.mockingDetails(template).isSpy()) 
@@ -134,6 +159,7 @@ public class MockWebs
         }
         this.template = template;
         this.mapper = mapper;
+        this.eventPublisher = eventPublisher;
 
         log.debug("[MockWebs] Initializing routing table...");
         Map<String, Object> controllers = context.getBeansWithAnnotation(Controller.class);
@@ -193,14 +219,47 @@ public class MockWebs
 
    /**
     * Creates a lightweight session bound to a specific user.
-    * This provides a clean, fluent API for tests, allowing you to avoid passing the Authentication 
-    * token repeatedly without rebuilding the heavy routing table.
+    * 
+    * This provides a clean, fluent API for tests, allowing you to avoid passing the 
+    * Authentication token repeatedly without rebuilding the heavy routing table.
+    * 
+    * Also publishes a SessionConnectedEvent so that the Spring Context actually
+    * records the session in Spring's internal registries (such as the 
+    * {@code SimpUserRegistry}). This allows downstream services to perform user-lookup
+    * checks or trigger user-specific broadcasts.
     * 
     * @param principal The user's Authentication or Principal object.
     * @return A StompSession instance tied to the provided principal.
     */
-   public StompSession with(Object principal) 
-   {   return new StompSession(this, principal);
+    public StompSession with(Object principal) {
+      // Use a stable ID based on the user's name/email instead of a random hash
+      String name = (principal instanceof Authentication auth) 
+        ? auth.getName() 
+        : String.valueOf(principal.hashCode());
+      String sessionId = "mock-session-" + name;
+
+      if (principal instanceof Authentication auth) {
+         // 2. Simulate the STOMP CONNECT frame headers
+         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
+         accessor.setSessionId(sessionId);
+         accessor.setUser(auth);
+         accessor.setLeaveMutable(true);
+
+         // 3. Wrap headers in a dummy message
+         Message<byte[]> connectMessage = MessageBuilder.createMessage(
+                  new byte[0], 
+                  accessor.getMessageHeaders()
+         );
+
+         // 4. Publish the SessionConnectedEvent to "trick" the rest of the Spring context
+         //    into believing a real WebSocket handshake just happened.
+         eventPublisher.publishEvent(new SessionConnectedEvent(this, connectMessage, auth));
+         
+         log.debug("[MockWebs] Simulating STOMP connection for user: {} (Session: {})", 
+                  auth.getName(), sessionId);
+      }
+
+      return new StompSession(this, principal);
    }
 
 
@@ -500,7 +559,7 @@ public class MockWebs
         {   verify(template, timeout(timeoutMillis).atLeastOnce())
                 .convertAndSend(contains(expectedTopicSubstring), payloadCaptor.capture());
         }
-        // 2.2. Immediatly (synchronously)
+        // 2.2. Immediately (synchronously)
         else 
         {   verify(template, atLeastOnce())
                 .convertAndSend(contains(expectedTopicSubstring), payloadCaptor.capture());
@@ -522,19 +581,57 @@ public class MockWebs
 */
 
         // 5. Deserialize the payload back into a strongly-typed object for test assertions
-        if (payloadClass.isInstance(actualPayload)) {
-            return payloadClass.cast(actualPayload);
-        } else if (actualPayload instanceof String) {
-            return mapper.readValue((String) actualPayload, payloadClass);
-        } else if (actualPayload instanceof byte[]) {
-            return mapper.readValue((byte[]) actualPayload, payloadClass);
-        } else {
-            throw new IllegalArgumentException("Cannot deserialize payload of type " + actualPayload.getClass());
+        //    Smart Deserialization 
+
+        // 5A. Direct Match: If the object is already of the requested type 
+        //     (or we want Object.class), return it.
+        if (payloadClass.isInstance(actualPayload) || payloadClass.equals(Object.class)) {
+            return (T) actualPayload;
         }
-    }
+
+        // 5B. Source is a String (handles "force logout from backend")
+        if (actualPayload instanceof String str) {
+            // If the test wants a String, return it raw.
+            if (payloadClass.equals(String.class)) {
+                return (T) str;
+            }
+            // If the test wants byte[] (Moxter default) but the backend sent a raw string
+            if (payloadClass.equals(byte[].class)) {
+                return (T) str.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            }
+            // If we're here, we actually want a DTO from a JSON string
+            return mapper.readValue(str, payloadClass);
+        }
+
+        // 5C. Source is a byte[] (Standard binary STOMP payload)
+        if (actualPayload instanceof byte[] bytes) {
+            if (payloadClass.equals(String.class)) {
+                return (T) new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+            }
+            if (payloadClass.equals(byte[].class)) {
+                return (T) bytes;
+            }
+            return mapper.readValue(bytes, payloadClass);
+        }
+
+        // 5D. Fallback: If it's a DTO (Object) and we want byte[], serialize it first
+        // (Required for your comment thread tests)
+        if (payloadClass.equals(byte[].class)) {
+            return (T) mapper.writeValueAsBytes(actualPayload);
+        }
+
+        // 5E. Final Fallback: Try to force cast or use Jackson as a last resort
+        try {
+            return mapper.convertValue(actualPayload, payloadClass);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(String.format(
+                "MockWebs cannot convert broadcast payload of type [%s] to requested type [%s].",
+                actualPayload.getClass().getSimpleName(), payloadClass.getSimpleName()), e);
+        }
+   }
 
     /**
-     * Conveniance: Synchronous verification of the broadcast.
+     * Convenience: Synchronous verification of the broadcast.
      */
     public <T> T verifyBroadcast(String expectedTopicSubstring, Class<T> payloadClass) throws Exception 
     {
