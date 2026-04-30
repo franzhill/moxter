@@ -2995,22 +2995,47 @@ public final class Moxter
             private void preprocess(Object input, Map<String, Object> registry) {
                 if (input instanceof Map) {
                     Map<String, Object> map = (Map<String, Object>) input;
+
+
+
+
                     
                     // 1. Resolve all templates at the CURRENT level first (Chaining)
                     // Using a while loop handles cases where one template pulls in another
                     while (map.containsKey(TEMPLATE_INJECTION_KEY)) {
                         Object templateRef = map.remove(TEMPLATE_INJECTION_KEY);
-                        
-                        if (templateRef instanceof String name && registry != null) {
-                            Object templateData = registry.get(name);
-                            if (templateData instanceof Map) {
-                                // Local definitions still take priority (putIfAbsent)
-                                ((Map<String, Object>) templateData).forEach(map::putIfAbsent);
-                            }
-                        } else if (templateRef instanceof Map) {
-                            // Handles standard YAML aliases if resolved to a Map
-                            ((Map<String, Object>) templateRef).forEach(map::putIfAbsent);
+
+                        List<Object> refs = new ArrayList<>();
+
+                        // Support: "__template__: ckeVars, ckeVars2"
+                        if (templateRef instanceof String s) {
+                            for (String part : s.split(",")) refs.add(part.trim());
+                        } 
+                        // Support: "__template__: [ckeVars, ckeVars2]"
+                        else if (templateRef instanceof List<?> l) {
+                            refs.addAll(l);
+                        } 
+                        else {
+                            refs.add(templateRef);
                         }
+
+
+                        // Apply templates in order (Later templates in the list override earlier ones, 
+                        // but local moxture variables ALWAYS win due to putIfAbsent)
+                        for (Object ref : refs) {
+                            Map<String, Object> data = null;
+                            if (ref instanceof String name && registry != null) {
+                                Object found = registry.get(name);
+                                if (found instanceof Map) data = (Map<String, Object>) found;
+                            } else if (ref instanceof Map) {
+                                data = (Map<String, Object>) ref;
+                            }
+
+                            if (data != null) {
+                                data.forEach(map::putIfAbsent);
+                            }
+                        }
+
                     }
 
                     // 2. Dive into NESTED maps/lists (Recursion)
