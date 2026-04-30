@@ -89,13 +89,13 @@ When using the raw builder, the search path defaults to the Moxture Root Folder 
 
 Once the builder is instantiated, you must provide the necessary dependencies (like MockMvc) and any global configuration.
 
-See chapter [Builder Reference](../engine/reference.md) for a deep dive into available methods.
+See chapter [Builder Reference](../../../site/user_guide/engine/reference.md) for a deep dive into available methods.
 
 
 ## Advanced setup
 The builder provides additional methods for specialized requirements, which are explored in later chapters:
 
-- Security: enabling automatic CSRF tokens or injecting global authentication headers for the Petclinic admin. See [Reference](../engine/reference.md).
-- Global Variables: injecting default values (withVar) like a default owner_id available to every moxture call. See [Reference](../engine/reference.md).
-- WebSocket Support: integrating with MockWebs to test real-time notifications.  See [MockWebs](../mockwebs.md).
-- Lifecycle Optimization: instead of instatiating the engine before each test, share the same instance for all your tests: see [Strategies for sharing an engine across multiple tests for faster suites](../cookbook/share_engine.md).
+- Security: enabling automatic CSRF tokens or injecting global authentication headers for the PetClinic admin. See [Reference](../../../site/user_guide/engine/reference.md).
+- Global Variables: injecting default values (withVar) like a default owner_id available to every moxture call. See [Reference](../../../site/user_guide/engine/reference.md).
+- WebSocket Support: integrating with MockWebs to test real-time notifications.  See [MockWebs](../../../site/user_guide/mockwebs.md).
+- Lifecycle Optimization: instead of instantiating the engine before each test, share the same instance for all your tests: see [Strategies for sharing an engine across multiple tests for faster suites](../../../site/user_guide/cookbook/share_engine.md).

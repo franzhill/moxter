@@ -28,4 +28,4 @@
 
 </div>
 
-![Alt text describing the image](/docs/img/test_pyramid.png "Optional hover title")
+![Alt text describing the image](/../../img/test_pyramid.png "Optional hover title")

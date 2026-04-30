@@ -18,7 +18,7 @@ The *Spring MockMvc* instance used to dispatch HTTP requests natively within the
 
 Integrates the engine with an instance of the **MockWebs** library (provided in the ***Moxter*** jar). This instance will be responsible for managing the WebSocket interactions defined by your moxtures, and performing assertions on outbound messages.
 
-See chapter [Mockwebs](../mockwebs.md).
+See chapter [Mockwebs](../../../site/user_guide/mockwebs.md).
 
 
 ## .authentication()
@@ -68,7 +68,7 @@ Used for JSON/YAML serialization and JsonPath evaluations. Using the application
 
 Defines the Moxture Root Folder (relative to your test resources folder). For example; If your YAMLs are located at `src/test/resources/myPetProject/moxtures`, then specify the the base path as `myPetProject/moxtures`.  
 Use this method only if you did not instantiate the builder with `.forTestClass(getClass())`.
-See chapter [The Moxture File](../moxture/moxture_file.md) for more information on the Moxture Root Folder.
+See chapter [The Moxture File](../../../site/user_guide/moxture/moxture_file.md) for more information on the Moxture Root Folder.
 
 
 ## .withCsrf()
@@ -104,4 +104,4 @@ mx = Moxter.builder()
         ))
         .build();
 ```
- See chapter [Variables](../variables/variables.md) for further information.
+ See chapter [Variables](../../../site/user_guide/variables/variables.md) for further information.

@@ -2,9 +2,9 @@
 
 A **moxture file** is a YAML-based collection of `moxtures` i.e. descriptions of tailored API calls with added capabilities that can be executed directly from a *JUnit* test or chained together to form more elaborate business test scenarios.
 
-Moxture files are named `moxtures.yaml`. While you can start with a single file, Moxter allows you to create several to keep your testing logic modular.
+Moxture files are named `moxtures.yaml`. While you can start with a single file, ***Moxter**** allows you to create several to keep your testing logic modular.
 
-## The `moxtures.yaml` file structure
+## 1. The `moxtures.yaml` file structure
 
 Moxtures are introduced at the top-level with the `moxtures:` key. This key acts as a container for all the individual `moxtures` defined within that file.
 
@@ -35,7 +35,7 @@ moxtures:
 > Note on groups: a moxture is considered a group moxture if it defines a list of moxtures. This is the configuration-first way to build multi-step scenarios.
 
 
-## How to organise your `moxtures.yaml` files
+## 2. How to organise your `moxtures.yaml` files
 
 ***Moxter*** expects your `moxtures.yaml` files to be placed somewhere under the Moxture Root Folder `src/test/resources/moxtures/`. Depending on your project size, you can choose between a simple setup or a hierarchical one.
 
@@ -82,6 +82,7 @@ src/test/resources/moxtures/
 
 
 #### Key benefits 
-- **Shadowing and Precedence**: this hierarchy allows you to provide a Library of common moxtures at a high level while allowing specific tests to redefine (shadow) them at a lower level. The file closest to your test class always takes precedence.
+- **Shadowing and Precedence**: this hierarchy allows you to provide a Library of common moxtures at a high level while allowing specific tests to redefine (shadow) them at a lower level. The file closest to your test class always takes precedence. (Notice: this behaviour will be made configurable in a future version, the choice could be made to actually disallow silent moxture redefinition)
 - The "anti-zombie" effect: this on-demand loading means ***Moxter*** only reads files relevant to your specific test's hierarchy. If a "zombie" (a broken or invalid YAML file) exists in an unrelated package, it will not crash your test suite because the engine never attempts to load it.
 - This hierarchical foundation also comes into play in advanced features like **variable shadowing** or **moxture inheritance** that we will be exploring in the upcoming chapters.
+

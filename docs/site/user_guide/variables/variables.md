@@ -2,20 +2,20 @@
 
 Variables allow you to render moxture calls dynamic and reusable. They enable data sharing between different moxture calls, such as capturing an ID from a `POST` response to use it in a subsequent `GET` or `DELETE` request.
 
-## Interpolation in moxtures
+## 1. Interpolation in moxtures
 
 ***Moxter*** uses the `${variable_name}` syntax for string interpolation inside YAML moxtures. Before a moxture is executed, the engine replaces these placeholders with their current values from the variable context.
 
-Variables can be used in many moxture fields, for example:
+Variables can be used in many moxture fields, for example:  
 - **Endpoint**: `/api/pets/${petId}`
 - **Body**: `{"name": "${pet_name}"}`
 - **Headers**: `X-Pet-Type: ${type}`
 - **Expectations**: `$.name: "${pet_name}"`
 
-> Note: the mustache-style `{{variable_name}}` syntax is also supported.
+> **Note**: the mustache-style `{{variable_name}}` syntax is also supported.
 
 
-## The Moxter Variable Context and its scopes
+## 2. The Moxter Variable Context and its scopes
 The **Moxter Variable Context** is where all variables reside during the lifetime of a ***Moxter*** engine instance. It is comprised of two distinct **scopes** that determine the lifetime and visibility of your variables.
 
 ### The Global Scope
@@ -34,7 +34,7 @@ The Call Scope is transient. It is created at the start of a moxture call (`mx.c
 - **Purpose**: providing specific inputs for a call without polluting the global scope.
 
 
-## How to set variables
+## 3. How to set variables
 
 ### Extract from a return
 To capture data from a response and store it in the Global Scope, use the `save` block in the moxture YAML definition. By default, it uses JsonPath to extract values from the response body. You can also capture headers by using the header: prefix.
@@ -101,7 +101,7 @@ mx = Moxter.builder()
 ```
 
 
-## Variable precedence
+## 4. Variable precedence
 
 As you will have noticed, several mechanisms allow variable instanciation. 
 This means variable collision is entirely possible. ***Moxter*** resolves this using a specific yet simple precednce system: if a variable is instanciated in multiple places, the one with the **highest priority** wins.
@@ -136,7 +136,7 @@ With the examples given above, the resolved (interpolated) moxture would hence b
 <!-- TODO improve example so we get all combinations -->
 
 
-## Accessing the variables in the Variable Context
+## 5. Accessing the variables in the Variable Context
 
 While you often interact with variables inside your YAML moxtures, you may find yourself needing to pull these variables back into your Java code, perhaps to perform a custom assertion for example, or manually having to set variables for the purpose of a specific test configuration.
 
@@ -199,7 +199,7 @@ Since the Global Scope persists for the lifetime of the engine instance by defau
 > It is highly recommended to call `mx.clearVars()` in an `@AfterEach` method if you are using a shared engine across multiple tests. This prevents "state leaking" where Test_A's variables accidentally satisfy the requirements of Test_B.
 
 
-## A word of caution
+## 6.A word of caution
 
 The Global Scope is what makes Moxter simple for complex integration scenarios. By allowing variables to persist across different moxture calls, you can build elaborate end-to-end flows without manually passing IDs or tokens between Java methods.
 

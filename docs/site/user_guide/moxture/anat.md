@@ -2,7 +2,7 @@
 
 # Anatomy of a moxture
 
-## In a nutshell
+## 1. In a nutshell
 
 A ***moxture*** is a declarative YAML blueprint of a tailored API or WebSocket interaction with added capabilities that can be executed directly from a *JUnit* test or chained together to form multiple-step test scenarios.
 
@@ -28,7 +28,7 @@ mx.caller()
 <!-- All features regarding calling ***moxtures*** will be examined in detail in the [Calling moxtures](../calling_moxtures.md) chapter. -->
 
 
-## YAML overview
+## 2. YAML overview
 
 ```YAML
 moxtures:
@@ -105,7 +105,7 @@ moxtures:
 For a detailed explanation on each item, please refer to the chapter [Reference](../moxture/moxture_reference.md)
 
 
-## Variable interpolation
+## 3. Variable interpolation
 
 Many fields in a ***moxture*** support dynamic placeholders using the `${variable_name}` syntax. 
 
@@ -114,5 +114,5 @@ This allows you to inject data into calls at runtime—such as tokens, keys, or 
 ***Moxter*** "bakes" these placeholders into their final literal values just before the ***moxture*** gets executed. The scope and management of these variables is explored in further detail in the [Variables](../variables.md) chapter.
 
 
-## Group Moxtures
+## 4. Group Moxtures
 Group moxtures allow you to chain several interactions into a single named sequence. This is the primary tool for building Business Test Scenarios.

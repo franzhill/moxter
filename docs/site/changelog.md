@@ -4,6 +4,25 @@
 ## v0.9.1
 
 
+### Multiple mixin support for YAML __template__ 
+
+```YAML
+.templates:
+  ckeVars:
+    p.fieldName: "commentCommercial"
+    p.userLockId: "init-lock-id"
+  
+  adminAuth:
+    headers:
+      Authorization: "Bearer {{admin_token}}"
+
+moxtures:
+  - name: cke.update_field
+    # MULTIPLE MIXINS: Injects auth headers AND cke variables
+    __template__: adminAuth, ckeVars 
+    method: POST
+```
+
 ### MockWebs: authentication session in Spring session registry
 
 2026.04.27 

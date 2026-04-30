@@ -62,7 +62,16 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 
-
+# --------------------------------------------------------------
+# TIP:
+# When linking: 
+#      from  site/user_guide/moxture/anat.md
+#             1      2         3     
+#      to    site/user_guide/target.md
+#
+#  see [target](../../../site/user_guide/target.md)
+#               1  2  3  
+# --------------------------------------------------------------
 nav:
   - Home: site/index.md
   - Getting started:
@@ -91,16 +100,33 @@ nav:
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
         #- Retrieving variables inside the JUnit test: user_guide/todo11.md
+      - Expectations:  
+        # Explain expect block
+        # Also show expectations can be added/overriden from the fluent API
+        - Basics: site/user_guide/expectations/basics.md
       - Calling the moxture: 
-        - Calling moxtures: site/user_guide/call/calling_moxtures.md
-        - The fluent API:
+        - Basics: site/user_guide/call/basics.md
           # (withVar, withVars)
-          - override variables: site/user_guide/call/todo12.md
-          - override moxture assertions: site/user_guide/call/todo13.md
-          - perform simple assertions: site/user_guide/call/todo14.md
-          - lax mode etc.: site/user_guide/call/todo15.md
-        - Caller configuration:
-           - user simulation: site/user_guide/call/user .md
+        - The MoxCaller: site/user_guide/call/basics.md
+        - Providing variables: site/user_guide/call/variables.md
+          # Explain how to dynamically alter the YAML's expect: block from Java:
+          # Document how to change expected HTTP status codes (e.g., testing a 404 on a 
+          # moxture usually designed for a 200) or override JSON body assertions on the fly.
+        - provide expectations: site/user_guide/call/expectations.md
+          # Chainable simple assertions
+          # Explain that while full assertions can be done after the call with full feature
+          # JUnit or JAssert assertions, Moxter provides simple chainable assertions for the
+          # simple cases.
+        - perform simple assertions: site/user_guide/call/assertions.md
+          # Document execution modifiers like "lax mode."
+          # Explain what lax mode does (e.g., skipping certain strict validations or ignoring
+          # unmapped fields) and how to toggle it via the fluent caller.
+        - lax mode etc.: site/user_guide/call/todo15.md
+        - user simulation: site/user_guide/call/user.md
+
+
+
+
       # start to write a scenario
       - Group moxtures (chaining): site/user_guide/todo16.md
       - Extending moxtures: 
@@ -113,9 +139,13 @@ nav:
       - Troubleshooting: site/user_guide/todo22.md
       - Logging & diagnostics: site/user_guide/todo23.md
       - Cookbook: 
+          # explains the pros and cons of using @Transactional
+          # if not using @Transactional it is your responsability to insure isolation
+          # as much as possible with @AfterEach/All
         - Use a parent class with the moxter engine and all the annotations: site/user_guide/todo24.md
         - Use beforeAll and AfterAll moxtures: site/user_guide/todo25.md
-        - Use lax mode for teadowns: site/user_guide/todo26.md
+        - Use lax mode for teardowns: site/user_guide/todo26.md
+        - Use sticky callers: site/user_guide/cookbook/sticky_callers.md
         - Simulating interaction between several users: site/user_guide/todo27.md
         # tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
         - Good practises: site/user_guide/todo28.md
@@ -125,6 +155,9 @@ nav:
 # Local Overrides: If a specific test needs a login call with different headers, 
 # simply define a moxture with the same name in that test's specific folder. The closest file always takes precedence.
 # 
+# Parallel execution: (threadsafe)
+#   Mockwebs does not support it well: e.g. Mockito.reset() is a "Global Hammer"
+#   Mockito mocks are not thread-aware; once you reset a mock, it is blank for every thread in the JVM. 
       - Examples: site/user_guide/todo30.md
   - What's up:
     - Release notes: site/release_notes.md

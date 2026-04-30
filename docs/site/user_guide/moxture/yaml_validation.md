@@ -6,13 +6,13 @@ To improve the development experience, ***Moxter*** provides a JSON schema. Conf
 - **Validation**: Detection of typos or incorrect data types.
 - **Documentation**: Tooltips describing the purpose of each field.
 
-## Schema URL
+## 1. Schema URL
 Configure your IDE to fetch the schema from:
 `https://franzhill.github.io/moxter/schema/moxture.schema.json`
 
 Alternatively, the file is located within the ***Moxter*** library JAR as `moxture.schema.json`.
 
-## Configuration
+## 2. Configuration
 ### IntelliJ IDEA
 IntelliJ provides native support for YAML schema mapping:
 
@@ -24,7 +24,7 @@ IntelliJ provides native support for YAML schema mapping:
   - `src/test/resources/moxtures/*.yaml`
   - `*moxtures.yaml`
 
-### VS Code
+### VSCode
 Using the Red Hat YAML extension, update your `settings.json` file:
 
 ```JSON
@@ -33,5 +33,5 @@ Using the Red Hat YAML extension, update your `settings.json` file:
 }
 ```
 
-## Verification
+## 3. Verification
 After configuration, opening a `.yaml` moxture file should enable suggestions via `Ctrl + Space`. Any invalid keys or structure will be highlighted as errors.

@@ -1,7 +1,7 @@
 
 # Moxture reference
 
-## Single moxtures
+## 1. Single moxtures
 
 ### extends
 - **Alias**: basedOn
@@ -146,7 +146,7 @@ A map of **JsonPath** keys to expected literal values. It performs a strict equa
 Validates asynchronous WebSocket broadcasts. The `topic` defines the destination to monitor, `wait` defines the max duration to wait for the message (e.g., `"2s"`), and the internal `save` block allows for extraction of message parts into variables using JsonPath.
 
 
-## Group moxtures
+## 2. Group moxtures
 
 ### moxtures
 - **Type**: List of `String`s
