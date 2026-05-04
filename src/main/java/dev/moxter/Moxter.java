@@ -42,11 +42,13 @@ import java.util.regex.Pattern;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.LongAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockMultipartFile;
@@ -69,9 +71,12 @@ import dev.moxter.Moxter.IO.HierarchicalMoxLoader;
 import dev.moxter.Moxter.IO.IMoxLoader;
 import dev.moxter.Moxter.IO.MoxLinker;
 import dev.moxter.Moxter.IO.MoxYamlMapper;
+import dev.moxter.Moxter.Model.ExpectBroadcastDef;
+import dev.moxter.Moxter.MoxVars.VarReader;
 import dev.moxter.mockWebs.MockWebs;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -162,8 +167,16 @@ public final class Moxter
 
     private final IMoxLoader loader; 
 
-    private final IMoxTemplator   templator;
-    private final BodyResolver bodyResolver;
+    private final IMoxTemplator  templator;
+    private final BodyResolver   bodyResolver;
+
+    /**
+     * Although wired directly into the StompExecutor, having a reference here
+     * comes in handy e.g. when the MoxCaller needs to call a reset on MockWebs.
+     */
+    @Getter
+    @Nullable
+    private final MockWebs mockWebs;
 
 
 
@@ -300,14 +313,16 @@ public final class Moxter
     //   Builder / construction
     // =====================================================================
 
-    private Moxter(IMoxLoader loader,
-                   IMoxTemplator templator,
-                   BodyResolver bodyResolver,
+    private Moxter(IMoxLoader                   loader,
+                   IMoxTemplator                templator,
+                   BodyResolver                 bodyResolver,
                    List<Wire.IProtocolExecutor> executors,
-                   VarExtractor extractor,     // Injected
-                   ExpectVerifier verifier,    // Injected
-                   Supplier<Authentication> authSupplier,
-                   ObjectMapper jsonMapper)
+                   VarExtractor                 extractor,
+                   ExpectVerifier               verifier,
+                   Supplier<Authentication>     authSupplier,
+                   ObjectMapper                 jsonMapper,
+                   MockWebs                     mockWebs
+                )
     {
         this.loader              = Objects.requireNonNull(loader, "loader");
         this.templator           = Objects.requireNonNull(templator, "templator");
@@ -317,6 +332,7 @@ public final class Moxter
         this.verifier            = Objects.requireNonNull(verifier, "verifier");
         this.builderAuthSupplier = authSupplier;
         this.jsonMapper          = jsonMapper;
+        this.mockWebs            = mockWebs;
 
         // 1. Initial Load via Strategy
         IMoxLoader.LoadedSuite loaded = loader.loadInitial();
@@ -473,7 +489,7 @@ public final class Moxter
             IMoxLoader loader = new HierarchicalMoxLoader(testClass, cfg, yamlMapper);
 
             // Create SHARED Runtime helpers (Temporary local instances for the builder to use)
-            IMoxTemplator   templator   = new MoxSimpleTemplator();
+            IMoxTemplator   templator = new MoxSimpleTemplator();
             BodyResolver bodyResolver = new BodyResolver(yamlMapper);
             
             // Create the ORCHESTRATION components
@@ -482,7 +498,7 @@ public final class Moxter
             // The verifier gets the helpers it needs right here:
             ExpectVerifier verifier = new ExpectVerifier(
                 bodyResolver, JSON_MAPPER, templator, mockWebs);
-            
+
             // Register Available Protocol Executors
             List<Wire.IProtocolExecutor> executors = new ArrayList<>();
             
@@ -515,7 +531,8 @@ public final class Moxter
                               extractor, 
                               verifier, 
                               authSupplier, 
-                              defaultJsonMapper());
+                              defaultJsonMapper(),
+                              mockWebs);
         }
 
 
@@ -933,12 +950,18 @@ public final class Moxter
          * @param jsonPathLax if true, the library that reads JSON paths in the "save" in the yaml moxtures
          *             will have a lax (aka lenient) configuration.
          *             Meaning: If parent is null, asking for $.parent.child.value simply returns null.
-         *             If you make a typo like $.parnet, it returns null (instead of crashing).
+         *             If you make a typo like $.parent, it returns null (instead of crashing).
          * @param varOverrides per-call variable overrides (not mutated; keys shadow globals)
          * @return {@code null} for group moxtures; for single moxtures, the response envelope.
          */
         public MoxtureResult call(String moxtureName) 
         {
+            // Ensure MockWebs starts with a clean ledger of wire-tapped broadcasts,
+            // for every new moxture call:
+            if (this.moxter.getMockWebs() != null) {
+                this.moxter.getMockWebs().reset();
+            }
+
             try {
                 // 1. Execute the full chain (including groups/recursion)
                 InternalExecutionResult res = callInternal(moxtureName, varOverrides);
@@ -1793,10 +1816,15 @@ public final class Moxter
             this.moxtureName = moxtureName;
             this.resolvedSpec= spec;
             // Capture an immutable copy of the variables used for this specific call
-            this.callVars    = (callVars == null) 
+            // Do not use Map.copyOf(deltaVars), it doenst support null values
+            // => use LinkedHashMap to allow null values, wrapped in unmodifiableMap for safety
+            this.callVars    = (callVars == null)
                                     ? Collections.emptyMap() 
                                     : Collections.unmodifiableMap(new LinkedHashMap<>(callVars));
-            this.deltaVars   = (deltaVars == null) ? Collections.emptyMap() : Map.copyOf(deltaVars);
+            this.deltaVars   = (deltaVars == null)
+                                    ? Collections.emptyMap() 
+                                    : Collections.unmodifiableMap(new LinkedHashMap<>(deltaVars));
+
         }
 
         /**
@@ -2172,6 +2200,17 @@ public final class Moxter
             }
 
             /**
+             * Switches context to Long-specific assertions with automatic numeric coercion.
+             */
+            public LongChain asLong() {
+                // Reuse VarReader to safely convert parsed JSON numbers (Integers) to Longs
+                Long longVal = new VarReader(d, val).asLong(); 
+                var engine = (LongAssert) Assertions.assertThat(longVal).as(d);
+                return new LongChain(engine);
+            }
+
+
+            /**
              * Switches the assertion context to a {@link BooleanChain}.
              * This "unlocks" boolean-specific assertions like {@code isTrue()} or {@code isFalse()}.
              * 
@@ -2218,6 +2257,22 @@ public final class Moxter
                 /** Returns to the original result context to chain further path assertions. */
                 public MoxtureResult and() { return MoxtureResult.this; }
             }
+
+            /**
+             * A fluent bridge for {@link LongAssert}.
+             */
+            public class LongChain {
+                private final LongAssert engine;
+                protected LongChain(LongAssert engine) { this.engine = engine; }
+
+                public LongChain isEqualTo(Long expected) { engine.isEqualTo(expected); return this; }
+                public LongChain isGreaterThan(Long expected) { engine.isGreaterThan(expected); return this; }
+                public LongChain isPositive() { engine.isPositive(); return this; }
+
+                /** Returns to the original result context to chain further path assertions. */
+                public MoxtureResult and() { return MoxtureResult.this; }
+            }
+
 
             /**
              * A fluent bridge for {@link BooleanAssert}.
@@ -3221,17 +3276,20 @@ public final class Moxter
                 Model.ExpectDef resolved = new Model.ExpectDef();
                 resolved.setStatus(raw.getStatus()); // Status codes are literal nodes
                 resolved.setBody(raw.getBody());
-                
+
+                // Resolve topics for all broadcast assertions
                 if (raw.getBroadcast() != null) {
-                    Model.ExpectBroadcastDef b = new Model.ExpectBroadcastDef();
-                    // Topic interpolation: e.g. /topic/ckeditor/field/${p.fieldName}/published
-                    b.setTopic(resolveString(raw.getBroadcast().getTopic(), context, tpl));
-                    b.setType(raw.getBroadcast().getType());
-                    b.setWait(raw.getBroadcast().getWait());
-                    if (raw.getBroadcast().getSave() != null) {
-                       b.setSave(new LinkedHashMap<>(raw.getBroadcast().getSave()));
+                    for (Model.ExpectBroadcastDef rawBr : raw.getBroadcast()) {
+                        Model.ExpectBroadcastDef b = new Model.ExpectBroadcastDef();
+                        // Topic interpolation: e.g. /topic/ckeditor/field/${p.fieldName}/published
+                        b.setTopic(resolveString(rawBr.getTopic(), context, tpl));
+                        b.setType(rawBr.getType());
+                        b.setWait(rawBr.getWait());
+                        if (rawBr.getSave() != null) {
+                            b.setSave(new LinkedHashMap<>(rawBr.getSave()));
+                        }
+                        resolved.getBroadcast().add(b);
                     }
-                    resolved.setBroadcast(b);
                 }
                 return resolved;
             }
@@ -3687,9 +3745,14 @@ public final class Moxter
             private void verifyBroadcast(Model.Moxture spec, Map<String, Object> vars) 
             {
                 // 1. Double Guard: Ensure both the 'expect' block and the 'broadcast' block exist
-                if (spec.getExpect() == null || spec.getExpect().getBroadcast() == null) return;
+                if (spec.getExpect() == null || 
+                    spec.getExpect().getBroadcast() == null ||
+                    spec.getExpect().getBroadcast().size() == 0) return;
                 
-                Model.ExpectBroadcastDef br = spec.getExpect().getBroadcast();
+                // For the time being even if we allow the moxture to have several broadcast
+                // assertions (it's a list), we'll behave as if there's only one.
+                // Handling several requires quite heave changes in MockWebs, see Confluence.
+                Model.ExpectBroadcastDef br = spec.getExpect().getBroadcast().get(0);
                 if (br.getTopic() == null) return;
 
 /* REMOVED : expecting a broadcast after a http request is entirely possible
@@ -3710,6 +3773,8 @@ public final class Moxter
                 }
 
                 // 4. Resolve Topic and Type
+                //    (Note: the topic may already have been resolved => this is a last chance
+                //     interpolation)
                 String resolvedTopic = String.valueOf(tpl.apply(br.getTopic(), vars));
                 Class<?> payloadClass = "String".equalsIgnoreCase(br.getType()) ? String.class : byte[].class;
 
@@ -5690,7 +5755,9 @@ public final class Moxter
             private JsonNode status;            // int | "2xx"/"3xx"/"4xx"/"5xx" | "201" | [ ... any of those ... ]
             private ExpectBodyDef body;
             @JsonAlias("stomp")
-            private ExpectBroadcastDef broadcast;
+            // This allows Jackson to treat a single object in YAML as a List of size 1
+            @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+            private List<ExpectBroadcastDef> broadcast = new ArrayList<>();
         }
 
         @Getter @Setter

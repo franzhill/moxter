@@ -3,6 +3,20 @@
 
 ## v0.9.1
 
+### Bugfix - Null-Safe Variable Snapshotting
+
+2026.05.05
+
+Issue: Resolved a NullPointerException in the MoxtureResult constructor that occurred when extracting null values from a response (e.g., a released lock field).
+Tests can now safely extract and assert on JSON fields containing null without crashing the framework.
+
+
+### MockWebs: Mockito mock SimpMessagingTemplate reset before every Moxter call 
+
+2026.05.04
+Before each moxture call, the MockWebs underlying Mockito mock for the messaging template is reset.
+This prevents "broadcast pollution" by ensuring that messages recorded in previous moxture calls do not interfere with the assertions of the current call.
+
 
 ### Multiple mixin support for YAML __template__ 
 
