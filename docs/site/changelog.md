@@ -4,6 +4,13 @@
 ## v0.9.1
 
 
+### MockWebs: Mockito mock SimpMessagingTemplate reset before every Moxter call 
+
+2026.05.04
+Before each moxture call, the MockWebs underlying Mockito mock for the messaging template is reset.
+This prevents "broadcast pollution" by ensuring that messages recorded in previous moxture calls do not interfere with the assertions of the current call.
+
+
 ### Multiple mixin support for YAML __template__ 
 
 ```YAML

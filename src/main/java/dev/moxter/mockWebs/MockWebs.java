@@ -126,6 +126,18 @@ public class MockWebs
      */
     private final PreAuthorizeAuthorizationManager authManager = new PreAuthorizeAuthorizationManager();
 
+
+    /**
+     * Used when verifying several brodcasts at the same time.
+     */
+    public record TopicExpectation(
+        String topicSubstring,
+        Class<?> payloadClass,
+        long timeoutMillis
+    ) {}
+
+
+
    /**
     * Constructs the MockWebSocket utility. 
     * 
@@ -195,9 +207,11 @@ public class MockWebs
             });
 
             // 3. Repeat for @SubscribeMapping
-            Map<Method, SubscribeMapping> subscribeMappings = MethodIntrospector.selectMethods(targetClass,
+            Map<Method, SubscribeMapping> subscribeMappings = MethodIntrospector.selectMethods
+            (targetClass,
                     (MethodIntrospector.MetadataLookup<SubscribeMapping>) method -> 
-                            AnnotatedElementUtils.findMergedAnnotation(method, SubscribeMapping.class));
+                            AnnotatedElementUtils.findMergedAnnotation(method, 
+                                SubscribeMapping.class));
 
             subscribeMappings.forEach((method, annotation) -> {
                 for (String mapping : annotation.value()) {
@@ -210,7 +224,8 @@ public class MockWebs
             // 4. Initialize the Security Manager with the ApplicationContext
             // This allows @PreAuthorize expressions to reference other beans via SpEL 
             // (e.g. @myService.check())
-            DefaultMethodSecurityExpressionHandler handler = new DefaultMethodSecurityExpressionHandler();
+            DefaultMethodSecurityExpressionHandler handler = 
+                                                    new DefaultMethodSecurityExpressionHandler();
             handler.setApplicationContext(context); 
             this.authManager.setExpressionHandler(handler);
         }
@@ -282,7 +297,8 @@ public class MockWebs
         /**
          * Sends a STOMP message as the session's bound user using a JsonNode payload.
          * 
-         * @param destination The raw STOMP target destination (path) (e.g., "/field/account/200/publish")
+         * @param destination The raw STOMP target destination (path) (e.g., 
+         *                    "/field/account/200/publish")
          * @param payload     The payload as a Jackson JsonNode.
          * @return The object returned by the controller method.
          */
@@ -385,10 +401,11 @@ public class MockWebs
                         }
                         
                         // --- 3C. Handle The Payload (The "Message Converter" Simulation) ---
-                        // If it's not a URL variable and not the Principal, it MUST be the payload body.
+                        // If it's not a URL variable and not the Principal, it MUST be the payload 
+                        // body.
                         // Because we bypassed the real STOMP broker, we also bypassed Spring's 
-                        // MappingJackson2MessageConverter. We must manually deserialize the JSON string
-                        // into the exact Java class the method demands.
+                        // MappingJackson2MessageConverter. We must manually deserialize the JSON 
+                        // string into the exact Java class the method demands.
                         else {
                             if (jsonPayload == null || jsonPayload.isBlank()) {
                                 args[i] = null; // No payload provided, pass null
@@ -397,7 +414,8 @@ public class MockWebs
                                     args[i] = mapper.readValue(jsonPayload, param.getType());
                                 } catch (Exception e) {
                                     throw new IllegalArgumentException(
-                                        "MockWebSocket failed to deserialize JSON into " + param.getType().getSimpleName() + 
+                                        "MockWebSocket failed to deserialize JSON into " 
+                                        + param.getType().getSimpleName() + 
                                         ". Please check your JSON structure.", e);
                                 }
                             }
@@ -423,8 +441,8 @@ public class MockWebs
                     {   returnValue = route.method().invoke(route.controller(), args);
                     } 
                     catch (InvocationTargetException e) 
-                    {   // Unwrap the reflection exception so the test sees the REAL business exception
-                        // (e.g., NotFoundException)
+                    {   // Unwrap the reflection exception so the test sees the REAL business 
+                        // exception (e.g., NotFoundException)
                         Throwable cause = e.getCause();
                         if (cause instanceof Exception) 
                         {   throw (Exception) cause;
@@ -637,5 +655,17 @@ public class MockWebs
     {
         return verifyBroadcast(expectedTopicSubstring, payloadClass, 0L);
     }
+
+
+    /**
+     * Resets the underlying Mockito mock for the messaging template.
+     * This prevents broadcasts from previous moxture calls from polluting 
+     * the current verification step.
+     */
+    public void reset() {
+        log.debug("[MockWebs] Resetting SimpMessagingTemplate mock state...");
+        Mockito.reset(template);
+    }
+
 
 }
