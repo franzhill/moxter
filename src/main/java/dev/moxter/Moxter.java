@@ -60,6 +60,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.ObjectUtils;
 
 import dev.moxter.Moxter.Engine.BodyResolver;
 import dev.moxter.Moxter.Engine.ExpectVerifier;
@@ -1419,8 +1420,8 @@ public final class Moxter
             {   log.warn("[Moxter] Overwriting var '{}' in {} scope. (old={}, new={})",
                           key, 
                           isScopeGlobal() ? "GLOBAL" : "LOCAL (" + moxtureName + ")",
-                          prev,
-                          value);
+                          Utils.Logging.previewValue(prev),   // Truncates to 200 chars
+                          Utils.Logging.previewValue(value));
             }
             return prev;
         }
@@ -5642,21 +5643,42 @@ public final class Moxter
                 try { return n.toPrettyString(); } catch (Exception e) { return n.toString(); }
             }
 
+
             /**
-             * Generates a safe, truncated string representation of an arbitrary object.
+             * Generates a safe, human-readable, and truncated string representation of an 
+             * arbitrary object for diagnostic logging.
              * 
-             * <p>Used primarily when dumping variables of unknown types, ensuring that 
-             * a massive object structure doesn't accidentally dump thousands of lines 
-             * into the console. Caps the output at 200 characters.
+             * <p><b>Key Behaviors:</b>
+             * - <b>Type-Aware Unboxing:</b> Detects {@code byte[]} arrays 
+             *   (common in STOMP/HTTP payloads) and decodes them as UTF-8 strings to avoid 
+             *   printing obfuscated memory addresses.
+             * - <b>JSON Awareness:</b> Handles Jackson {@link JsonNode} objects by returning 
+             *   their standard string representation.
+             * - <b>Flood Prevention:</b> Automatically truncates the resulting string to 
+             *   200 characters, ensuring that massive JSON bodies or binary data do not flood
+             *   the console or IDE buffers.
+             * - <b>Null Safety:</b> Returns the literal string "null" if the input object is null.
+             * </p>
              *
-             * @param v The object to preview.
-             * @return A truncated string representation.
+             * @param v The object to preview (can be null).
+             * @return A truncated, human-readable string representation of the object.
              */
             static String previewValue(Object v) {
                 if (v == null) return "null";
-                String s = String.valueOf(v);
-                return s.length() > 200 ? s.substring(0, 200) + " …" : s;
+                
+                String s;
+                if (v instanceof byte[] bytes) {
+                    s = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+                } else if (v instanceof JsonNode node) {
+                    s = node.toString();
+                } else {
+                    s = ObjectUtils.nullSafeToString(v);
+                }
+
+                return s.length() > 200 ? s.substring(0, 200) + " ..." : s;
             }
+
+
         }
     }
 

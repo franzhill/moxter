@@ -3,8 +3,14 @@
 
 ## v0.9.1
 
-### Bugfix - Null-Safe Variable Snapshotting
+### Variable Truncation in Logs
+2026.05.07
 
+When printing variable values in logs, values are now automatically capped at a maximum of 200 characters in the logs to reduce log bloat and possible flooding.
+
+
+
+### Bugfix - Null-Safe Variable Snapshotting
 2026.05.05
 
 Issue: Resolved a NullPointerException in the MoxtureResult constructor that occurred when extracting null values from a response (e.g., a released lock field).
@@ -12,7 +18,6 @@ Tests can now safely extract and assert on JSON fields containing null without c
 
 
 ### MockWebs: Mockito mock SimpMessagingTemplate reset before every Moxter call 
-
 2026.05.04
 Before each moxture call, the MockWebs underlying Mockito mock for the messaging template is reset.
 This prevents "broadcast pollution" by ensuring that messages recorded in previous moxture calls do not interfere with the assertions of the current call.
@@ -38,10 +43,10 @@ moxtures:
 ```
 
 ### MockWebs: authentication session in Spring session registry
-
 2026.04.27 
 
 MockWebs: when providing an authentication, publish a SessionConnectedEvent to "trick" the Spring context into saving the session in its session registry.
+
 
 ### Added support for extracting variables out of the broadcasted message
 2026.04.17
