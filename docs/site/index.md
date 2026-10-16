@@ -123,7 +123,7 @@ This file describes HTTP calls to your API backend.
 
 
 ### The Java JUnit test
-In your *JUnit* test, call any moxture, grab portions from their return payload, enforce any kind of good old JUnit/AssertJ assertion or just let the moxture's own assertions do the work. Moxter handles the *MockMvc* execution, JSON serialization, variable extraction and configured assertions, automatically.
+In your *JUnit* test, call any moxture, grab portions from their return payload, enforce any kind of good old JUnit/AssertJ assertion or just let the moxture's own assertions do the work. ***Moxter*** handles the *MockMvc* execution, JSON serialization, variable extraction and configured assertions, automatically.
 
 === "Lean"
 
