@@ -1,11 +1,11 @@
-# YAML-ize your API calls. Build lean test scenarios.
+# YAML-ize API calls, chain them inside lean test scenarios, and make your tests great again! 
 <!-- Blueprint for your API tests. Forget the boilerplate, write just the scenarios. 
 Build great scenarios 
 Moxter externalizes API interactions into reusable, stateful building blocks and lets you compose them into scenarios without Java glue.
 -->
 
 
-***Moxter*** turns verbose *JUnit MockMvc* tests into collections of reusable, chainable API calls to let you write lean, business-centric scenarios. 
+***Moxter*** lets you turn your verbose *JUnit MockMvc* tests into lean, business-centric scenarios backed by a library of reusable, chainable YAML-defined API calls.
 
 - Define your API calls in YAML **once**, *with* their expectations
 - Call them from *Java/JUnit*, **chain** them together to forward state, and keep your test intent **light and crystal clear**
