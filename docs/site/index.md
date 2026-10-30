@@ -5,12 +5,13 @@ Moxter externalizes API interactions into reusable, stateful building blocks and
 -->
 
 
-***Moxter*** lets you turn your verbose *JUnit MockMvc* tests into lean, business-centric scenarios backed by a library of reusable, chainable, assertion-ready YAML-defined API calls.
+***Moxter*** turns your verbose *JUnit MockMvc* tests into lean, business-centric scenarios powered by a library of reusable, chainable, assertion-enabled YAML-defined API calls.
 
-- Define your API calls in YAML **once**, *with* their expectations
-- Call them from *Java/JUnit*, **chain** them together to forward state, and keep your test intent **light and crystal clear**
-- Shake, and run just like a good old *JUnit* test.
-
+- Define your API calls in YAML **once**
+- Call them from your *Java/JUnit* test, **chain** them together, piping the results of one into the other
+- The YAML API call carries its own assertions - or perform standard assertions within the test
+- Run just like any good old *JUnit* test
+- And keep your test intent **light and crystal clear**!
 
 
 ## A first simple example
@@ -123,7 +124,7 @@ This file describes HTTP calls to your API backend.
 
 
 ### The Java JUnit test
-In your *JUnit* test, call any moxture, grab portions from their return payload, enforce any kind of good old JUnit/AssertJ assertion or just let the moxture's own assertions do the work. ***Moxter*** handles the *MockMvc* execution, JSON serialization, variable extraction and configured assertions, automatically.
+In your *JUnit* test, call any moxture, grab portions from its return payload, enforce any kind of good old *JUnit/AssertJ* assertion or just let the moxture's own assertions do the work. ***Moxter*** handles the *MockMvc* execution, JSON serialization, variable extraction and configured assertions, automatically.
 
 === "Lean"
 

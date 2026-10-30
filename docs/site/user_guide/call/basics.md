@@ -20,7 +20,7 @@ The `MoxCaller` provides a fluent API to programmatically prep (configure) your 
 ## 1. Resolution (Finding the moxture)
 First, ***Moxter*** locates the target moxture by looking for it the moxture files, per the configured discovery mechanism. By default, this is a "walk-up" mechanism through a defined moxture file hierarchy rooted in your test resource folder.
 
-See [Moxture File Resolution](../../../site/user_guide/moxture/moxture_file.md) for the exact lookup rules.
+See [Moxture File Resolution](../../user_guide/moxture/moxture_file.md) for the exact lookup rules.
 
 ## 2. Linking (inheritance resolution)
 
@@ -44,7 +44,7 @@ Example:
                                   # status, category are inherited
 ```
 
-More on the inheritance mechanism in the chapter [Extending moxtures](../../../site/user_guide/extending_moxtures.md)
+More on the inheritance mechanism in the chapter [Extending moxtures](../../user_guide/extending_moxtures.md)
 
 
 ## 3. Blending Runtime Options
@@ -72,7 +72,7 @@ mx.caller()
 - Moxture Scope (Variables defined directly in the YAML)
 - Global Scope (Persistent engine memory)
 
-*See the [Variables](../../../site/user_guide/variables/variables.md) chapter for detailed scope priority rules.*
+*See the [Variables](../../user_guide/variables/variables.md) chapter for detailed scope priority rules.*
 
 
 
@@ -98,5 +98,5 @@ Finally, ***Moxter*** evaluates the `expect:` block defined in your YAML moxture
 - If all expectations are met, the call succeeds, and the test continues to the next step.
 - If any assertion fails (e.g., you expected a `200 OK` but got a `400 Bad Request`, or a JSON path mismatch occurred), ***Moxter*** immediately throws a test assertion failure, halting the test. A detailed diagnostic report is generated in `target/moxter-failures/` to assist with debugging.
 
-See the [Expectations](../../../site/user_guide/expectations/expectations.md) chapter for the full validation syntax.
+See the [Expectations](../../user_guide/expectations/expectations.md) chapter for the full validation syntax.
 

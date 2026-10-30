@@ -50,7 +50,7 @@ mx.caller()
 
 Variables injected via the fluent API are placed in the **Call Scope**. This scope has the absolute highest priority, meaning your injected variables will temporarily shadow any YAML-defined or Global variables that share the same name.
 
-For the complete rules on how Moxter merges scopes, see the [Variables chapter](../../../site/user_guide/variables/variables.md).
+For the complete rules on how Moxter merges scopes, see the [Variables chapter](../../user_guide/variables/variables.md).
 
 These overrides are strictly **ephemeral**. Because the `MoxCaller` is immutable, any variables you inject are discarded immediately after the `.call()` returns. This guarantees you do not accidentally pollute the global test state for subsequent steps.
 

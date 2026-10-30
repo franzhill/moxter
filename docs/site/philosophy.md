@@ -49,7 +49,7 @@ Such a testing approach is already made possible by existing tools such as Sprin
 
 ## Further resources on the subject of testing
 
-* [TDD is Dead. Long live testing.](https://david.heinemeierhansson.com/2014/tdd-is-dead-long-live-testing.html) (DHH): A critique of how mock-heavy testing leads to "Test-Induced Design Damage," creating complex architectures just to satisfy isolation.
+* [TDD is Dead. Long live testing.](https://dhh.dk/2014/tdd-is-dead-long-live-testing.html) (DHH): A critique of how mock-heavy testing leads to "Test-Induced Design Damage," creating complex architectures just to satisfy isolation.
 * [TDD, Where Did It All Go Wrong?](https://www.youtube.com/watch?v=EZ05e7EMOLM) (Ian Cooper): A seminal talk arguing that a "unit" should be a cohesive business behavior, not a single class.
 * [Unit Test](https://martinfowler.com/bliki/UnitTest.html) (Martin Fowler): A breakdown of the "Sociable vs. Solitary" distinction, explaining why testing components together provides higher confidence.
 * [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html) (Martin Fowler): An analysis of the "London School" (Mockist) versus the "Detroit School" (Classicist) and how they define test boundaries.

@@ -49,6 +49,12 @@ lombok.config
 /surefire-reports/
 /jacoco.exec
 
+# === MkDocs locally generated site ===
+/site/
+
+# === Python virtual environments ===
+/.venv*/
+
 # === Optional ===
 *.swp
 *.swo

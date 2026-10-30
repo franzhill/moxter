@@ -1,0 +1,6 @@
+# Python packages needed to build and serve the MkDocs documentation.
+# Shared by the local setup alias and the GitHub Pages workflow.
+mkdocs-material
+pymdown-extensions
+mkdocs-enumerate-headings-plugin
+mkdocs-macros-plugin

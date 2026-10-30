@@ -9,9 +9,10 @@ A ***moxture*** is a declarative YAML blueprint of a tailored API or WebSocket i
 Technically, these calls are executed natively within your *Spring* application context and dispatched to *MockMvc* for REST or [*MockWebs*](../mockwebs.md) for STOMP/WebSocket interactions.
 
 Beyond describing standard request parameters, a ***moxture*** provides configuration for built-in logic such as: 
-- declarative assertions: define what success looks like (status codes, full/partial/surgical JSON matching...) directly in the YAML.
-- variable extraction: extract fields from a response and save them into variables for subsequent steps.
-- inheritance: build new moxtures on top of existing ones to reduce repetition
+
+- **declarative assertions**: define what success looks like (status codes, full/partial/surgical JSON matching...) directly in the YAML.
+- **variable extraction**: extract fields from a response and save them into variables for subsequent steps.
+- **inheritance**: build new moxtures on top of existing ones to reduce repetition
 - and more 
 
 ***Moxtures*** are ultimately called from within a *JUnit* test, in the following fashion:
@@ -102,7 +103,7 @@ moxtures:
 
 ```
 
-For a detailed explanation on each item, please refer to the chapter [Reference](../moxture/moxture_reference.md)
+For a detailed explanation on each item, please refer to the chapter [Reference](../moxture/reference.md)
 
 
 ## 3. Variable interpolation
@@ -111,7 +112,7 @@ Many fields in a ***moxture*** support dynamic placeholders using the `${variabl
 
 This allows you to inject data into calls at runtime—such as tokens, keys, or scenario-specific values—or reuse variables extracted from a previous ***moxture*** execution.
 
-***Moxter*** "bakes" these placeholders into their final literal values just before the ***moxture*** gets executed. The scope and management of these variables is explored in further detail in the [Variables](../variables.md) chapter.
+***Moxter*** "bakes" these placeholders into their final literal values just before the ***moxture*** gets executed. The scope and management of these variables is explored in further detail in the [Variables](../variables/variables.md) chapter.
 
 
 ## 4. Group Moxtures
