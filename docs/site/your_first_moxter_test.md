@@ -10,14 +10,14 @@ We'll create a moxture representing a call to that endpoint, assert it should re
 
 ```YAML
 # src/test/resources/moxtures/moxtures.yaml
-moxture:
-  name: "health_check"
-  method: GET
-  endpoint: /api/v1/status    # an endpoint of your API
-  save:
-    version: "${app.version}" # use jsonpath to extract a variable from the response
-  expect:
-    status: 200
+moxtures:
+  - name: "health_check"
+    method: GET
+    endpoint: /api/v1/status    # an endpoint of your API
+    save:
+      version: "$.version"     # extract version from the JSON response body using jsonpath
+    expect:
+      status: 200
 ```
 
 ## Call the moxture in a JUnit test
@@ -25,38 +25,40 @@ moxture:
 Now, in the JUnit we just need to call the moxture. We'll then assert the returned version is as expected.
 
 ```Java
+... // imports
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class HelloWorldTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-    private static Moxter mx;
+  private Moxter mx;
 
-    @BeforeAll
-    static void setup(@Autowired MockMvc mockMvc) {
-        mx = Moxter.forTestClass(PetIntegrationTest.class)  
+  @BeforeEach
+  void setup(@Autowired MockMvc mockMvc) {
+    mx = Moxter.forTestClass(getClass())
                     .mockMvc(mockMvc)
                     .build();
     }
 
     @Test
     void shouldReturnHealthyStatus() {
-        mx.call("health_check");
-
-        // Perform assertions ...
-        assertThat(mx.getVar("version")).isEqualTo("v1");
+      mx.caller()
+        .call("health_check");
+      // Perform assertions...  
+      assertThat(mx.vars().read("version").asString()).isEqualTo("v1");
     }
+  }
 ```
 
 ## Execute the test
-Run your tests as you normally would.
+Run your tests as you normally would:
 
 ```Bash
 $ mvn test
 ```
 
-or just this test:
+or run 
+just this test:
 
 ```Bash
 $ mvn test -Dtest="HelloWorldTest"

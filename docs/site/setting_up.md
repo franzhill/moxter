@@ -1,7 +1,7 @@
 # Setting up
 
 
-Getting Moxter up and running takes less time than mixing a proper martini. Follow these three steps to run your first declarative API test.
+Getting Moxter up and running takes less time than mixing a proper martini. Follow these  steps to run your first declarative API test.
 
 ## Prerequisite
 Moxter requires Java 17+ and a Spring Boot 3.x environment.

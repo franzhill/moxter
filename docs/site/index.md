@@ -7,19 +7,19 @@ Moxter externalizes API interactions into reusable, stateful building blocks and
 
 ***Moxter*** turns your verbose *JUnit MockMvc* tests into lean, business-centric scenarios powered by a library of reusable, chainable, assertion-enabled YAML-defined API calls.
 
-- Define your API calls in YAML **once**
-- Call them from your *Java/JUnit* test, **chain** them together, piping the results of one into the other
-- The YAML API call carries its own assertions - or perform standard assertions within the test
-- Run just like any good old *JUnit* test
-- And keep your test intent **light and crystal clear**!
+- Define **reusable** API calls with expected results in **YAML**
+- Execute them from your *Java/JUnit* test
+- Easily extract values from responses for advanced assertions
+-  **Chain** calls by piping the result of one into the other, and build meaningful scenarios
+- Keep your test intent **light and crystal clear**
 
+Moxter runs inside the Spring test context through `MockMvc`. It is intended for application integration tests, not for sending requests to a deployed service.
 
 ## A first simple example
 
 ### The YAML definition
 Place a file named  `moxtures.yaml` in your test resources (e.g., 
-`src/test/resources/moxter/simple/`). 
-This file describes HTTP calls to your API backend.
+`src/test/resources/moxtures/`). This file describes HTTP calls to your API backend.
 
 === "Lean"
     ```yaml
@@ -73,9 +73,9 @@ This file describes HTTP calls to your API backend.
         method: POST
         endpoint: /api/pets
         body: |          # Body given in JSON format
-          { "firstName": "Thomas "
-            "lastName" : "O'Malley"
-            "address"  : "Alleyways and rooftops"
+          { "firstName": "Thomas ",
+            "lastName" : "O'Malley",
+            "address"  : "Alleyways and rooftops",
             "age"      : 13
           }
         save:
@@ -129,19 +129,19 @@ In your *JUnit* test, call any moxture, grab portions from its return payload, e
 === "Lean"
 
     ```Java
+    ...
+
     @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
     @AutoConfigureMockMvc
     class ShampooIntegrationTest {
 
-        @Autowired
-        private MockMvc mockMvc;
-        private static Moxter mx;
+        private Moxter mx;
 
-        @BeforeAll
-        static void setup(@Autowired MockMvc mockMvc) {
-            mx = Moxter.forTestClass(PetIntegrationTest.class)  
-                      .mockMvc(mockMvc)
-                      .build();
+        @BeforeEach
+        void setup(@Autowired MockMvc mockMvc) {
+            mx = Moxter.forTestClass(getClass())
+                       .mockMvc(mockMvc)
+                       .build();
         }
 
         @Test
@@ -175,23 +175,22 @@ In your *JUnit* test, call any moxture, grab portions from its return payload, e
 === "With comments"
 
     ```Java
+    ...
+    
     @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
     @AutoConfigureMockMvc
     class ShampooIntegrationTest {
 
-        @Autowired
-        private MockMvc mockMvc;   // Injected by the Spring Test context
+        private Moxter mx;  // Our moxture engine
 
-        private static Moxter mx;  // Our moxture engine
-
-        @BeforeAll
-        static void setup(@Autowired MockMvc mockMvc) {
+        @BeforeEach
+        void setup(@Autowired MockMvc mockMvc) {
             // Build the engine for this test class
-            mx = Moxter.forTestClass(PetIntegrationTest.class)  
-                      // (this will let Moxter know which moxture file(s) to load)
-                      .mockMvc(mockMvc)
-                      // The mockMvc instance Moxter will be using to submit requests
-                      .build();
+            mx = Moxter.forTestClass(getClass())  
+                        // (this will let Moxter know which moxture file(s) to load)
+                       .mockMvc(mockMvc)
+                        // The mockMvc instance Moxter will be using to submit requests
+                       .build();
         }
 
         @Test
@@ -243,7 +242,7 @@ In your *JUnit* test, call any moxture, grab portions from its return payload, e
 
 ### Run your Moxter test
 
-Just like any other good old Unit Test:
+Run it like any other JUnit integration test:
 
 ```bash
 $ mvn test  -Dtest=ShampooIntegrationTest
@@ -255,33 +254,33 @@ $ mvn test  -Dtest=ShampooIntegrationTest
 
 ### Under the hood
 
-***Moxter*** is designed to test a persisted *Spring* API (so that test scenarios retain state between moxture calls), at `mvn test` phase.
+***Moxter*** is designed to test a stateful *Spring* API during the `mvn test` phase. Statefulness (or 'persistence') means that application context is retained between test calls thus allowing chaining calls into more complex stateful scenarios. <!--During the test phase statefulness is often achieved by using in-memory state mechanisms like a H2 dtabase.-->
 
-Under the hood, ***Moxter*** works with and uses:
+Under the hood, ***Moxter*** works with or relies on:
 
 - **@SpringBootTest** annotated *JUnit* tests
 - **MockMvc**
-- A mock **persistence** mechanism at test time (a common setup is to use an in-memory DB like *H2*)
+- A test **persistence** setup (a common setup is e.g. an in-memory database such as *H2*)
 
 
-***Moxter*** then:
+***Moxter***:
 
-- leverages *MockMvc* to **perform the actual REST requests**
-- therefore sending requests through the **full Spring stack**. They hit your actual Controllers, Services, and Repositories (thus providing excellent coverage in the process)
-- accomplishes **YAML configured assertions**
+- leverages *MockMvc* to perform the actual **REST requests**
+- requests go through the **full Spring stack**, hitting your actual Controllers, Services, and Repositories, providing excellent coverage in the process
+- accomplishes YAML configured **assertions**.
 
 
 ### The Moxter value
 
 What ***Moxter*** brings on top of that:
 
-- **Oganize** your API calls in reusable, highly tunable YAML moxtures, inside YAML config files
+- **Organize** your API calls in reusable, highly tunable YAML moxtures, inside YAML config files
 - **Chain** API calls to build scenarios
 - **Extend** a moxture to avoid duplicating it when slight variations are needed
 - **Override** moxture defaults at call time from the JUnit test
 - Easily **extract** and **reuse** data from the response body across all moxtures
 - **Bake simple assertions** into the actual YAML moxture
-- Still command the use of more complex assertions on the "**Java side**"- 
+- Keep more complex assertions on the **Java side**
 - **STOMP/WebSocket** support for event-driven testing
 
 

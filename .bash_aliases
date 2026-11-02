@@ -10,7 +10,7 @@ if [ -z "${DIR_MOXTER:-}" ]; then
 fi
 
 # Jump to this machine's Moxter checkout.
-alias fhicdmoxter='cd "$DIR_MOXTER"'
+alias fhimoxtercd='cd "$DIR_MOXTER"'
 
 # Find the virtualenv interpreter using the layout for the current dev machine.
 _moxter_venv_python() {
