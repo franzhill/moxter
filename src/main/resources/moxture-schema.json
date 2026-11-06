@@ -1,14 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Moxter Moxture File Schema",
-  "description": "Schema for validating Moxter blueprint-compliant YAML files",
-  "type": "object",
+  "title": "Moxter moxture File Schema",
+  "description": "Schema for validating moxture files (YAML)",
+    "type": "object",
   "properties": {
-    "include": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "List of other YAML files to merge into this context."
+    ".templates": {
+      "type": "object",
+      "description": "Named templates available to __template__ directives.",
+      "additionalProperties": true
     },
+    "__template__": { "$ref": "#/definitions/templateReference" },
     "vars": {
       "type": "object",
       "additionalProperties": true,
@@ -17,119 +18,183 @@
     "moxtures": {
       "type": "array",
       "items": { "$ref": "#/definitions/moxture" }
-    },
-    "play": {
-      "type": "array",
-      "items": { "type": "string" },
-      "description": "The sequence of moxtures to execute when running in standalone mode."
     }
   },
+  "additionalProperties": false,
   "definitions": {
+    "templateReference": {
+      "description": "A template name, a list of template names, or an inline template object.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "object" }
+            ]
+          }
+        },
+        { "type": "object" }
+      ]
+    },
+    "stringMap": {
+      "type": "object",
+      "properties": {
+        "__template__": { "$ref": "#/definitions/templateReference" },
+        "<<": { "type": "object" }
+      },
+      "additionalProperties": { "type": ["string", "number", "boolean"] }
+    },
     "moxture": {
       "type": "object",
       "required": ["name"],
       "properties": {
+        "__template__": { "$ref": "#/definitions/templateReference" },
+        "<<": { "type": "object" },
         "name": { "type": "string" },
-        "description": { "type": "string" },
         "extends": { "type": "string" },
         "basedOn": { "type": "string" },
         "options": {
           "type": "object",
           "properties": {
-            "allowFailure": { "type": "boolean" },
-            "verbose": { "type": "boolean" }
-          }
+            "__template__": { "$ref": "#/definitions/templateReference" },
+            "<<": { "type": "object" },
+            "allowFailure": { "type": "boolean", "default": false },
+            "verbose": { "type": "boolean", "default": false }
+          },
+          "additionalProperties": false
         },
-        "actor": {
-          "type": "object",
-          "properties": {
-            "principal": { "type": "string" }
-          }
+        "protocol": {
+          "type": "string",
+          "anyOf": [
+            { "enum": ["HTTP", "HTTPS", "STOMP"] },
+            { "pattern": "^(?:[Hh][Tt][Tt][Pp][Ss]?|[Ss][Tt][Oo][Mm][Pp])$" }
+          ],
+          "default": "HTTP"
         },
+        "method": {
+          "type": "string",
+          "anyOf": [
+            { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] },
+            { "pattern": "^(?:[Gg][Ee][Tt]|[Pp][Oo][Ss][Tt]|[Pp][Uu][Tt]|[Pp][Aa][Tt][Cc][Hh]|[Dd][Ee][Ll][Ee][Tt][Ee]|[Hh][Ee][Aa][Dd]|[Oo][Pp][Tt][Ii][Oo][Nn][Ss])$" }
+          ],
+          "default": "GET",
+          "description": "HTTP method. STOMP moxtures always send and do not use this field."
+        },
+        "endpoint": { "type": "string" },
+        "headers": { "$ref": "#/definitions/stringMap" },
+        "query": { "$ref": "#/definitions/stringMap" },
+        "body": {},
+        "save": { "$ref": "#/definitions/stringMap" },
         "vars": { "type": "object", "additionalProperties": true },
-        "request": {
-          "type": "object",
-          "properties": {
-            "protocol": { "enum": ["HTTP", "STOMP"] },
-            "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "SEND", "SUBSCRIBE"] },
-            "endpoint": { "type": "string" },
-            "headers": { "type": "object", "additionalProperties": { "type": "string" } },
-            "queryParams": { "type": "object", "additionalProperties": { "type": "string" } },
-            "cookies": { "type": "object", "additionalProperties": { "type": "string" } },
-            "body": { "type": ["string", "object", "array"] },
-            "multipart": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": { "type": "string" },
-                  "type": { "enum": ["json", "file", "text"] },
-                  "filename": { "type": "string" },
-                  "body": { "type": ["string", "object"] }
-                }
-              }
-            }
-          }
-        },
-        "extract": {
-          "type": "object",
-          "properties": {
-            "options": {
-              "type": "object",
-              "properties": { "strict": { "type": "boolean" } }
-            },
-            "body": { "type": "object", "additionalProperties": { "type": "string" } },
-            "headers": { "type": "object", "additionalProperties": { "type": "string" } },
-            "cookies": { "type": "object", "additionalProperties": { "type": "string" } }
-          }
-        },
-        "expect": {
-          "type": "object",
-          "properties": {
-            "status": {
-              "oneOf": [
-                { "type": "integer" },
-                { "type": "string", "pattern": "^[1-5]xx$" },
-                { "type": "array", "items": { "type": ["integer", "string"] } }
-              ]
-            },
-            "broadcast": { "type": "string" },
-            "time": { "type": "string" },
-            "headers": { "type": "object", "additionalProperties": { "type": "string" } },
-            "body": {
-              "type": "object",
-              "properties": {
-                "match": {
-                  "type": "object",
-                  "properties": {
-                    "mode": { "enum": ["full", "partial"] },
-                    "ignorePaths": { "type": "array", "items": { "type": "string" } },
-                    "content": { "type": ["string", "object", "array"] }
-                  }
-                },
-                "assert": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": { "type": ["string", "number", "boolean", "object", "null"] }
-                  }
-                },
-                "schema": { "type": "string" }
-              }
-            }
-          }
-        },
-        "finally": {
+        "multipart": {
           "type": "array",
-          "items": { "$ref": "#/definitions/finallyStep" }
-        }
-      }
+          "items": {
+            "type": "object",
+            "properties": {
+              "__template__": { "$ref": "#/definitions/templateReference" },
+              "<<": { "type": "object" },
+              "name": { "type": "string" },
+              "type": { "enum": ["json", "file", "text"] },
+              "filename": { "type": "string" },
+              "body": {}
+            },
+            "additionalProperties": false
+          }
+        },
+        "moxtures": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Names of moxtures to execute sequentially as a group."
+        },
+        "expect": { "$ref": "#/definitions/expectations" }
+      },
+      "additionalProperties": false
     },
-    "finallyStep": {
+    "statusValue": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "integer" },
+        { "type": "string", "pattern": "^(?:[1-5]xx|[0-9]+)$" }
+      ]
+    },
+    "expectations": {
       "type": "object",
       "properties": {
-        "call": { "type": "string" }
-      }
+        "__template__": { "$ref": "#/definitions/templateReference" },
+        "<<": { "type": "object" },
+        "status": {
+          "oneOf": [
+            { "$ref": "#/definitions/statusValue" },
+            {
+              "type": "array",
+              "items": { "$ref": "#/definitions/statusValue" }
+            }
+          ]
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "__template__": { "$ref": "#/definitions/templateReference" },
+            "<<": { "type": "object" },
+            "match": {
+              "type": "object",
+              "properties": {
+                "__template__": { "$ref": "#/definitions/templateReference" },
+                "<<": { "type": "object" },
+                "mode": {
+                  "type": "string",
+                  "anyOf": [
+                    { "enum": ["full", "partial"] },
+                    { "pattern": "^(?:[Ff][Uu][Ll][Ll]|[Pp][Aa][Rr][Tt][Ii][Aa][Ll])$" }
+                  ],
+                  "default": "partial"
+                },
+                "ignorePaths": { "type": "array", "items": { "type": "string" } },
+                "content": {}
+              },
+              "additionalProperties": false
+            },
+            "assert": {
+              "type": "object",
+              "description": "Map of JsonPath expressions to expected values.",
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "broadcast": { "$ref": "#/definitions/broadcastExpectations" },
+        "stomp": { "$ref": "#/definitions/broadcastExpectations" }
+      },
+      "additionalProperties": false
+    },
+    "broadcastExpectations": {
+      "description": "One broadcast expectation, or a list (only the first is currently verified).",
+      "oneOf": [
+        { "$ref": "#/definitions/broadcastExpectation" },
+        {
+          "type": "array",
+          "maxItems": 1,
+          "items": { "$ref": "#/definitions/broadcastExpectation" }
+        }
+      ]
+    },
+    "broadcastExpectation": {
+      "type": "object",
+      "properties": {
+        "__template__": { "$ref": "#/definitions/templateReference" },
+        "<<": { "type": "object" },
+        "topic": { "type": "string" },
+        "destination": { "type": "string" },
+        "type": { "type": "string" },
+        "wait": {
+          "type": "string",
+          "pattern": "^\\d+\\s*(?:[mM][sS]|[sS]|[mM]|[mM][iI][nN])?$"
+        },
+        "save": { "$ref": "#/definitions/stringMap" }
+      },
+      "additionalProperties": false
     }
   }
 }

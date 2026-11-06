@@ -4,19 +4,24 @@
    "files.autoSave": "afterDelay", //onFocusChange",
    "files.autoSaveDelay": 1000,   // 1 second
 
+   // Requires the Red Hat YAML extension.
+   // Adds support for YAML schema validation based on the specified schemas.
    "yaml.schemas": {
-      // Use the following schema : for the following files
+      // Use the following schema: for the following files
       // "src/main/java/com/fhi/moxter/moxter-schema.json": "**/moxtures.yaml",
-       "src/main/java/dev/moxter/moxter-schema.json": "**/moxtures.yaml"
+     "src/main/resources/moxture-schema.json": "**/moxtures.yaml"
    },
 
-
+   "editor.renderControlCharacters": true,
+   "editor.renderWhitespace": "all",
+   "editor.detectIndentation": false,
    "editor.rulers": [100],  // vertical line at XX characters
    "workbench.editor.wrapTabs": true,
    "workbench.colorCustomizations": {
     "editorRuler.foreground": "#ff444455"   // and its colour
    },
    
+   // Requires the "highlight" extension.
    "highlight.regexes": 
    {  
       // Highlight javadoc

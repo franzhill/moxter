@@ -1,30 +1,30 @@
-# YAML Moxture files
+# YAML moxture files
 
-A **moxture file** is a YAML-based collection of `moxtures` i.e. descriptions of tailored API calls with added capabilities that can be executed directly from a *JUnit* test or chained together to form more elaborate business test scenarios.
+A **moxture file** is a YAML collection of `moxtures` i.e. descriptions of tailored API calls with added capabilities that can be executed directly from a *JUnit* test, or chained to form more elaborate business test scenarios.
 
-Moxture files are named `moxtures.yaml`. While you can start with a single file, ***Moxter*** allows you to create several to keep your testing logic modular.
+Moxture files are named `moxtures.yaml`. You can start with a single file or create several to keep your test logic modular.
 
 ## 1. The `moxtures.yaml` file structure
 
 Moxtures are introduced at the top-level with the `moxtures:` key. This key acts as a container for all the individual `moxtures` defined within that file.
 
-```YAML
+```yaml
 moxtures:
   # This is a moxture (a single API call):
-  - name: create_pet:
+  - name: create_pet
     method: POST
     endpoint: /api/pets
     # ... (details)
 
   # This is another moxture:
-  - name: assign_owner:
+  - name: assign_owner
     method: POST
-    endoint: /api/pet/{id}/owner
+    endpoint: /api/pets/{id}/owner
     # ... (details)
 
   # This is a group moxture:
   # (Executes the given moxtures as a sequence)
-  - name: scenario_pet_and_owner
+  - name: create_pet_and_assign_owner
     moxtures:
       - create_pet
       - assign_owner
@@ -32,42 +32,25 @@ moxtures:
 ```
 
 > 💡 
-> Note on groups: a moxture is considered a group moxture if it defines a list of moxtures. This is the configuration-first way to build multi-step scenarios.
+> Note on groups: a moxture is considered a group moxture if it defines a list of moxtures. This is the 'configuration-first' way to build multi-step scenarios.
 
 
-## 2. How to organise your `moxtures.yaml` files
 
-***Moxter*** expects your `moxtures.yaml` files to be placed somewhere under the Moxture Root Folder `src/test/resources/moxtures/`. Depending on your project size, you can choose between a simple setup or a hierarchical one.
+The example shows the basic shape; moxtures can also define options such as headers, a request body, and expectations.
 
+## Where to place moxture files
 
-### One moxture file
+By default, Moxter looks for moxtures on the test classpath under `moxtures/`. In a Maven project, the corresponding root is usually:
 
-If you are just starting or have a small project, place a single `moxtures.yaml` directly inside the Moxture Root Folder:  
-`src/test/resources/moxtures/moxtures.yaml`.
+```text
+src/test/resources/moxtures/
+```
 
-Moxtures in this file will be available to every test in your suite.
+For a small project, put one `moxtures.yaml` file there. Its definitions can be used by any test class.
 
+For a larger project, split definitions into files in subdirectories that mirror the tests' Java packages. Moxter also checks an optional subdirectory named after the test class. For example:
 
-### Several moxture files: unleashing the power of the hierarchy
-
-***Moxter*** is designed to be modular. Instead of one single moxture file concentrating all moxtures for the project, moxtures can be distributed into multiple files.
-
-#### Follow the package structure
-
-`moxtures.yaml` files are still placed under the Moxture Root Folder, but inside a further subfolder structure that mirrors the Java package folder structure of your *JUnit* tests. 
-
-
-#### The "walk-Up" visibility
-When a *JUnit* test references a moxture, ***Moxter*** performs a hierarchical search:
-
-- It looks for a moxture file inside a folder mirroring you test class' package folder
-- If it doesn't find the requested moxture inside that file, or if the file does not exist, it will check the parent package folder.
-- It continues walking up the tree until it reaches the Moxture Root Folder.
-
-
-#### Example
-
-```txt
+```text
 src/test/resources/moxtures/
 ├── moxtures.yaml                 <-- [ROOT] Global moxtures, available to 
 |                                      all tests. 
@@ -82,8 +65,7 @@ src/test/resources/moxtures/
 ```
 
 
-#### Key benefits 
-- **Shadowing and Precedence**: this hierarchy allows you to provide a Library of common moxtures at a high level while allowing specific tests to redefine (shadow) them at a lower level. The file closest to your test class always takes precedence. (*Notice: this behaviour will be made configurable in a future version, the choice could be made to actually disallow silent moxture redefinition*)
-- The "anti-zombie" effect: this on-demand loading mechanism means ***Moxter*** only reads files relevant to your specific test's hierarchy. If a "zombie" (a broken or invalid YAML file) exists in an unrelated package, it will not crash your test suite because the engine never attempts to load it.
-- This hierarchical foundation also comes into play in advanced features like **variable shadowing** or **moxture inheritance** that we will be exploring in the upcoming chapters.
-
+#### Key benefits
+- **Shadowing and precedence:** This hierarchy lets you keep a library of common moxtures in parent folders while allowing specific tests to shadow (redefine) them in child folders. When the same moxture name appears at multiple levels, the definition in the closest folder takes precedence. (This behavior may become configurable in a future version, so as to possibly deactivate it.)
+- **Isolation from unrelated files:** Moxter only reads files in a test's hierarchy. A broken or invalid YAML file in an unrelated package is not loaded for that test.
+- This hierarchy also supports advanced features such as **variable shadowing** and **moxture inheritance**, which are covered in later chapters.

@@ -25,7 +25,7 @@ IntelliJ provides native support for YAML schema mapping:
   - `*moxtures.yaml`
 
 ### VSCode
-Using the Red Hat YAML extension, update your `settings.json` file:
+Using the Red Hat YAML extension (Identifier: `redhat.vscode-yaml`), update your `settings.json` file:
 
 ```JSON
 "yaml.schemas": {

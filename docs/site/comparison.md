@@ -4,14 +4,14 @@
 
 <div class="moxter-comparison" markdown="1">
 
-| | Mockito | MockMvc | Moxter | Rest Assured | Postman / Newman and clones |
+| | Mockito | MockMvc (alone) | Moxter | Rest Assured | Postman / Newman and clones |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Testing Level** | Unit (Isolation) | Integration | Integration | Integration | End To End / System |
 | **Test "Border"** | Internal Logic | API Border | API Border | API Border | API Border |
 | **Main rationale** | Automated proof of internal logic | Automated proof of the API contract | Automated proof of the API contract and end-user scenarios| Automated proof of the API contract | Manual/Automated proof and exploration of the API contract in 'real-life' |
 | **Covers**        | 🔴 Small portion of code | 🟢 Controller, Service, Repo | 🟢 Controller, Service, Repo | 🟢 Controller, Service, Repo | ⭐ Controller, Service, Repo, non-test DB | 
 | **Environment**   |Test | Test | Test | Any | Any (inc. Prod) | 
-| **Requires HTTP server** | 🟢 No | 🟢 No | 🟢 No | 🔴 Yes (🟢 No with MockMvc extension) | 🔴 Yes |
+| **Requires HTTP server** | 🟢 No | 🟢 No | 🟢 No | 🔴 Yes <br />(🟢 No with MockMvc extension) | 🔴 Yes |
 | **Close to Real-life?** | 🔴 No | 🟢 Closer  | 🟢 Closer | ⭐ Closest | ⭐ Closest |
 | **Stage in dev cycle** | ⭐ Early | ⭐ Early  | ⭐ Early | 🟡 Later | 🔴 Late (Post-Deployment) |
 | **Execution Speed** | ⭐ Instant | 🟢 Fast | 🟢 Fast | 🟡 Moderate | 🔴 Slow (Needs Server) |
