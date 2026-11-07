@@ -106,7 +106,6 @@ nav:
         # (Method, Path, Payload, Expectations).
         - Anatomy of a moxture: user_guide/moxture/anat.md
         - YAML Validation & Autocomplete: user_guide/moxture/yaml_validation.md
-        - Reference: user_guide/moxture/reference.md
       # Settings etc. 
       - The Moxter engine:
         - Setup: user_guide/engine/build.md
@@ -177,9 +176,11 @@ nav:
 #   Mockwebs does not support it well: e.g. Mockito.reset() is a "Global Hammer"
 #   Mockito mocks are not thread-aware; once you reset a mock, it is blank for every thread in the JVM. 
       - Examples: user_guide/todo30.md
+  - Reference: reference.md
   - What's up:
-    - Release notes: release_notes.md
-    - Roadmap: roadmap.md
+    - Release notes: whatsup/release_notes.md
+    - Roadmap: whatsup/roadmap.md
+    - About: whatsup/about.md
 
 
 
@@ -235,4 +236,3 @@ nav:
 ###  Flexible jsonPathMode
 ## 14) NEXT
 ###  JSON expected return, in the fixture
-

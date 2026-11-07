@@ -17,3 +17,7 @@ Before reading additional files:
 - Ask for approval.
 
 Do not perform repository-wide searches unless explicitly requested.
+
+How to write Moxter documentation:
+- The documenatation should describe the intended public contract, and not leak waht happens to be implementation details into it.
+- Moxter is a "brand" -> its typo should be ***Moxter*** everywhere in the documentation.

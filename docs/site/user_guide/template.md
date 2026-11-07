@@ -24,3 +24,29 @@ moxtures:
     vars:
       p.fieldName: "OVERRIDE_LOCAL" # This wins over cke_vars because of putIfAbsent
 ```
+
+Think if this as a low-level pre-compiler copy-paste.
+This will result in the following moxture
+
+```YAML
+  - name: cke.update_field
+
+    # Injection of __template__: adminAuth 
+    headers:
+      Authorization: "Bearer {{admin_token}}"
+    
+    # Injection of __template__: ckeVars
+    p.fieldName: "commentCommercial"
+    p.userLockId: "init-lock-id"
+     
+    method: POST
+    endpoint: "/api/cke/update"
+    vars:
+      p.fieldName: "OVERRIDE_LOCAL" # This wins over cke_vars because of putIfAbsent
+```
+
+Naturally the template snippets must be cnceived and inserted in such a way that the resulting moxture conforms with the YAML schema of the moxture.
+
+
+templates can also be referenced with the "<<" object merge key instead of __template__
+(this requires a plugin/extension in YAML processing I think TODO)
