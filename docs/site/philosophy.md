@@ -4,53 +4,73 @@
 ![Moxter dressed as a Greek philosopher, deep in thought](img/moxter_thinking.png)
 </div>
 
-## The state of unit testing
+## The usual state of project tests
 
-***Moxter*** was born out of one realization: while production code gets regular care, tests are often left untended until the suite becomes a tangled, hard-to-maintain place nobody wants to enter.
+***Moxter*** was born out of one observation: while production code gets regular care, test suites can become difficult to understand and maintain.
 
-In many software projects, unit testing is the neglected stepchild of the development lifecycle. While production code is scrutinized for clean architecture, design patterns, and performance, the test concern, while proudly exposed through flattering metrics and indicators, is often left to grow wild, resulting in a "Big Tangled Ball of Spaghetti" that provides a false sense of safety and a long groan of dread whenever a developer has to "add test coverage".
+In many a software project, testing is the ugly little duckling in the project family. While production code gets all the attention and scrutiny for architecture, design and performance, test suites are often left to grow without so much supervision. 
+As a result, they usually become prone to a number of familiar bad habits:
 
-Because good tests are actually -and surprisingly- difficult to craft, because they are tedious to write, and because nobody really cares as long as that pipeline turns green, they tend to evolve with a life of their own without any governance and direction.
+- rushing to get tests to pass, as they usually are the last hurdle to clear before delivery,
+- heavy copy-pasting all around,
+- scattered and repeated hard-coded values,
+- layers of unfettered helpers or abstractions,
+- cramming in tests with no clear intent or business-case value, just to clear code coverage thresholds.
 
-Without a clear framework or strategy, developers copy-paste setup logic, hardcode magic strings, create deeply nested helper methods, Mockito everything away ending up testing nothing more than the bare metal of the underlying frameworks. As long as "the tests pass", everybody turns a blind eye.
+Add to this that good, meaningful tests can be surprisingly difficult to craft.
 
-Over the years, libraries have emerged to address parts of this problem.
+All this makes tests increasingly harder to maintain over time, a chore to work with, and reduces confidence in what they actually verify.
 
-The result? A big folder of tests that take longer to code and maintain than actually developing the feature, and where nobody truly knows what a specific test is actually verifying or why its setup context is as it is.
+## A note on terminology before moving on
+
+The exact definitions and boundaries of these notions are subject to constant heated debates. For this document, though, we’ll use them as follows:
+
+- **Unit test**: Tests a piece of behavior in isolation, with possible mocks.
+- **Integration test**: Tests how application components work together, in the Spring application context, run with JUnit  during Maven’s test phase.
+- **End-to-end (E2E) test**: Tests a complete flow against a running, deployed application through its external interface.
 
 
-## The false sense of security
+## The bias towards unit vs integration testing
 
-High test coverage percentages often act as a mask. You can have 90% coverage and still ship a critical bug because your mocks are "lying" to you. If you mock your service layer to return a success, your test will pass even if the real service would have crashed due to a database constraint or a null pointer.
+Over the years, multiple incentives pushed the industry in the direction of favouring unit testing over integration testing. That bias has proved hard to break.
 
-"Testing with mocks is often just testing that your mocks work."
+Unit tests are cheap to run and expensive to question. A mocked unit test runs in milliseconds, needs no database or test environment, and is deterministic. By contrast, integration tests are slow, require more complicated setup and may hit environment issues. Back in the day they were notorioulsy difficult to setup.
 
-When tests are too isolated, they fail to catch State Corruptions. A unit test might prove that you can create a user, and another might prove you can delete a user, but they rarely prove that you can create, update, and then delete that same user in a single cohesive flow. This gap is where the most expensive production bugs hide.
+Many testing practices that still hold today were shaped by these conditions back then, when spinning up a database was painful, frameworks lacked features, Docker did not exist, CI resources were expensive, and integration environments fragile. Under those conditions, mocked unit tests thrived. Test Driven Development became an ideology (write unit tests for every single function), code coverage became a sacred cow on which managers and QA fixated, incentivizing developers to add ever more costless and painless empty unit tests.
 
+Today, frameworks offer powerful features for testing their whole stack, Docker and Devops have made provisioning environments and resources easier, and CI is cheaper. Integration tests still do take more time and setup, but the technical barriers have never been lower.
+
+Yet old habits die hard. The industry has become very good at measuring what is easy to measure—coverage, test count, and execution speed—rather. Those metrics are convenient, reassuring, and pleasing to management.
+
+Integration tests can also expose architectural problems or problems with the tooling. If an integration test is difficult to write, it may point to hidden dependencies, global state, tight coupling, bad configuration, or poor deployment and test infrastructure. That is not proof of bad architecture, but it is a signal worth investigating. Instead of addressing the underlying problem, teams may mock more aggressively. Mocking can become a mechanism for avoiding reality.
+
+So what does integration testing bring over unit testing? This is not to say that unit testing is inherently bad. But for glorified CRUD web apps (which most Spring projects are, let’s face it), favouring unit testing over integration testing hardly makes sense when the technical barriers are no longer prohibitive. Integration tests can:
+
+- Exercise application wiring and framework behavior, including transactions that isolated tests may bypass.
+- Verify complete workflows across components and persistence, rather than testing each method in isolation.
+- Reduce reliance on mocks that can make tests pass while hiding failures in the real application.
+- Focus on observable business behavior, allowing internal implementation details to change without rewriting tests tied to them.
 
 
 ## Where Moxter comes in
 
-***Moxter*** was designed to disrupt this cycle by promoting business-focused testing at the application boundary and making test scenarios easier to organize, automate, and understand.
+***Moxter*** was designed to counter this bias by promoting higher-level, business-focused testing at the application boundary, shaping tests into real use-case scenarios in a way that is easy to organize and understand.
 
-***Moxter*** encourages "Black Box" integration-style testing through your application's natural API interface rather than testing Java internal methods in isolation ( so-called 'unit' tests).
+It encourages black-box, integration-style testing through your application’s API, complementing your unit tests geared towards testing smaller chunks of business logic computations.
 
-This approach builds on existing Spring testing tools: `@SpringBootTest` provides the Spring application context, and `MockMvc` exercises the application through Spring MVC without starting a real HTTP server.
+***Moxter*** builds on the power of existing Spring testing tools: `@SpringBootTest` provides the full Spring application context, while `MockMvc` queries the application's REST interface, all without having to start a real HTTP server.
 
-
- 
-***Moxter*** does not reinvent the wheel. Rather it seeks to make the most of what is already out there. By building on top of them, and providing the means to easily define test building bricks (so-called "moxtures"), ***Moxter*** allows developers to painlessly design and orchestrate larger, sleeker, more meaningful test scenarios.
+Making the most of what is already out there, ***Moxter*** adds the ability to easily define test building bricks ("moxtures") and painlessly orchestrate larger, sleeker, more meaningful test scenarios.
 
 
 ## Why use Moxter?
-- **The Sweet Spot**: sitting in between isolated unit tests and external API testing tools, ***Moxter*** allows you to test real-world scenarios during the standard mvn test phase.
+
+- **The Sweet Spot**: sitting in between isolated unit tests and external API testing tools (or yet even E2E tests), ***Moxter*** allows you to test real-world scenarios during the standard mvn test phase.
 - **Shorter, Cleaner, Meaningful Tests**: ***Moxter*** reduces repetitive `MockMvc` request boilerplate setup, letting JUnit tests focus more on scenario intent while retaining standard assertions.
 - **Readability**: "Moxtures" (MockMvc calls) are configured in YAML files thus providing clean, human-readable and reusable bricks.
 - **Maintainability**: When an API endpoint changes, you update the YAML "moxture" in one place rather than hunting through dozens of Java test files.
-- **Reusability**: "Moxtures" can be shared across multiple test classes 
+- **Reusability**: "Moxtures" can be shared across multiple test classes .
 - **Buildability**: "Moxtures" serve as the fundamental building bricks for advanced test scenarios. You can group multiple moxtures to define new, higher-level moxtures which function just like a simple moxture. Moxtures can be chained together, with the output of one 'fed' into the input of the next one.
-
-
 
 
 ## Further resources on the subject of testing

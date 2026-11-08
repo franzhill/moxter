@@ -2,36 +2,34 @@
 # ![](../../img/moxter_userguide.png) Variables
 </div>
 
-Variables allow you to render moxture calls dynamic and reusable. They enable data sharing between different moxture calls, such as capturing an ID from a `POST` response to use it in a subsequent `GET` or `DELETE` request.
+Variables make moxture calls dynamic and reusable. They enable data sharing between calls, such as capturing an ID from a `POST` response and using it in a subsequent `GET` or `DELETE` request.
 
 ## 1. Interpolation in moxtures
 
-***Moxter*** uses the `${variable_name}` syntax for string interpolation inside YAML moxtures. Before a moxture is executed, the engine replaces these placeholders with their current values from the variable context.
+***Moxter*** supports `${variable_name}` and `{{variable_name}}` interpolation inside YAML moxtures. Before a moxture is executed, the engine replaces placeholders with values from the variable context.
 
 Variables can be used in many moxture fields, for example:  
+
 - **Endpoint**: `/api/pets/${petId}`
 - **Body**: `{"name": "${pet_name}"}`
 - **Headers**: `X-Pet-Type: ${type}`
 - **Expectations**: `$.name: "${pet_name}"`
 
-> **Note**: the mustache-style `{{variable_name}}` syntax is also supported.
-
-
 ## 2. The Moxter Variable Context and its scopes
-The **Moxter Variable Context** is where all variables reside during the lifetime of a ***Moxter*** engine instance. It is comprised of two distinct **scopes** that determine the lifetime and visibility of your variables.
+The **Moxter Variable Context** holds the engine's global variables. Each moxture call also combines that context with moxture-local defaults and call-scoped overrides. These three scopes determine variable visibility and precedence.
 
 ### The Global Scope
 The Global Scope is tied to the Moxter engine instance. It acts as the persistent memory of your test or test suite.
 
-- **Source**: defined via `Moxter.builder().withVar(...)` or captured during a moxture execution as defined by the `save` block.  
+- **Source**: set through `mx.vars().put(...)` or captured during a moxture execution through its `save` block.
 - **Lifetime**: persists as long as the engine instance exists. If you use a shared engine (e.g. set up in a `@BeforeAll` method), variables saved in Test_A are available in Test_B.  
 - **Purpose**: storing state that needs to "travel" between different moxture calls (e.g., `auth_token`, `new_pet_id`...).
 
 
 ### The Call Scope
-The Call Scope is transient. It is created at the start of a moxture call (`mx.call(moxture)`) and destroyed as soon as the call finishes.
+The Call Scope is transient. It is created for a moxture call and discarded when that call finishes.
 
-- **Source**: comprised of the variables defined in the moxture's YAML vars block and any overrides provided via the fluent API (`mx.caller().withVar(...)`).  
+- **Source**: combines defaults in the moxture's YAML `vars` block with overrides provided through the fluent API (`mx.caller().withVar(...)`).
 - **Lifetime**: exists only for the duration of a single moxture execution.  
 - **Purpose**: providing specific inputs for a call without polluting the global scope.
 
@@ -61,11 +59,9 @@ To provide default values that only exist within the **Call Scope** of a specifi
     # In the rest of the moxture, use the variables:
     body: |          # Body given in JSON format.
         { "name"    : "${p.name}",
-          "species" : "${species}" # No default for this variable. Will have to 
-                                   #  be provided externally or the test might
-                                   #  fail or misbehave.
+          "species" : "${species}", # No default: provide this when calling the moxture.
           "address" : "Brussels",
-          "age"     : $p.age       # age being a numeric, does not require quotes in JSON
+          "age"     : ${p.age}     # Numeric values do not need quotes in JSON.
         }
     expect:
       body:
@@ -90,38 +86,35 @@ mx.caller()
 
 ### Set as global in the Moxter engine
 
-To define "constants" or environment-level defaults that should be available to every moxture call, use the builder. These live in the Global Scope.
+To define constants or environment-level defaults that should be available to every moxture call, add them to the engine's global context.
 
 ```Java
-mx = Moxter.builder()
+mx = Moxter.forTestClass(MyTest.class)
         .mockMvc(mockMvc)
-        .withVars(Map.of(
-            "api_version", "v1",
-            "default_owner_id", 1
-        ))
         .build();
+
+mx.vars().put("api_version", "v1");
+mx.vars().put("default_owner_id", 1);
 ```
 
 
 ## 4. Variable precedence
 
-As you will have noticed, several mechanisms allow variable instanciation. 
-This means variable collision is entirely possible. ***Moxter*** resolves this using a specific yet simple precednce system: if a variable is instanciated in multiple places, the one with the **highest priority** wins.
+Variables can be defined at multiple scopes. When the same name appears in more than one scope, ***Moxter*** resolves it using this precedence order:
 
 | Priority | Source | Scope | Definition Method |
 | :--- | :--- | :--- | :--- |
-| **1 (Highest)** | **JUnit call**                | Call   | `mx.caller().withVar("key", "val")` |
-| **2**           | **Moxture YAML**              | Call   | The `vars:` block in the YAML file. |
-| **3**           | **Moxture result extraction** | Global | `.builder().withVar("key", "val")` |
-| **4 (Lowest)**  | **Engine Builder**            | Global | `.builder().withVars(Map.of("key", "val"))` |
+| **1 (Highest)** | **Call override** | Call | `mx.caller().withVar("key", "val")` |
+| **2** | **Moxture YAML defaults** | Moxture | The `vars:` block in the YAML file |
+| **3 (Lowest)** | **Engine-global variables** | Global | `mx.vars().put(...)` or a moxture's `save` block |
 
-If several instanciations of a same variable compete at the same level, then precedence is obtained by chronology (last wins).
+Values captured by `save` and values added with `mx.vars().put(...)` share the same global map; `save` is not a separate precedence level. By default, writing an existing global key replaces its value and logs a warning. If strict variable handling is enabled, an overwrite throws instead.
 
 With the examples given above, the resolved (interpolated) moxture would hence be:
 ```YAML
     body: |          # Body given in JSON format.
         { "name"    : "Beethoven",
-          "species" : "Dog"
+          "species" : "Dog",
           "address" : "Brussels",
           "age"     : 15
         }
@@ -133,9 +126,7 @@ With the examples given above, the resolved (interpolated) moxture would hence b
 ```
 
 > **Note**  
-> If no value is resolved, then the literal string `${var_name}` will be used by ***Moxter***, thus resulting in a either a test failure or possibly unintended (or not) behaviour.
-
-<!-- TODO improve example so we get all combinations -->
+> If a variable is missing, ***Moxter*** logs a warning and leaves its placeholder (for example, `${var_name}`) in place. The resulting request or assertion may then fail or behave unexpectedly.
 
 
 ## 5. Accessing the variables in the Variable Context
@@ -146,7 +137,7 @@ You can interact with the variable context programmatically through the Moxter e
 
 ### Reading from the Global Scope
 
-Accessing variables from Java is always made against the Global Scope. Because the Call Scope is transient (it is created and destroyed within the mx.call() lifecycle), it is logically impossible to retrieve a "call variable" once the execution has returned to your Java test method.
+Use `mx.vars()` to access the engine-global context from Java. Call-scoped overrides are transient, so they cannot be retrieved after the moxture call has finished.
 
 ```Java
 ...
@@ -165,28 +156,25 @@ Accessing variables from Java is always made against the Global Scope. Because t
 ...
 ```
 
-#### Type-safe Extraction (read)
-While accessing the raw context variable map (via getVars()) returns plain Objects, the read() method allows you to extract and cast variables in a single, type-safe operation. This is the preferred way to interact with your data from Java.
+#### Reading and converting values
+`mx.vars().view()` provides a read-only view of the context map, whose values are plain Java objects. The `read()` method returns a value wrapper with methods for accessing or converting that value.
 
-- First access the variable fom the variable context via: `vars().read("var_name")`.
-- Then chain the caster method: `.as(<Class>)`, `.asLong()`, `.asString()`, `.asBoolean()` ... The value will automatically converted/cast to the desired type using Moxter's ObjectMapper.
+Use the method that matches the value and conversion you need. For example, `asLong()` parses a numeric value, while `asType(Long.class)` performs a type cast and does not deserialize or convert arbitrary values.
 
 Example:
 
 ```Java
 // Extracting a nested field from a JSON object saved in 'last_response':
-String petName = mx.read("pet_name").asString();  // E.g. saved in the "create_pet" moxture
+String petName = mx.vars().read("pet_name").asString();  // E.g. saved in the "create_pet" moxture
 
 // Extracting a numeric ID and ensuring it is a Long:
-Long ownerId = mx.read("owner_id").as(Long.class); // Eliminates manual casting and provides 
-                                                   // clearer error messages if a type mismatch 
-                                                   // occurs.
+Long ownerId = mx.vars().read("owner_id").asLong();
 
-// Mapping a saved JSON variable to a Java Object
-Pet myPet = mx.read("saved_pet_data").as(Pet.class);
+// Read a saved JSON value as a Jackson JsonNode
+JsonNode savedPet = mx.vars().read("saved_pet_data").asJsonNode();
 ```
 
-See page [Reference](site/user_guide/variables/reference.md) for the full list of extraction methods.
+See the [Reference](reference.md) for the full list of extraction methods.
 
 
 
@@ -198,17 +186,17 @@ Since the Global Scope persists for the lifetime of the engine instance by defau
 - `mx.vars().clear()`: wipes the Global Scope completely. This is the "reset button."
 
 > **Vigilance Note**  
-> It is highly recommended to call `mx.clearVars()` in an `@AfterEach` method if you are using a shared engine across multiple tests. This prevents "state leaking" where Test_A's variables accidentally satisfy the requirements of Test_B.
+> If you use a shared engine across tests, consider calling `mx.vars().clear()` in an `@AfterEach` method. This prevents state leaking where variables from one test accidentally satisfy another test's requirements.
 
 
-## 6.A word of caution
+## 6. A word of caution
 
 The Global Scope is what makes Moxter simple for complex integration scenarios. By allowing variables to persist across different moxture calls, you can build elaborate end-to-end flows without manually passing IDs or tokens between Java methods.
 
 However, this simplicity requires vigilance:
 
-- **Unintended overwrites**: since any `save` block writes to the same global map, using generic variable names (like `id`) across different moxtures increases the risk of one call silently overwriting data needed by another.
+- **Unintended overwrites**: since every `save` block writes to the same global map, generic names (like `id`) can replace values needed by another call. By default, Moxter logs a warning when a global value is overwritten; strict variable handling can be enabled to make overwrites throw instead.
 - **State Pollution**: if you use a shared engine, the global scope acts as shared state. A failure in one test might leave the context "dirty," causing subsequent tests to fail unpredictably.
 
 > **Recommendation**  
-> Use descriptive names (e.g., `created_pet_id` instead of just `id`) when "globality" is not a desired effect, and consider using `mx.clearVars()` in an `@AfterEach` method if you need to ensure a clean slate between tests.
+> Use descriptive names (e.g., `created_pet_id` instead of just `id`) to reduce accidental collisions. If you need a clean slate between tests, call `mx.vars().clear()` in an `@AfterEach` method.

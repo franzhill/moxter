@@ -4,9 +4,9 @@
      style="float: left; transform: rotate(-1deg); margin: 0 1.5rem 1rem 0;">
 
 
-**Moxter is developed by its creator.**
+Hey! I'm Franzhill, the creator of **Moxter** ;)
 
-I am a computer engineer based in the South of France, with over 20 years of experience in software development.
+I am a computer engineer based in the South of France, with 20+ years of experience in software development.
 
 I've worked across a wide range of projects, teams and technical environments. Along the way, I've come to appreciate a few things: sound engineering, simplicity where possible, maintainability over short-term convenience, and finding the right compromise when constraints inevitably come into play.
 

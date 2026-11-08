@@ -115,10 +115,10 @@ nav:
       - The Moxter engine:
         - Setup: user_guide/engine/build.md
         # Authentication & CSRF
-        - Reference: user_guide/reference/engine.md
+        - Reference: reference/engine.md
       - Variables:
         - Using variables: user_guide/variables/variables.md
-        - Reference: user_guide/reference/variables.md
+        - Reference: reference/variables.md
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
         #- Retrieving variables inside the JUnit test: user_guide/todo11.md
@@ -129,17 +129,17 @@ nav:
       - Calling the moxture: 
         - Basics: user_guide/call/basics.md
           # (withVar, withVars)
-        - The MoxCaller: user_guide/call/basics.md
+        - The MoxCaller: user_guide/call/caller.md
         - Providing variables: user_guide/call/variables.md
           # Explain how to dynamically alter the YAML's expect: block from Java:
           # Document how to change expected HTTP status codes (e.g., testing a 404 on a 
           # moxture usually designed for a 200) or override JSON body assertions on the fly.
-        - provide expectations: user_guide/call/expectations.md
+        - Providing expectations: user_guide/call/expectations.md
           # Chainable simple assertions
           # Explain that while full assertions can be done after the call with full feature
           # JUnit or JAssert assertions, Moxter provides simple chainable assertions for the
           # simple cases.
-        - perform simple assertions: user_guide/call/assertions.md
+        - Performing simple assertions: user_guide/call/assertions.md
           # Document execution modifiers like "lax mode."
           # Explain what lax mode does (e.g., skipping certain strict validations or ignoring
           # unmapped fields) and how to toggle it via the fluent caller.
@@ -181,7 +181,7 @@ nav:
 #   Mockwebs does not support it well: e.g. Mockito.reset() is a "Global Hammer"
 #   Mockito mocks are not thread-aware; once you reset a mock, it is blank for every thread in the JVM. 
       - Examples: user_guide/todo30.md
-  - Reference: 
+  - Reference:
     - Moxture: reference/moxture.md
     - Engine: reference/engine.md
     - Variables: reference/variables.md
