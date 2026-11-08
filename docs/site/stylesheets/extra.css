@@ -74,7 +74,7 @@ h2 {
 
 /* Title */
 article h1 {
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  text-shadow: 1px 1px 2px rgba(var(--moxter-black-rgb), 0.05);
   color: var(--md-primary-fg-color);
   font-weight: 800;
   font-size: 2.2em;
@@ -88,14 +88,14 @@ article h1 {
 
 /* H2: Section - Primary Color Theme */
 article h2 {
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  text-shadow: 1px 1px 2px rgba(var(--moxter-black-rgb), 0.05);
   border-left: 0px solid var(--md-accent-fg-color);
   padding-left: 15px;
   padding-right: 10px; /* Added for background balance */
   margin-top: 3rem;    /* Add more space above headers to separate sections clearly */
   font-weight: 700;
-  color: #142b45;
-  background: rgba(29, 73, 100, 0.06);
+  color: var(--moxter-navy);
+  background: rgba(var(--moxter-blue-rgb), 0.06);
   padding-top: 8px;
   padding-bottom: 8px;
   border-radius: 0 4px 4px 0; /* Smooths out the right edge */
@@ -107,7 +107,7 @@ article.md-typeset h2 {
 
 /* H3: Sub-sections - Accent Color Theme */
 article h3 {
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+  text-shadow: 1px 1px 2px rgba(var(--moxter-black-rgb), 0.05);
   border-left: 0px solid var(--md-accent-fg-color);
   border-bottom: none;
   padding-left: 15px;
@@ -115,8 +115,8 @@ article h3 {
   padding-top: 6px;    /* Added to house the background */
   padding-bottom: 6px; /* Added to house the background */
   font-weight: 600;
-  color: #142b45;
-  background: rgba(29, 73, 100, 0.04);
+  color: var(--moxter-navy);
+  background: rgba(var(--moxter-blue-rgb), 0.04);
   margin-top: 2rem;   /* Add more space above headers to separate sections clearly */
   letter-spacing: 0.01em;
   border-radius: 0 4px 4px 0;
@@ -130,9 +130,9 @@ article.md-typeset h3 {
 article h4,
 article h5,
 article h6 {
-  color: #142b45;
+  color: var(--moxter-navy);
   padding: 0.2rem 0.4rem;
-  background: rgba(29, 73, 100, 0.025);
+  background: rgba(var(--moxter-blue-rgb), 0.025);
 }
 
 article h2,
@@ -140,7 +140,7 @@ article h3,
 article h4,
 article h5,
 article h6 {
-  background: linear-gradient(325deg, var(--md-default-bg-color), #eef4f8);
+  background: linear-gradient(325deg, var(--md-default-bg-color), var(--moxter-heading-tint));
   border-radius: 6px;
 }
 
@@ -151,7 +151,7 @@ article h5::before,
 article h6::before {
   display: inline-block;
   margin-right: 0.45em;
-  color: #142b45;
+  color: var(--moxter-navy);
   font-size: 1.1em;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -208,11 +208,11 @@ article h6::before {
 
 /* Style the Header Row (Dark background, White text for both modes) */
 .md-typeset table thead {
-    background-color: #2e3b42; 
+    background-color: var(--moxter-table-header);
 }
 
 .md-typeset table thead th {
-    color: #ffffff !important; /* Forces white text on the dark header */
+    color: var(--moxter-white) !important; /* Forces white text on the dark header */
     font-weight: 700;
     /*text-transform: uppercase;*/
     letter-spacing: 0.05em;
@@ -224,14 +224,14 @@ article h6::before {
     /* ADAPTIVE: Uses the theme's default text color (white in dark, black in light) */
     color: var(--md-typeset-color); 
     /* ADAPTIVE: A very subtle grey tint that works on both dark and light backgrounds */
-    background-color: rgba(128, 128, 128, 0.07); 
+    background-color: rgba(var(--moxter-neutral-rgb), 0.07);
     border-right: 1px solid var(--md-typeset-table-color);
 }
 
 /* Base style for regular cells - Forced contrast */
 .moxter-comparison table tbody td {
     /* This adds a subtle "lift" regardless of your theme background */
-    background-color: rgba(128, 128, 128, 0.05) !important; 
+    background-color: rgba(var(--moxter-neutral-rgb), 0.05) !important;
     border: 1px solid var(--md-typeset-table-color);
     padding: 12px 16px !important;
 }
@@ -239,7 +239,7 @@ article h6::before {
 
 /* Subtle Row Hover Effect */
 .md-typeset table tbody tr:hover {
-    background-color: rgba(128, 128, 128, 0.04);
+    background-color: rgba(var(--moxter-neutral-rgb), 0.04);
 }
 
 /* Base style for all body cells in the comparison table */
@@ -247,7 +247,7 @@ article h6::before {
     /* Use a slightly different background than the page */
     background-color: var(--md-default-fg-color--highest); 
     /* Or use a manual subtle tint if the variable is too dark/light: */
-    /* background-color: rgba(128, 128, 128, 0.03); */
+    /* background-color: rgba(var(--moxter-neutral-rgb), 0.03); */
     
     border: 1px solid var(--md-typeset-table-color);
     transition: background-color 0.2s ease;
@@ -255,7 +255,7 @@ article h6::before {
 
 /* Ensure the Feature Column (1st) remains distinct */
 .md-typeset  table tbody td:first-child {
-    background-color: rgba(128, 128, 128, 0.12) !important;
+    background-color: rgba(var(--moxter-neutral-rgb), 0.12) !important;
     font-weight: 700;
 }
 
@@ -280,18 +280,18 @@ article h6::before {
 /* The Moxter Column (4th column) */
 /* Make the Moxter header stand out with depth */
 .moxter-comparison table th:nth-child(4) {
-    background-color: #3d5afe !important;   /* Brighter blue for the header */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    background-color: var(--moxter-comparison) !important;   /* Brighter blue for the header */
+    box-shadow: 0 4px 10px rgba(var(--moxter-black-rgb), 0.3);
     border-radius: 4px 4px 0 0;
     position: relative;
     z-index: 1;
 }
 
 .moxter-comparison table td:nth-child(4) {
-    background-color: rgba(61, 90, 254, 0.1) !important; 
+    background-color: rgba(var(--moxter-comparison-rgb), 0.1) !important;
   /* Add a very faint vertical border to separate the hero column */
-    border-left: 1px solid rgba(61, 90, 254, 0.2);
-    border-right: 1px solid rgba(61, 90, 254, 0.2);
+    border-left: 1px solid rgba(var(--moxter-comparison-rgb), 0.2);
+    border-right: 1px solid rgba(var(--moxter-comparison-rgb), 0.2);
 }
 
 
@@ -300,16 +300,16 @@ article h6::before {
    ======================================= */
 
 [data-md-color-scheme="default"] {
-    --md-default-bg-color: #f5f7fb;
+    --md-default-bg-color: var(--moxter-page-background);
 }
 
 .md-header,
 .md-tabs {
-    background: linear-gradient(110deg, #142b45, #1d4964);
+    background: linear-gradient(110deg, var(--moxter-navy), var(--moxter-blue));
 }
 
 .md-tabs__link--active {
-    border-bottom-color: #ffd166;
+    border-bottom-color: var(--moxter-gold);
 }
 
 .moxter-hero {
@@ -320,18 +320,18 @@ article h6::before {
     margin: 0 0 2rem;
     padding: clamp(1rem, 2vw, 1.75rem);
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(var(--moxter-white-rgb), 0.12);
     border-radius: 22px;
     background:
-        radial-gradient(circle at 84% 18%, rgba(255, 209, 102, 0.18), transparent 30%),
-        linear-gradient(125deg, #142b45, #1d4964 65%, #087e8b);
-    box-shadow: 0 16px 38px rgba(20, 43, 69, 0.16);
-    color: #fff;
+        radial-gradient(circle at 84% 18%, rgba(var(--moxter-gold-rgb), 0.18), transparent 30%),
+        linear-gradient(125deg, var(--moxter-navy), var(--moxter-blue) 65%, var(--moxter-teal));
+    box-shadow: 0 16px 38px rgba(var(--moxter-navy-rgb), 0.16);
+    color: var(--moxter-white);
 }
 
 .moxter-hero__eyebrow {
     margin: 0 0 0.75rem;
-    color: #ffd166;
+    color: var(--moxter-gold);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -342,17 +342,17 @@ article h6::before {
     margin: 0 0 1rem;
     border: 0;
     background: none;
-    color: #fff;
+    color: var(--moxter-white);
     font-size: clamp(1.75rem, 3vw, 2.5rem);
     line-height: 1.05;
     text-transform: none;
-    -webkit-text-fill-color: #fff;
+    -webkit-text-fill-color: var(--moxter-white);
 }
 
 .moxter-hero__lead {
     max-width: 42rem;
     margin: 0 0 1.5rem;
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(var(--moxter-white-rgb), 0.88);
     font-size: 1rem;
     line-height: 1.45;
 }
@@ -370,20 +370,20 @@ article h6::before {
 }
 
 .moxter-hero .md-button--primary {
-    border-color: #ffd166;
-    background-color: #ffd166;
-    color: #142b45;
+    border-color: var(--moxter-gold);
+    background-color: var(--moxter-gold);
+    color: var(--moxter-navy);
     font-weight: 700;
 }
 
 .moxter-hero .md-button--primary:hover {
-    border-color: #ffe09a;
-    background-color: #ffe09a;
+    border-color: var(--moxter-gold-light);
+    background-color: var(--moxter-gold-light);
 }
 
 .moxter-hero .md-button:not(.md-button--primary) {
-    border-color: rgba(255, 255, 255, 0.7);
-    color: #fff;
+    border-color: rgba(var(--moxter-white-rgb), 0.7);
+    color: var(--moxter-white);
 }
 
 .moxter-hero__art {
@@ -396,7 +396,7 @@ article h6::before {
     width: min(100%, 14rem);
     height: auto;
     border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 30px rgba(var(--moxter-black-rgb), 0.2);
 }
 
 .moxter-features {
@@ -408,22 +408,22 @@ article h6::before {
 
 .moxter-feature-card {
     padding: 0.5rem 1.25rem 1rem;
-    border: 1px solid #dce9ed;
-    border-top: 3px solid #08a0a9;
+    border: 1px solid var(--moxter-border);
+    border-top: 3px solid var(--moxter-teal-bright);
     border-radius: 14px;
-    background: linear-gradient(145deg, #fff, #e8f6f7);
-    box-shadow: 0 8px 22px rgba(20, 43, 69, 0.06);
+    background: linear-gradient(145deg, var(--moxter-white), var(--moxter-card-tint));
+    box-shadow: 0 8px 22px rgba(var(--moxter-navy-rgb), 0.06);
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .moxter-feature-card:hover {
     transform: translateY(-3px);
-    border-top-color: #ffd166;
-    box-shadow: 0 14px 28px rgba(20, 43, 69, 0.13);
+    border-top-color: var(--moxter-gold);
+    box-shadow: 0 14px 28px rgba(var(--moxter-navy-rgb), 0.13);
 }
 
 .moxter-feature-card__number {
-    color: #07818c;
+    color: var(--moxter-teal-muted);
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.1em;
@@ -431,21 +431,21 @@ article h6::before {
 
 .moxter-feature-card__title {
     margin: 0.35rem 0;
-    color: #142b45;
+    color: var(--moxter-navy);
     font-size: 1.05rem;
     font-weight: 700;
 }
 
 .moxter-feature-card p:last-child {
     margin: 0;
-    color: #526174;
+    color: var(--moxter-muted-text);
 }
 
 .moxter-note {
     padding: 0.85rem 1rem;
-    border-left: 3px solid #08a0a9;
+    border-left: 3px solid var(--moxter-teal-bright);
     border-radius: 0 8px 8px 0;
-    background: rgba(8, 160, 169, 0.07);
+    background: rgba(var(--moxter-teal-bright-rgb), 0.07);
 }
 
 @media (max-width: 700px) {
@@ -464,6 +464,70 @@ article h6::before {
     .moxter-features {
         grid-template-columns: 1fr;
     }
+
+}
+
+.moxter-title-with-image {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7rem;
+    align-items: start;
+    gap: 1rem;
+    margin-bottom: -2.75rem;
+}
+
+.moxter-title-with-image h1,
+.moxter-title-with-image p {
+    margin: 0;
+}
+
+.moxter-title-with-image img {
+    display: block;
+    position: relative;
+    top: -0.4rem;
+    z-index: 2;
+    width: 7rem;
+    height: auto;
+}
+
+.moxter-title-with-image + h2 {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+}
+
+.moxter-setting-up-intro {
+    margin-top: 3.75rem;
+}
+
+.moxter-setting-up-intro p {
+    margin: 0;
+}
+
+.moxter-setting-up-intro img {
+    float: right;
+    position: relative;
+    top: 0;
+    z-index: 2;
+    width: 7rem;
+    height: auto;
+    margin: -3.5rem 0 0.5rem 0.75rem;
+}
+
+
+
+@media (max-width: 700px) {
+    .moxter-title-with-image {
+        grid-template-columns: minmax(0, 1fr) 5.5rem;
+        gap: 0.75rem;
+    }
+
+    .moxter-title-with-image img {
+        width: 5.5rem;
+    }
+
+    .moxter-setting-up-intro img {
+        width: 5.5rem;
+    }
 }
 
 
@@ -473,27 +537,28 @@ article h6::before {
 
 .md-sidebar--secondary .md-nav__title {
     padding-bottom: 0.45rem;
-    border-bottom: 2px solid rgba(255, 209, 102, 0.75);
-    color: #142b45;
+    border-bottom: 2px solid rgba(var(--moxter-gold-rgb), 0.75);
+    color: var(--moxter-navy);
     font-weight: 700;
 }
 
 .md-sidebar--secondary .md-nav__link {
     border-left: 2px solid transparent;
     border-radius: 0 4px 4px 0;
-    color: #526174;
+    color: var(--moxter-muted-text);
     transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .md-sidebar--secondary .md-nav__link:hover {
-    color: #087e8b;
+    color: var(--moxter-teal);
 }
 
 .md-sidebar--secondary .md-nav__link--active {
-    border-left-color: #ffd166;
-    background-color: rgba(8, 160, 169, 0.07);
-    color: #142b45;
+    border-left-color: var(--moxter-gold);
+    background-color: rgba(var(--moxter-teal-bright-rgb), 0.07);
+    color: var(--moxter-navy);
     font-weight: 600;
+    padding-left: 0.5rem;
 }
 
 .md-search__form {

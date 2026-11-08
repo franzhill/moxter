@@ -1,6 +1,8 @@
+<div class="moxter-title-with-image" markdown="1">
 # Your first Moxter test
 
-
+![Moxter racing toward the finish line](img/moxter_racing_transparent_3.png)
+</div>
 
 ## Create your first "Moxture"
 By default, Moxter looks for YAML files in `src/test/resources/moxtures`. Create a file there named `moxtures.yaml`.
@@ -15,7 +17,8 @@ moxtures:
     method: GET
     endpoint: /api/v1/status    # an endpoint of your API
     save:
-      version: "$.version"     # extract version from the JSON response body using jsonpath
+      version: "$.version"     # extract version from the JSON response body 
+                               # using jsonpath
     expect:
       status: 200
 ```

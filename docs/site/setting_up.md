@@ -1,13 +1,18 @@
+<div class="moxter-title-with-image" markdown="1">
 # Setting up
+</div>
 
-
-Getting Moxter up and running takes less time than mixing a proper martini. Follow these  steps to run your first declarative API test.
+<div class="moxter-setting-up-intro" markdown="1">
+![Moxter racing toward the finish line](img/moxter_racing_transparent_3.png) Getting Moxter up and running takes less time than mixing a proper martini. Follow these steps to run your first declarative API test.
+</div>
 
 ## Prerequisite
 Moxter requires Java 17+ and a Spring Boot 3.x environment.
 
 ## Add the Dependency
-Add Moxter to your pom.xml. Since Moxter is designed for the test phase, ensure the scope is set to test.
+***Moxter*** is published on  [Maven Central](https://central.sonatype.com/artifact/dev.moxter/moxter/). <br />
+Add it to your pom.xml. <br />
+Since ***Moxter*** is designed for the test phase, ensure the scope is set to test.
 
 ```XML
 <dependency>
@@ -17,4 +22,3 @@ Add Moxter to your pom.xml. Since Moxter is designed for the test phase, ensure 
     <scope>test</scope>
 </dependency>
 ```
-

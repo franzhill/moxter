@@ -1,0 +1,34 @@
+:root {
+    --moxter-navy: #102a43;
+    --moxter-navy-rgb: 16, 42, 67;
+    --moxter-blue: #1d4ed8;
+    --moxter-blue-rgb: 29, 78, 216;
+    --moxter-teal: #1e40af;
+    --moxter-teal-bright: #2563eb;
+    --moxter-teal-bright-rgb: 37, 99, 235;
+    --moxter-teal-muted: #1d4ed8;
+    --moxter-gold: #ffd166;
+    --moxter-gold-rgb: 255, 209, 102;
+    --moxter-gold-light: #ffe09a;
+    --moxter-page-background: #f5f8ff;
+    --moxter-heading-tint: #edf3ff;
+    --moxter-card-tint: #e9f1ff;
+    --moxter-border: #d6e2f5;
+    --moxter-muted-text: #526174;
+    --moxter-table-header: #203a61;
+    --moxter-comparison: #3157d5;
+    --moxter-comparison-rgb: 49, 87, 213;
+    --moxter-neutral-rgb: 128, 128, 128;
+    --moxter-white: #fff;
+    --moxter-white-rgb: 255, 255, 255;
+    --moxter-black-rgb: 0, 0, 0;
+}
+
+[data-md-color-scheme="default"] {
+    --md-default-bg-color: var(--moxter-page-background);
+    --md-primary-fg-color: var(--moxter-navy);
+    --md-primary-fg-color--light: var(--moxter-blue);
+    --md-primary-fg-color--dark: var(--moxter-navy);
+    --md-accent-fg-color: var(--moxter-teal-bright);
+    --md-typeset-a-color: var(--moxter-teal);
+}

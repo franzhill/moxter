@@ -1,4 +1,8 @@
+<div class="moxter-title-with-image" markdown="1">
 # The philosophy behind Moxter
+
+![Moxter dressed as a Greek philosopher, deep in thought](img/moxter_thinking_greek_transparent.png)
+</div>
 
 ## The state of unit testing
 

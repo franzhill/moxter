@@ -30,6 +30,10 @@ theme:
     - tables.sortable          # Allows users to sort
 
 extra_css:
+  # Replace this with another palette file to switch the site's custom colors.
+  - stylesheets/palettes/blue.css
+  #- stylesheets/palettes/sapphire.css
+  #- stylesheets/palettes/ember.css
   - stylesheets/extra.css
 
 plugins:

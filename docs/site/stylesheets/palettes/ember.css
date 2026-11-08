@@ -1,0 +1,35 @@
+/* Ember palette: deep plum, terracotta, and warm amber. */
+:root {
+    --moxter-navy: #2d1e35;
+    --moxter-navy-rgb: 45, 30, 53;
+    --moxter-blue: #53344f;
+    --moxter-blue-rgb: 83, 52, 79;
+    --moxter-teal: #8f3650;
+    --moxter-teal-bright: #c14a3f;
+    --moxter-teal-bright-rgb: 193, 74, 63;
+    --moxter-teal-muted: #9a3e4f;
+    --moxter-gold: #f2b84b;
+    --moxter-gold-rgb: 242, 184, 75;
+    --moxter-gold-light: #f8d38b;
+    --moxter-page-background: #fcf7f1;
+    --moxter-heading-tint: #f4ece8;
+    --moxter-card-tint: #f8e9e5;
+    --moxter-border: #e9d7d1;
+    --moxter-muted-text: #66545e;
+    --moxter-table-header: #332531;
+    --moxter-comparison: #9a405e;
+    --moxter-comparison-rgb: 154, 64, 94;
+    --moxter-neutral-rgb: 128, 128, 128;
+    --moxter-white: #fff;
+    --moxter-white-rgb: 255, 255, 255;
+    --moxter-black-rgb: 0, 0, 0;
+}
+
+[data-md-color-scheme="default"] {
+    --md-default-bg-color: var(--moxter-page-background);
+    --md-primary-fg-color: var(--moxter-navy);
+    --md-primary-fg-color--light: var(--moxter-blue);
+    --md-primary-fg-color--dark: var(--moxter-navy);
+    --md-accent-fg-color: var(--moxter-teal-bright);
+    --md-typeset-a-color: var(--moxter-teal);
+}
