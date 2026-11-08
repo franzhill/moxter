@@ -1,5 +1,6 @@
-# Providing Variables
-
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) Providing Variables
+</div>
 When requiring a moxture for a test, you will often find yourself needing to either provide new runtime values or override existing moxture defaults. 
 
 The `MoxCaller` provides a [fluent API](https://en.wikipedia.org/wiki/Fluent_interface) that lets you inject **call-scoped variables** using `.withVar()` and `.withVars()`.

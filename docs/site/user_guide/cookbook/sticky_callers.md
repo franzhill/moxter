@@ -1,5 +1,6 @@
-# Sticky callers
-
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) Sticky callers
+</div>
 
 ## Make variables sticky across several calls
 

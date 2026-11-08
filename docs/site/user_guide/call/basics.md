@@ -1,5 +1,6 @@
-# Calling a Moxture: Lifecycle overview
-
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) Calling a Moxture: Lifecycle overview
+</div>
 
 Triggering the execution of a moxture from your *JUnit* test is done through the `caller()` method which returns an **immutable** `MoxCaller` object:
 
@@ -99,4 +100,3 @@ Finally, ***Moxter*** evaluates the `expect:` block defined in your YAML moxture
 - If any assertion fails (e.g., you expected a `200 OK` but got a `400 Bad Request`, or a JSON path mismatch occurred), ***Moxter*** immediately throws a test assertion failure, halting the test. A detailed diagnostic report is generated in `target/moxter-failures/` to assist with debugging.
 
 See the [Expectations](../../user_guide/expectations/expectations.md) chapter for the full validation syntax.
-

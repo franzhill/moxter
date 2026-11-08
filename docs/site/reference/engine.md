@@ -1,4 +1,6 @@
-# Moxter Engine building reference
+<div class="moxter-userguide-title" markdown="1">
+# ![](../img/moxter_reference.png) Moxter Engine Reference
+</div>
 
 The `Moxter.builder()` is used to configure the ***Moxter*** execution engine. Methods presented below are meant to be chained onto it (`Moxter.builder().method1().method2()...`). The configurations they define are "sticky" and apply to every moxture called by the resulting engine instance.
 

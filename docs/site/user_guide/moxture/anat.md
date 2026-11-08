@@ -1,6 +1,8 @@
 
 
-# Anatomy of a moxture
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) Anatomy of a moxture
+</div>
 
 ## 1. In a nutshell
 

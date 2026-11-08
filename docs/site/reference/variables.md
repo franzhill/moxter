@@ -1,5 +1,7 @@
 
-# Reference
+<div class="moxter-userguide-title" markdown="1">
+# ![](../img/moxter_reference.png) Variables Reference
+</div>
 
 
 ## .vars()
@@ -130,9 +132,6 @@ Example:
 String json = mx.vars().read("saved_pet").asJson();
 System.out.println("Payload: " + json);
 ```
-
-
-
 
 
 

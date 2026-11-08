@@ -1,4 +1,6 @@
-# Variables
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) Variables
+</div>
 
 Variables allow you to render moxture calls dynamic and reusable. They enable data sharing between different moxture calls, such as capturing an ID from a `POST` response to use it in a subsequent `GET` or `DELETE` request.
 

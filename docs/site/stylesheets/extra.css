@@ -499,18 +499,33 @@ article h6::before {
     margin-top: 3.75rem;
 }
 
-.moxter-setting-up-intro p {
+.moxter-userguide-title {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.moxter-setting-up-intro p,
+.moxter-userguide-title h1 {
     margin: 0;
 }
 
-.moxter-setting-up-intro img {
+.moxter-setting-up-intro img,
+.moxter-userguide-title h1 img {
     float: right;
+    display: block;
     position: relative;
     top: 0;
     z-index: 2;
     width: 7rem;
     height: auto;
+}
+
+.moxter-setting-up-intro img {
     margin: -3.5rem 0 0.5rem 0.75rem;
+}
+
+.moxter-userguide-title h1 img {
+    margin: 0 0 0.5rem 0.75rem;
 }
 
 
@@ -525,7 +540,8 @@ article h6::before {
         width: 5.5rem;
     }
 
-    .moxter-setting-up-intro img {
+    .moxter-setting-up-intro img,
+    .moxter-userguide-title h1 img {
         width: 5.5rem;
     }
 }

@@ -1,7 +1,7 @@
 <div class="moxter-title-with-image" markdown="1">
 # Your first Moxter test
 
-![Moxter racing toward the finish line](img/moxter_racing_transparent_3.png)
+![Moxter racing toward the finish line](img/moxter_racing.png)
 </div>
 
 ## Create your first "Moxture"

@@ -1,4 +1,6 @@
-# YAML moxture files
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) YAML moxture files
+</div>
 
 A **moxture file** is a YAML collection of `moxtures` i.e. descriptions of tailored API calls with added capabilities that can be executed directly from a *JUnit* test, or chained to form more elaborate business test scenarios.
 

@@ -1,4 +1,6 @@
-# YAML Validation & Autocomplete
+<div class="moxter-userguide-title" markdown="1">
+# ![](../../img/moxter_userguide.png) YAML Validation & Autocomplete
+</div>
 
 To improve the development experience, ***Moxter*** provides a JSON schema. Configuring this in your IDE enables:
 

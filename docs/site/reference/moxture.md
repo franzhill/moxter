@@ -1,5 +1,7 @@
 
-# Moxture file reference
+<div class="moxter-userguide-title" markdown="1">
+# ![](../img/moxter_reference.png) Moxture file reference
+</div>
 
 ## 1. Root level
 

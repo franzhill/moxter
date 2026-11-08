@@ -3,7 +3,7 @@
 </div>
 
 <div class="moxter-setting-up-intro" markdown="1">
-![Moxter racing toward the finish line](img/moxter_racing_transparent_3.png) Getting Moxter up and running takes less time than mixing a proper martini. Follow these steps to run your first declarative API test.
+![Moxter racing toward the finish line](img/moxter_racing.png) Getting Moxter up and running takes less time than mixing a proper martini. Follow these steps to run your first declarative API test.
 </div>
 
 ## Prerequisite

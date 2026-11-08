@@ -1,4 +1,6 @@
-# Mockwebs
+<div class="moxter-userguide-title" markdown="1">
+# ![](../img/moxter_userguide.png) Mockwebs
+</div>
 
 
 This utility is specifically designed to bypass the STOMP network layer entirely. Here is the breakdown of how it works:

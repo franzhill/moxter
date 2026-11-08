@@ -16,12 +16,12 @@
 <div class="moxter-features" aria-label="Moxter features">
   <div class="moxter-feature-card">
     <!--<span class="moxter-feature-card__number">01</span>-->
-    <p class="moxter-feature-card__title">Reusable API calls</p>
+    <p class="moxter-feature-card__title">Reusable API test calls</p>
     <p>Define requests and expected results once in readable YAML.</p>
   </div>
   <div class="moxter-feature-card">
     <!--<span class="moxter-feature-card__number">02</span>-->
-    <p class="moxter-feature-card__title">Test Scenarios</p>
+    <p class="moxter-feature-card__title">Use-case scenarios</p>
     <p>Chain calls together and build meaningful business test scenarios.</p>
   </div>
   <div class="moxter-feature-card">

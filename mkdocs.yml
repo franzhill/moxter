@@ -110,14 +110,15 @@ nav:
         # (Method, Path, Payload, Expectations).
         - Anatomy of a moxture: user_guide/moxture/anat.md
         - YAML Validation & Autocomplete: user_guide/moxture/yaml_validation.md
+        - Reference: reference/moxture.md
       # Settings etc. 
       - The Moxter engine:
         - Setup: user_guide/engine/build.md
         # Authentication & CSRF
-        - Reference: user_guide/engine/reference.md
+        - Reference: user_guide/reference/engine.md
       - Variables:
         - Using variables: user_guide/variables/variables.md
-        - Reference: user_guide/variables/reference.md
+        - Reference: user_guide/reference/variables.md
         #- Scope: user_guide/todo10.md
         #  (mx.vars() )
         #- Retrieving variables inside the JUnit test: user_guide/todo11.md
@@ -180,7 +181,10 @@ nav:
 #   Mockwebs does not support it well: e.g. Mockito.reset() is a "Global Hammer"
 #   Mockito mocks are not thread-aware; once you reset a mock, it is blank for every thread in the JVM. 
       - Examples: user_guide/todo30.md
-  - Reference: reference.md
+  - Reference: 
+    - Moxture: reference/moxture.md
+    - Engine: reference/engine.md
+    - Variables: reference/variables.md
   - What's up:
     - Release notes: whatsup/release_notes.md
     - Roadmap: whatsup/roadmap.md
