@@ -4,7 +4,7 @@ A **moxture file** is a YAML collection of `moxtures` i.e. descriptions of tailo
 
 Moxture files are named `moxtures.yaml`. You can start with a single file or create several to keep your test logic modular.
 
-## 1. The `moxtures.yaml` file structure
+## The `moxtures.yaml` file structure
 
 Moxtures are introduced at the top-level with the `moxtures:` key. This key acts as a container for all the individual `moxtures` defined within that file.
 
@@ -65,7 +65,7 @@ src/test/resources/moxtures/
 ```
 
 
-#### Key benefits
+## Key benefits
 - **Shadowing and precedence:** This hierarchy lets you keep a library of common moxtures in parent folders while allowing specific tests to shadow (redefine) them in child folders. When the same moxture name appears at multiple levels, the definition in the closest folder takes precedence. (This behavior may become configurable in a future version, so as to possibly deactivate it.)
 - **Isolation from unrelated files:** Moxter only reads files in a test's hierarchy. A broken or invalid YAML file in an unrelated package is not loaded for that test.
 - This hierarchy also supports advanced features such as **variable shadowing** and **moxture inheritance**, which are covered in later chapters.

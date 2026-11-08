@@ -1,19 +1,37 @@
-# YAML-ize. Chain. Combine. Write great test scenarios. 
-<!-- Blueprint for your API tests. Forget the boilerplate, write just the scenarios. 
-Build great scenarios 
-Moxter externalizes API interactions into reusable, stateful building blocks and lets you compose them into scenarios without Java glue.
--->
+<section class="moxter-hero" aria-labelledby="moxter-hero-title">
+  <div class="moxter-hero__content">
+    <p class="moxter-hero__eyebrow">Java · Spring · JUnit · MockMvc</p>
+    <h1 id="moxter-hero-title">YAML-ize. Chain. Scenarize.</h1>
+    <p class="moxter-hero__lead">Forget the pain. Ditch the boilerplate. Harness the power of YAML and bullet-proof your project with great test scenarios.</p>
+    <div class="moxter-hero__actions">
+      <a class="md-button md-button--primary" href="setting_up/">Get started</a>
+      <a class="md-button" href="user_guide/moxture/moxture_file/">Explore the reference</a>
+    </div>
+  </div>
+  <div class="moxter-hero__art">
+    <img src="img/logo.png" alt="Moxter logo">
+  </div>
+</section>
 
+<div class="moxter-features" aria-label="Moxter features">
+  <div class="moxter-feature-card">
+    <!--<span class="moxter-feature-card__number">01</span>-->
+    <p class="moxter-feature-card__title">Reusable API calls</p>
+    <p>Define requests and expected results once in readable YAML.</p>
+  </div>
+  <div class="moxter-feature-card">
+    <!--<span class="moxter-feature-card__number">02</span>-->
+    <p class="moxter-feature-card__title">Test Scenarios</p>
+    <p>Chain calls together and build meaningful business test scenarios.</p>
+  </div>
+  <div class="moxter-feature-card">
+    <!--<span class="moxter-feature-card__number">03</span>-->
+    <p class="moxter-feature-card__title">Best of both worlds</p>
+    <p>Retain the power of JUnit/AssertJ assertions where needed.</p>
+  </div>
+</div>
 
-***Moxter*** turns your verbose *JUnit MockMvc* tests into lean, business-centric scenarios powered by a library of reusable, chainable, assertion-enabled YAML-defined API calls.
-
-- Define **reusable** API calls with expected results in **YAML**
-- Execute them from your *Java/JUnit* test
-- Easily extract values from responses for advanced assertions
--  **Chain** calls by piping the result of one into the other, and build meaningful scenarios
-- Keep your test intent **light and crystal clear**
-
-Moxter runs inside the Spring test context through `MockMvc`. It is intended for application integration tests, not for sending requests to a deployed service.
+<p class="moxter-note">Moxter runs inside the Spring test context through <code>MockMvc</code>. It is intended for application integration tests, not for sending requests to a deployed service.</p>
 
 ## A first simple example
 

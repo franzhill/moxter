@@ -12,8 +12,8 @@ theme:
   name: material
   logo: img/logo.png
   palette:
-    primary: grey   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
-    accent: blue  # This handles all buttons, links, and highlights automatically
+    primary: indigo   # https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
+    accent: cyan  # This handles all buttons, links, and highlights automatically
     #scheme: slate  # slate = dark mode
     scheme: default  # default = light mode
   features:
