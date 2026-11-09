@@ -5,114 +5,128 @@
 
 
 ## .vars()
-- **Return**: VariableContext
+- **Called on**: a `Moxter` engine object.
+- **Return**: a `MoxVars` object
 
-The entry point for all variable manipulations. You must call this on the `Moxter` engine instance before any of the management or extraction methods listed below.
+The entry point for managing and reading variables in the Moxter engine's global scope.
 
 
-### .all()
+
+### .view()
+- **Called on**: a `MoxVars` object
 - **Return**: `Map<String, Object>`
 
-Returns a map containing every variable currently held by the current Moxter engine instance in the Global Scope.
+
+Returns a live, unmodifiable map of the engine-global variables. It does not include moxture defaults or call-scoped overrides.
+
 
 Example: 
 ```Java
-// Inspecting the state in a JUnit test
-Map<String, Object> varContext = mx.vars().all();
+Moxter mx = Moxter.forTestClass(getClass())...; // Moxter engine
+Map<String, Object> varContext = mx.vars().view();
 Object myVar = varContext.get("my_variable");
 log.debug("Current variable context:\n{}", mapper.writeValueAsString(varContext));
 ```
 
 ### .clear()
+- **Called on**: a `MoxVars` object
 - **Return**: `void`
 
 Wipes the engine variable context.  
 An example of use is to call this in a `@AfterEach` method to ensure a clean state for the next test.
 
 
-### .set(String name, Object value)
-- **Return**: `void`
+### .put(String key, Object value)
+- **Called on**: a `MoxVars` object
+- **Return**: `Object`
 
-Injects or overwrites a single variable in the Global Scope.
+Adds or overwrites a variable in the Global Scope. Returns the previous value, or `null` if there was none. If the key already exists, strict variable handling makes the overwrite throw; otherwise, replacing a non-null value logs a warning.
 
 Example:
 
 ```Java
-mx.vars().set("api_version", "v2");
+mx.vars().put("api_version", "v2");
 ```
 
-If a variable of that name already exists, it is overwritten by the new value.
 
+### .putIfAbsent(String key, Object value)
+- **Called on**: a `MoxVars` object
+- **Return**: `boolean`
 
-### .set(Map<String, Object> variables)
-- **Return**: `void`
-
-Batch injection: merges the provided map into the Global Scope. Existing variables with matching names are overwritten, while other existing variables remain untouched.
+Adds a variable only if that key is not already present. Returns `true` if the value was added and `false` if the key already exists.
 
 Example:
 
 ```Java
-mx.vars().set(Map.of("user", "A", "role", "ADMIN"));
+boolean added = mx.vars().putIfAbsent("user", "A");
 ```
 
 ### .read(String varName)
-- **Return**: `VariableReader`
+- **Called on**: a `MoxVars` object
+- **Return**: a `VarReader` object
 
-Initiates the type-safe, fluent extraction API on the given variable.
+Returns a reader for the given variable. Throws an `IllegalStateException` if the variable is missing.
 
 Example:
 
 ```Java
 mx.vars().read("pet_id").asLong();
 ```
-
+See the [variable usage guide](../../user_guide/variables/variables.md).
 
 #### .isNull()
+- **Called on**: a `VarReader` object
 - **Return**: `boolean`
 
-Returns true if the variable is missing from the Global Scope or is explicitly null.
+Returns true if the variable's stored value is null. `read()` throws if the variable is missing.
 
 #### .asObject()
+- **Called on**: a `VarReader` object
 - **Return**: `Object`
 
-Returns the raw value as-is. Equivalent to `mx.vars().all().get(name)`.
+Returns the raw value as-is. For an existing variable, this is equivalent to `mx.vars().get(name)`. Unlike `read(name)`, `get(name)` returns `null` if the variable is missing.
 
 #### .asType(Class type)
-- **Return**: `T`
+- **Called on**: a `VarReader` object
+- **Return**: an object of the specified type
 
-Maps the variable to the specified Java class using the engine's `ObjectMapper`. Use this for `Integer`, `Boolean`, or custom POJOs.
+Performs a strict type cast to the specified class. The stored value must already be an instance of that type; this method does not convert values or deserialize JSON.
 
 Example:
 
 ```Java
-Integer count = mx.vars().read("item_count").asType(Integer.class);
-Pet myPet = mx.vars().read("saved_pet").asType(Pet.class);
+Long ownerId = mx.vars().read("owner_id").asType(Long.class);
 ```
 
 #### .asString()
+- **Called on**: a `VarReader` object
 - **Return**: `String`
 
 Returns the value as a String.
 
 #### .asLong()
+- **Called on**: a `VarReader` object
 - **Return**: `Long`
 
-Converts and returns the variable as a Long. This is the safest way to retrieve IDs to avoid Integer vs Long mismatch errors.
+Converts a numeric value or numeric string to a `Long`. Returns `null` for a null value and throws if the value cannot be converted.
 
 #### .asInstant()
+- **Called on**: a `VarReader` object
 - **Return**: `java.time.Instant`
 
-Parses the variable into an Instant (supports ISO-8601 strings or numeric Epoch milliseconds).
+Parses an ISO-8601 date-time string into an `Instant`.
 
 #### .asInstant(DateTimeFormatter formatter)
+- **Called on**: a `VarReader` object
 - **Return**: `java.time.Instant`
 
 Parses a String variable using the provided custom DateTimeFormatter.
 
 #### .asList(Class elementType)
+- **Called on**: a `VarReader` object
 - **Return**: `List<T>`
 
-Maps a collection variable into a List of the specified elementType.
+Converts a stored `List` into a typed list. Numeric elements are converted to the requested numeric type when supported.
 
 Example:
 
@@ -120,19 +134,17 @@ Example:
 List<Long> ids = mx.vars().read("result_ids").asList(Long.class);
 ```
 
-#### .asJson()
-- **Return**: `String`
+#### .asJsonNode()
+- **Called on**: a `VarReader` object
+- **Return**: `JsonNode`
 
-Serializes the variable's value back into its JSON string representation using the engine's `ObjectMapper`. This is particularly useful for logging complex objects or verifying the exact JSON structure being passed between moxtures.
+Parses a JSON string value into a Jackson `JsonNode`. This is particularly useful for logging complex objects or verifying the exact JSON structure being passed between moxtures.
 
 Example:
 
 ```Java
-// Get the raw JSON string of a saved pet object
-String json = mx.vars().read("saved_pet").asJson();
-System.out.println("Payload: " + json);
+// Parse a saved JSON string into a JsonNode
+JsonNode savedPet = mx.vars().read("saved_pet").asJsonNode();
+System.out.println("Saved:\n" + savedPet.toPrettyString());
 ```
-
-
-
 

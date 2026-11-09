@@ -193,10 +193,10 @@ Using `mx.vars()` in your JUnit tests will access the engine-global scope of the
 ```
 
 #### Reading and converting values
-`mx.vars().view()` provides a read-only view of the variable context map, whose values are plain Java objects. 
-While accessing the raw context variable map via `getVars()` returns plain Objects, the `read()` method returns a value wrapper with methods for accessing or converting that value.
+`mx.vars().view()` provides a read-only view of the raw globally-scoped variable context. Values stored are are plain Java objects. 
+Accessing the variable context map via `getVars()` will return plain Objects. The `read()` method however returns a value wrapper with methods for accessing or converting the raw value.
 
-Use the method that matches the value and conversion you need. ***Moxter*** will uses its internal ObjectMapper to perform the conversion or cast. 
+Each reader method has its own behavior. For example, `asLong()` converts a number or numeric string to a `Long`, while `asType()` performs a strict type cast. Use `asJsonNode()` to parse a JSON value.
 
 Example:
 

@@ -30,9 +30,9 @@ The exact definitions and boundaries of these notions are subject to constant he
 - **End-to-end (E2E) test**: Tests a complete flow against a running, deployed application through its external interface.
 
 
-## The bias towards unit vs integration testing
+## The bias towards unit vs other forms of automated testing
 
-Over the years, multiple incentives pushed the industry in the direction of favouring unit testing over integration testing. That bias has proved hard to break.
+Over the years, multiple incentives pushed the industry in the direction of favouring unit testing over all other types of automated tests. That bias has proved hard to break.
 
 Unit tests are cheap to run and expensive to question. A mocked unit test runs in milliseconds, needs no database or test environment, and is deterministic. By contrast, integration tests are slow, require more complicated setup and may hit environment issues. Back in the day they were notorioulsy difficult to setup.
 
@@ -54,13 +54,11 @@ So what does integration testing bring over unit testing? This is not to say tha
 
 ## Where Moxter comes in
 
-***Moxter*** was designed to counter this bias by promoting higher-level, business-focused testing at the application boundary, shaping tests into real use-case scenarios in a way that is easy to organize and understand.
+***Moxter*** was designed to counter this bias by promoting higher-level, business-focused testing of the application's API, while still staying within the simplicity of the application’s own test workflow (think *JUnit* and maven test phase).
 
-It encourages black-box, integration-style testing through your application’s API, complementing your unit tests geared towards testing smaller chunks of business logic computations.
+This is actually made possible by building on the power of existing tools within the *Spring* ecosystem: `@SpringBootTest` provides the full Spring application context at test time, `MockMvc` queries the application's REST interface without the need of a live HTTP server, and `H2` as an in-memory database.
 
-***Moxter*** builds on the power of existing Spring testing tools: `@SpringBootTest` provides the full Spring application context, while `MockMvc` queries the application's REST interface, all without having to start a real HTTP server.
-
-Making the most of what is already out there, ***Moxter*** adds the ability to easily define test building bricks ("moxtures") and painlessly orchestrate larger, sleeker, more meaningful test scenarios.
+Alongside your other Junit unit tests geared towards testing smaller chunks of business logic computations, ***Moxter*** tests will help test your application like a black-box, and build real use-case scenarios in a way that is easy to organize and understand.
 
 
 ## Why use Moxter?
