@@ -1,12 +1,15 @@
 <div class="moxter-userguide-title" markdown="1">
-# ![](../../img/moxter_userguide.png) Calling a Moxture: Lifecycle overview
+# ![](../../img/moxter_userguide.png) Overview of the Moxture call sequence
 </div>
 
 ## The MoxCaller
 
 Calling a moxture is done via the `call(...)` method of the `MoxCaller` object, which is obtained by applying the method `caller()` on a `Moxter` (engine).
 
-Configuration for your moxture call can be done on the caller, before actually executing it with `call(...)`.
+
+Configuration for your moxture call is performed on the `MoxCaller` before executing it with `call`. See [MoxCaller](caller.md) for more details.
+
+
 
 ```java
 ...
@@ -17,29 +20,8 @@ Moxter mx = Moxter.forTestClass(MyTest.class)
 
 @Test
 void myTest() {
-    mx.caller()
-      .   ... // configuraiton
-      .call("my_moxture");
+    mx.caller().call("my_moxture");
 }
-```
-!!! note
-    A `MoxCaller` is immutable: its configuration methods return a new caller rather than changing the existing one. 
-    This design prevents the risk that applying configuration would change an existing caller that might be used in several places (but with differing configuration expectations).
-    
-The `expect()` method returns an expectation builder; use `.and()` to return to the caller for more options, or call `.call(...)` directly.
-
-
-## Configuring the call
-
-The `MoxCaller` provides a fluent API to configure an individual call before execution. Its options include setting variables, authentication, expected HTTP status, verbose output, JsonPath lax mode, and whether a failure should be allowed to continue.
-
-```java
-Moxter.MoxtureResult result = mx.caller()
-                                .withVar("p.name", "Doris")
-                                .expect()
-                                    .status(403)
-                                .and()
-                                .call("get_secure_resource");
 ```
 
 ## How Moxter processes the call
@@ -54,7 +36,7 @@ See [Moxture File Resolution](../../user_guide/moxture/moxture_file.md) for the 
 
 ### 2. Linking (inheritance resolution)
 
-Once the moxture is found, the engine resolves inheritance declared with `extends` or `basedOn`. Child values take precedence, with merge behavior depending on the property: maps such as `headers`, `query`, and `vars` are shallow-merged; lists such as `save` and `moxtures` are replaced by the child.
+Once the moxture is found, the engine resolves inheritance declared with `extends` or `basedOn`. Child values take precedence, with merge behavior depending on the property: maps such as `headers`, `query`, and `vars` are shallow-merged; lists such as `save` and `moxtures` are replaced by the child. The resulting moxture representation is called the "linked moxture".
 
 For JSON `body`, object values are recursively merged, so a child can override or add nested fields. Array and scalar body values are replaced by the child.
 
@@ -78,7 +60,7 @@ More on the inheritance mechanism in the chapter [Extending moxtures](../../user
 
 
 ### 3. Blending runtime options
-Before executing, the engine blends the linked moxture specification (its properties) with any runtime options passed via the *fluent Java call API*. This allows for surgical overrides of the moxture spec, at call time: 
+Before executing, the engine blends the linked moxture specification (its properties) with any runtime options passed via the `MoxCaller`'s *fluent call API*. This allows for surgical overrides of the moxture spec, at call time: 
 
 Example:
 ```Java

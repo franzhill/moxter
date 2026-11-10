@@ -128,7 +128,7 @@ nav:
         # Also show expectations can be added/overriden from the fluent API
         - Basics: user_guide/expectations/basics.md
       - Calling the moxture: 
-        - Basics: user_guide/call/basics.md
+        - Overview: user_guide/call/basics.md
           # (withVar, withVars)
         - The MoxCaller: user_guide/call/caller.md
         - Providing variables: user_guide/call/variables.md
