@@ -110,7 +110,7 @@ nav:
       - The moxture:
         # (Method, Path, Payload, Expectations).
         - Anatomy of a moxture: user_guide/moxture/anat.md
-        - YAML Validation & Autocomplete: user_guide/moxture/yaml_validation.md
+        - Syntax Validator & Autocomplete: user_guide/moxture/yaml_validation.md
         #- Moxture File Reference: reference/moxture.md
       # Settings etc. 
       - The Moxter engine:

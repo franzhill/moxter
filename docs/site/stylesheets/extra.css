@@ -304,7 +304,8 @@ article h6::before {
 }
 
 .md-header,
-.md-tabs {
+.md-tabs,
+.md-footer-meta {
     background: linear-gradient(110deg, var(--moxter-navy), var(--moxter-blue));
 }
 

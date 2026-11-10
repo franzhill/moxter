@@ -2,32 +2,61 @@
 # ![](../../img/moxter_userguide.png) Calling a Moxture: Lifecycle overview
 </div>
 
-Triggering the execution of a moxture from your *JUnit* test is done through the `caller()` method which returns an **immutable** `MoxCaller` object:
+## The MoxCaller
 
-```Java
-    @Test
-    myTest(){
-       ...
-       mx.caller().call("my_moxture")
-       ...
-   }
+Calling a moxture is done via the `call(...)` method of the `MoxCaller` object, which is obtained by applying the method `caller()` on a `Moxter` (engine).
+
+Configuration for your moxture call can be done on the caller, before actually executing it with `call(...)`.
+
+```java
+...
+// The local Moxter Engine
+Moxter mx = Moxter.forTestClass(MyTest.class)
+                  .mockMvc(mockMvc)
+                  .build();
+
+@Test
+void myTest() {
+    mx.caller()
+      .   ... // configuraiton
+      .call("my_moxture");
+}
+```
+!!! note
+    A `MoxCaller` is immutable: its configuration methods return a new caller rather than changing the existing one. 
+    This design prevents the risk that applying configuration would change an existing caller that might be used in several places (but with differing configuration expectations).
+    
+The `expect()` method returns an expectation builder; use `.and()` to return to the caller for more options, or call `.call(...)` directly.
+
+
+## Configuring the call
+
+The `MoxCaller` provides a fluent API to configure an individual call before execution. Its options include setting variables, authentication, expected HTTP status, verbose output, JsonPath lax mode, and whether a failure should be allowed to continue.
+
+```java
+Moxter.MoxtureResult result = mx.caller()
+                                .withVar("p.name", "Doris")
+                                .expect()
+                                    .status(403)
+                                .and()
+                                .call("get_secure_resource");
 ```
 
-The `MoxCaller` provides a fluent API to programmatically prep (configure) your test before triggering the actual request. This includes injecting call-scoped variables, defining or overriding moxture settings such as expectations, users, execution mode etc., on the fly.
+## How Moxter processes the call
 
-***Moxter*** then proceeds through the following steps:
+When a moxture gets `call`ed, ***Moxter*** performs the following steps
 
+### 1. Resolution (finding the moxture)
 
-## 1. Resolution (Finding the moxture)
-First, ***Moxter*** locates the target moxture by looking for it the moxture files, per the configured discovery mechanism. By default, this is a "walk-up" mechanism through a defined moxture file hierarchy rooted in your test resource folder.
+***Moxter*** uses the test class to locate the moxture definitions on the classpath. By default, it searches the configured moxture hierarchy, starting from the test class's location.
 
-See [Moxture File Resolution](../../user_guide/moxture/moxture_file.md) for the exact lookup rules.
+See [Moxture File Resolution](../../user_guide/moxture/moxture_file.md) for the lookup rules.
 
-## 2. Linking (inheritance resolution)
+### 2. Linking (inheritance resolution)
 
-Once the moxture is found, the engine evaluates its `extends` property to resolve any inheritance. If that property is set, ***Moxter*** computes the final virtual moxture by merging the child moxture's properties into the parent's (child properties therefore override the parent's).
+Once the moxture is found, the engine resolves inheritance declared with `extends` or `basedOn`. Child values take precedence, with merge behavior depending on the property: maps such as `headers`, `query`, and `vars` are shallow-merged; lists such as `save` and `moxtures` are replaced by the child.
 
-For JSON `body`, the merge mechanism is actually a bit more elaborate: ***Moxter*** performs a deep partial merge. This allows a child moxture to inherit a massive JSON body from its parent and selectively overwrite just one or two nested fields without redefining the rest.
+For JSON `body`, object values are recursively merged, so a child can override or add nested fields. Array and scalar body values are replaced by the child.
 
 Example:
 ```YAML
@@ -48,7 +77,7 @@ Example:
 More on the inheritance mechanism in the chapter [Extending moxtures](../../user_guide/extending_moxtures.md)
 
 
-## 3. Blending Runtime Options
+### 3. Blending runtime options
 Before executing, the engine blends the linked moxture specification (its properties) with any runtime options passed via the *fluent Java call API*. This allows for surgical overrides of the moxture spec, at call time: 
 
 Example:
@@ -60,13 +89,14 @@ mx.caller()
   .withVar("p.name", "Doris")  // Specify a var / override the local moxture var .
   .expect()
     .status(403)               // Override the expected status.
-  .and()                       // Necessary 'syntactic sugar' to move on to the next step.
+  .and()                       // Return to the caller if you need to chain more caller options.
   .call("get_secure_resource");// Execute the moxture with all the new settings
 ```
 
+The expectation builder also supports calling `.call(...)` directly; `.and()` is only needed to return to the `MoxCaller` before adding more caller options.
 
 
-## 4. Building the Variable Context
+### 4. Building the Variable Context
 ***Moxter*** builds a unified, layered variable context to be used for interpolation. It blends scopes in the following priority (highest wins):
 
 - Call Scope (Java overrides passed via `.withVar()`)
@@ -77,26 +107,26 @@ mx.caller()
 
 
 
-## 5. Resolving (Interpolation
+### 5. Resolving (Interpolation)
 ***Moxter*** parses the YAML and resolves all placeholders (e.g., `${pet_id}`) by looking up in the Variable Context, and computes a literal, executable final "resolved" moxture.
 
-Also performs "Type Recovery" (turning a string into a Boolean or Long) and handling "Classpath Sniffing" (loading an external file if the body starts with classpath:).
+It also preserves resolved number, boolean, and collection values as typed values rather than converting them to strings. A body can reference an external classpath resource with a `classpath:` value.
 
-## 6. Execution
+### 6. Execution
 
 With the moxture fully linked and all variables interpolated into concrete strings, ***Moxter*** locates the appropriate **Protocol Executor** (e.g., HTTP or STOMP) and dispatches the request  against your application context, using the underlying *MockMvc* for HTTP or *MockWebs* for STOMP.
 
 
-## 7. Capture and Extraction
-***Moxter*** intercepts the result returned by the **protocol executor** and wraps it into a `MoxResult` object, cleanly capturing the response status, headers, and body payload.
-
-Crucially, before assertions run, ***Moxter*** executes the save: block to extract values from the response and store them in the Global Scope. This ensures that IDs or tokens are captured even if later assertions fail.
+### 7. Capture and Extraction
+***Moxter*** captures the response. Before checking expectations, it executes the `save` block and writes extracted values to the global variable scope. If an expectation fails, those values have already been written to the global scope.
 
 
-## 8. Performing Assertions (Expectations)
-Finally, ***Moxter*** evaluates the `expect:` block defined in your YAML moxture against the captured `MoxResult`. 
+### 8. Performing Assertions (aka Expectations)
+Finally, ***Moxter*** evaluates the `expect:` block defined in your YAML moxture against the resolved moxture and captured response.
 
 - If all expectations are met, the call succeeds, and the test continues to the next step.
-- If any assertion fails (e.g., you expected a `200 OK` but got a `400 Bad Request`, or a JSON path mismatch occurred), ***Moxter*** immediately throws a test assertion failure, halting the test. A detailed diagnostic report is generated in `target/moxter-failures/` to assist with debugging.
+- If an expectation fails (e.g., you expected a `200 OK` but got a `400 Bad Request`, or a JSON path mismatch occurred), ***Moxter***'s default behaviour is to let the test fail (through the normal *JUnit* failure behaviour) and also generates a specific diagnostic report in `target/moxter-failures/` with ***Moxter***-related runtime context information. If `options.allowFailure` is `true`, Moxter logs the failure and continues instead.
 
-See the [Expectations](../../user_guide/expectations/expectations.md) chapter for the full validation syntax.
+When execution completes with a response, `.call(...)` returns a `Moxter.MoxtureResult` that provides access to the response status, headers, and body.
+
+See the [Expectations guide](../../user_guide/expectations/expectations.md) for the supported expectation syntax.
