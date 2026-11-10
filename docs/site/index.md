@@ -1,6 +1,6 @@
 <section class="moxter-hero" aria-labelledby="moxter-hero-title">
   <div class="moxter-hero__content">
-    <p class="moxter-hero__eyebrow">Java · Spring · JUnit · MockMvc</p>
+    <p class="moxter-hero__eyebrow">Java · Spring · JUnit </p>
     <h1 id="moxter-hero-title">YAML-ize. Chain. Scenarize.</h1>
     <p class="moxter-hero__lead">Forget the pain. Ditch the boilerplate. Harness the power of YAML and bullet-proof your project with great test scenarios.</p>
     <div class="moxter-hero__actions">
@@ -31,7 +31,13 @@
   </div>
 </div>
 
-<p class="moxter-note">Moxter runs inside the Spring test context through <code>MockMvc</code>. It is intended for application integration tests, not for sending requests to a deployed service.</p>
+
+<!--
+<p class="moxter-note"><strong><em>Moxter</em></strong> is designed for integration testing REST APIs built with Spring. It runs in the Spring test context and uses <code>MockMvc</code> to exercise the API without starting a real HTTP server or sending requests to a deployed service.</p>
+-->
+
+&nbsp; &nbsp;  ***Moxter*** is designed for JUnit-based integration testing of REST APIs built with Spring.
+
 
 ## A first simple example
 

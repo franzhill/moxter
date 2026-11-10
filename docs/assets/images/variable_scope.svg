@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="920" viewBox="0 0 1120 920" role="img" aria-labelledby="title description">
+  <title id="title">Moxter variable scopes</title>
+  <desc id="description">Global variables, moxture defaults, and call overrides combine to resolve values for a moxture call. Higher layers override lower ones. Values extracted with save are written to the global scope.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#527086"/>
+    </marker>
+    <style>
+      .title { font: 700 34px 'Segoe UI', Arial, sans-serif; fill: #17364d; }
+      .subtitle { font: 18px 'Segoe UI', Arial, sans-serif; fill: #526b7c; }
+      .card-title { font: 700 23px 'Segoe UI', Arial, sans-serif; fill: #17364d; }
+      .body { font: 16px 'Segoe UI', Arial, sans-serif; fill: #435c6d; }
+      .code { font: 15px Consolas, 'Courier New', monospace; fill: #17364d; }
+      .small { font: 13px 'Segoe UI', Arial, sans-serif; fill: #526b7c; }
+      .label { font: 700 12px 'Segoe UI', Arial, sans-serif; letter-spacing: 1.1px; fill: #526b7c; }
+      .priority { font: 700 13px 'Segoe UI', Arial, sans-serif; fill: #17364d; }
+    </style>
+  </defs>
+
+  <rect width="1120" height="920" fill="#f4f7fa"/>
+  <text class="title" x="60" y="66">Moxter variable scopes</text>
+  <text class="subtitle" x="60" y="102">Three layers are combined to resolve values for each moxture call.</text>
+
+  <text class="label" x="60" y="146">VARIABLE SOURCES</text>
+  <text class="label" x="864" y="146">PRECEDENCE</text>
+
+  <rect x="60" y="166" width="740" height="148" rx="14" fill="#ffffff" stroke="#b9d8d8" stroke-width="2"/>
+  <rect x="60" y="166" width="10" height="148" rx="5" fill="#2b858b"/>
+  <circle cx="101" cy="205" r="18" fill="#e1f1f0"/>
+  <text x="101" y="211" text-anchor="middle" class="priority" fill="#17656b">1</text>
+  <text class="card-title" x="133" y="211">Global scope</text>
+  <text class="body" x="92" y="250">Engine-wide values available across moxture calls.</text>
+  <text class="code" x="92" y="284">mx.vars().put(...)   ·   save:</text>
+  <rect x="837" y="207" width="224" height="64" rx="12" fill="#e1f1f0" stroke="#9bc9c8"/>
+  <text class="priority" x="949" y="232" text-anchor="middle">BASE VALUES</text>
+  <text class="small" x="949" y="253" text-anchor="middle">lowest precedence</text>
+
+  <path d="M430 318 L430 350" fill="none" stroke="#527086" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text class="small" x="448" y="340">overrides matching global values</text>
+
+  <rect x="60" y="358" width="740" height="148" rx="14" fill="#ffffff" stroke="#bed0e5" stroke-width="2"/>
+  <rect x="60" y="358" width="10" height="148" rx="5" fill="#4d78a8"/>
+  <circle cx="101" cy="397" r="18" fill="#e8eef7"/>
+  <text x="101" y="403" text-anchor="middle" class="priority" fill="#355b84">2</text>
+  <text class="card-title" x="133" y="403">Moxture scope</text>
+  <text class="body" x="92" y="442">YAML <tspan class="code">vars:</tspan> provide defaults for a moxture.</text>
+  <text class="small" x="92" y="476">A child moxture's value overrides its inherited parent value.</text>
+  <rect x="837" y="399" width="224" height="64" rx="12" fill="#e8eef7" stroke="#b5c8df"/>
+  <text class="priority" x="949" y="424" text-anchor="middle">DEFAULTS</text>
+  <text class="small" x="949" y="445" text-anchor="middle">middle precedence</text>
+
+  <path d="M430 510 L430 542" fill="none" stroke="#527086" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text class="small" x="448" y="532">overrides matching defaults</text>
+
+  <rect x="60" y="550" width="740" height="148" rx="14" fill="#ffffff" stroke="#e5cda6" stroke-width="2"/>
+  <rect x="60" y="550" width="10" height="148" rx="5" fill="#c47b2c"/>
+  <circle cx="101" cy="589" r="18" fill="#fbf0df"/>
+  <text x="101" y="595" text-anchor="middle" class="priority" fill="#8a551d">3</text>
+  <text class="card-title" x="133" y="595">Call scope</text>
+  <text class="body" x="92" y="634">Fluent <tspan class="code">withVar(...)</tspan> values override defaults for calls through this caller.</text>
+  <text class="small" x="92" y="668">Scoped to the caller; not written back to the Global scope.</text>
+  <rect x="837" y="591" width="224" height="64" rx="12" fill="#fbf0df" stroke="#e8c99a"/>
+  <text class="priority" x="949" y="616" text-anchor="middle">CALL OVERRIDES</text>
+  <text class="small" x="949" y="637" text-anchor="middle">highest precedence</text>
+
+  <rect x="60" y="738" width="1001" height="92" rx="14" fill="#17364d"/>
+  <text x="90" y="777" font-family="'Segoe UI', Arial, sans-serif" font-size="21" font-weight="700" fill="#ffffff">Resolved variable context</text>
+  <text x="90" y="807" font-family="'Segoe UI', Arial, sans-serif" font-size="16" fill="#dbe7ee">For the same key, the highest-precedence value is used in that call.</text>
+  <rect x="858" y="758" width="172" height="48" rx="24" fill="#d5efeb"/>
+  <text x="944" y="788" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="0.8px" fill="#17364d">FOR THIS CALL</text>
+
+  <rect x="60" y="854" width="1001" height="42" rx="10" fill="#e7eef3"/>
+  <text class="small" x="82" y="880">
+    <tspan font-weight="700">save:</tspan>
+    <tspan> extracted response values are written to the Global scope for later calls.</tspan>
+  </text>
+</svg>

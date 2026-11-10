@@ -1,6 +1,6 @@
 # About
 
-<img src="../../img/franzhill.png" alt="Portrait of Franz Hill" width="250"
+<img src="../../img/franzhill.png" alt="Moxter and creator" width="250"
      style="float: left; transform: rotate(-1deg); margin: 0 1.5rem 1rem 0;">
 
 
@@ -18,9 +18,18 @@ Moxter is one such initiative: a project born out of professional experience, pe
 
 In my spare time, when not actively coding, tinkering with technology or poking things and ideas for answers, I enjoy playing guitar, roaming the countryside trails on my mountain bike or swimming in lakes whenever I get the chance.
 
+## About the use of AI
+
+Recent advances in AI are both enthralling and terrifying. For a software architect like me with a good idea of where I'd like to go, AI has so far been a blessing. 
+
+Using it as a mighty exoskeleton, I have been able to take personal projects further than I could ever have imagined without sacrificing years of my life to them. Moxter is one such project. 
+
+All high and medium-level architectural work remains mine. AI implements the fine, tedious details, allowing me move in great strides, making ***Moxter*** a weeks or months-long effort, rather than years.
+
+
 ## Get in touch
 
-Moxter is an independent project, built and maintained in my spare time.
+***Moxter*** is an independent project, built and maintained in my spare time.
 
 If you find it useful, here are a few ways to connect or show your support:
 
