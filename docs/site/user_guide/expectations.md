@@ -55,6 +55,9 @@ expect:
       "$.category.name": dogs
 ```
 
+If the caller's JsonPathLax (lenient) setting is enabled (see [MoxCaller reference](../reference/moxcaller.md),  a JsonPath that does not match a value is treated as `null` instead of raising a path-not-found exception.
+The assertion however will still be performed against this `null` value (and therefore most probably fail). In the example above, an absent `$.category.name` does not satisfy an expectation of `dogs`.
+
 See the [moxture reference](../../reference/moxture.md) for all supported options, including ignored paths and variable interpolation.
 
 ### Check a STOMP broadcast

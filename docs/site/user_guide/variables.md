@@ -70,6 +70,9 @@ save:
   active_pet_ids: "$.pets[?(@.status == 'active')].id"  # returns a list of ids
 ```
 
+If a saved path may be absent from a response, turn the caller's JsonPathLax (lenient) setting to true (see [MoxCaller reference](../reference/moxcaller.md)).
+The missing value will be saved as `null`. .
+
 ### Define locally in a moxture
 To provide default values that only exist within the **Call Scope** of a specific moxture, use the `vars` block. These are useful for making moxtures runnable out-of-the-box, without having to specify them upon calling the moxture.
 

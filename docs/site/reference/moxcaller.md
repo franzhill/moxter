@@ -31,8 +31,8 @@ Adds one call-scoped variable override. Call-scoped variables take precedence ov
 
 ```java
 Moxter.MoxtureResult result = mx.caller()
-        .withVar("p.name", "Doris")
-        .call("create_pet");
+                                .withVar("p.name", "Doris")
+                                .call("create_pet");
 ```
 
 ## `.withVars(Map<String, Object> overrides)`
@@ -68,8 +68,8 @@ Other expectations in the YAML, including body checks, remain in effect. The `Mo
 
 ```java
 mx.caller()
-        .expect(403)
-        .call("get_secure_resource");
+  .expect(403)
+  .call("get_secure_resource");
 ```
 
 ## `.expect()`
@@ -102,18 +102,18 @@ Returns an immutable `MoxCaller` with the status override applied. Use `.and()` 
 
 ```java
 Moxter.MoxtureResult result = mx.caller()
-        .expect().status(403)
-        .and()
-        .withVar("p.name", "Doris")
-        .call("get_secure_resource");
+                                .expect().status(403)
+                                .and()
+                                .withVar("p.name", "Doris")
+                                .call("get_secure_resource");
 ```
 
 If there are no more call options to add, you can call `.call(...)` directly on the expectation builder:
 
 ```java
 mx.caller()
-        .expect().status(403)
-        .call("get_secure_resource");
+  .expect().status(403)
+  .call("get_secure_resource");
 ```
 
 ## `.verbose(boolean enabled)`
@@ -141,4 +141,18 @@ When enabled, execution and expectation failures are logged as warnings rather t
 - **Required**: no
 - **Applicable**: calls that perform JsonPath extraction
 
-When enabled, a failed JsonPath extraction returns `null` instead of throwing an exception.
+When enabled, the call uses lenient JsonPath evaluation for YAML `save:` extractions and body expectations, including `expect.body.assert`. A missing path is read as `null` instead of raising a path-not-found exception; the YAML assertion is still evaluated against that value. This option does not affect fluent result assertions such as `.assertBody(...)`.
+
+Suppose the response body has no `name` field:
+
+```json
+{"id": 42}
+```
+
+With this moxture, `pet_name` is saved as `null`, and the body assertion passes because it expects `null`:
+
+```yaml
+save:
+  pet_name: "$.name"   # saved as 'null'
+```
+

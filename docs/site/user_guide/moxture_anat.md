@@ -9,6 +9,8 @@
 
 ## YAML overview
 
+Here is an overview of the settings that can be configured in a moxture file.
+
 ```yaml
 moxtures:
 
@@ -40,7 +42,7 @@ moxtures:
       firstCreation: true        # <key>: <val>
     vars:                        # Local variables for this moxture only.
       p.name: "Snowy"            # The "p." prefix is a namespace convention
-                                 #  (stands for "parameter").
+                                 #  ("p" is for "parameter").
       p.age: 13                                    
     body: |                      # Request payload as JSON text (here, inlined).
       {                          

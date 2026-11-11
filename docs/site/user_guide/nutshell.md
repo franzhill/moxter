@@ -2,7 +2,7 @@
 # ![](../../img/moxter_userguide.png) Moxter in a nutshell
 </div>
 
-A ***moxture*** is a declarative YAML blueprint for a tailored HTTP or STOMP request, with added capabilities. It can be called directly from a *JUnit* test or chained with other moxtures to form multi-step test scenarios.
+A ***moxture*** is a declarative YAML blueprint for a tailored HTTP or STOMP request, with added capabilities. Using the Moxter Engine, it can be called directly from a *JUnit* test or chained with other moxtures to form multi-step test scenarios.
 
 These calls run in-process within your *Spring* application context: HTTP moxtures are dispatched to *MockMvc*, and STOMP moxtures to [*MockWebs*](../mockwebs.md).
 
@@ -16,8 +16,6 @@ Beyond describing standard request parameters, a ***moxture*** provides configur
 ***Moxtures*** are ultimately called from within a *JUnit* test, with a `MoxCaller` derived from a Moxter Engine, in the following fashion:
 
 ```java
-
-
 // Example: Creating a pet and asserting the returned name
 Moxter mx = Moxter. ...             // Build the Moxter Engine
 mx.caller()                         // The MoxCaller

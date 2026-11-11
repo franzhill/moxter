@@ -100,7 +100,7 @@ nav:
   - Getting started:
     - Setting up: setting_up.md
     - Your first Moxter test: your_first_moxter_test.md
-  - Concepts:
+  - Philosophy:
     - Philosophy: philosophy.md
     - Comparison: comparison.md
   - User Guide:
@@ -109,7 +109,7 @@ nav:
       - YAML moxture files: user_guide/moxture_files.md
       - Anatomy of a moxture: user_guide/moxture_anat.md
       - The Moxter engine: user_guide/engine.md
-      - Calling the moxture: user_guide/call.md
+      - The moxture call sequence: user_guide/call.md
       - Variables: user_guide/variables.md
       - Providing variables: user_guide/variables_2.md
       - Expectations: user_guide/expectations.md

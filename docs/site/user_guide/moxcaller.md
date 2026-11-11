@@ -10,12 +10,13 @@ For the detailed technical overview of the call sequence, see [Calling a Moxture
 
 ## Execute a moxture
 
-Call `.call(...)` on a configured caller to execute the named moxture. It returns a `Moxter.MoxtureResult`:
+Call `.call(...)` on a configured caller to execute the named moxture. It returns a `MoxtureResult`:
 
 ```java
-Moxter.MoxtureResult result = mx.caller()
-                                .withVar("p.name", "Doris")
-                                .call("create_pet");
+Moxter mx = ... // Build the local Moxter Engine
+MoxCaller mxc = mx.caller();
+MoxtureResult result = mxc.withVar("p.name", "Doris")
+                          .call("create_pet");
 ```
 
 ## Per-call options
@@ -25,11 +26,11 @@ Moxter.MoxtureResult result = mx.caller()
 Use `.withVar(key, value)` for one override or `.withVars(map)` for several. Call-scoped values take precedence over variables in the moxture and the engine's global scope. They apply only to this caller.
 
 ```java
-Moxter.MoxtureResult result = mx.caller()
-        .withVars(Map.of(
-                "p.name", "Doris",
-                "p.status", "available"))
-        .call("create_pet");
+MoxtureResult result = mx.caller()
+                         .withVars(Map.of(
+                                      "p.name", "Doris",
+                                      "p.status", "available"))
+                         .call("create_pet");
 ```
 
 See the [Variables guide](../variables/variables.md) for variable scopes and precedence.
@@ -44,25 +45,32 @@ Use `.expect(status)` to override the expected HTTP status for this call. The st
 
 ```java
 mx.caller()
-        .expect(403)
-        .call("get_secure_resource");
+  .expect(403)
+  .call("get_secure_resource");
 ```
 
 Use `.expect().status(status)` to configure the expected status within the fluent call chain. This temporarily switches from `MoxCaller` to an expectation builder. Calling `.and()` returns to a configured `MoxCaller`, so you can continue chaining call options. If you have no more call options to add, you can call `.call(...)` directly on the expectation builder:
 
 ```java
 mx.caller()
-        .expect().status(403)
-        .and()
-        .withVar("p.name", "Doris")
-        .call("get_secure_resource");
+  .expect().status(403)
+  .and()
+  .withVar("p.name", "Doris")
+  .call("get_secure_resource");
 ```
 
-### Other execution options
 
-- `.verbose(true)` enables detailed request and response output for this call.
-- `.allowFailure(true)` logs execution or expectation failures and allows the test to continue. Use this only when the failure is acceptable; an execution failure may leave the result without a response.
-- `.withJsonPathLax(true)` makes a failed JsonPath extraction return `null` instead of throwing an exception.
+### Best-effort calls
+Some moxtures are useful even when they are not essential to the test's success—for example, a teardown moxture that performs cleanup. 
+Make such a call best-effort with `.allowFailure(true)`:
+
+```java
+mx.caller()
+  .allowFailure(true)
+  .call("cleanup");  // cleanup resource that may or may not exist
+```
+
+Execution or expectation failures are logged as warnings, and the test continues.
 
 ## Quick reference
 
@@ -77,9 +85,9 @@ mx.caller()
 | `.verbose(boolean enabled)` | `MoxCaller` | Enable or disable detailed request and response output. |
 | `.allowFailure(boolean allowed)` | `MoxCaller` | Allow execution or expectation failures without failing the test. |
 | `.withJsonPathLax(boolean enabled)` | `MoxCaller` | Make failed JsonPath extractions return `null`. |
-| `.call(String moxtureName)` | `Moxter.MoxtureResult` | Execute the moxture and return its result. |
+| `.call(String moxtureName)` | `MoxtureResult` | Execute the moxture and return its result. |
 
-The expectation builder also provides `.call(String moxtureName)` as a shortcut, returning a `Moxter.MoxtureResult` without first calling `.and()`.
+The expectation builder also provides `.call(String moxtureName)` as a shortcut, returning a `MoxtureResult` without first calling `.and()`.
 
 ## Immutability
 
@@ -88,9 +96,11 @@ A `MoxCaller` is immutable. A call-option method such as `.withVar(...)` returns
 If you discard the returned caller, the option is not applied:
 
 ```java
-Moxter.MoxCaller caller = mx.caller();
+MoxCaller caller = mx.caller();
 
-caller.withVar("p.name", "Doris"); // Returnes a new caller (which gets discarded)
+caller.withVar("p.name", "Doris"); // Returns a new caller (which gets discarded!)
+                                   // caller actually remains unchanged.
+                                   // So this instruction is basically pointless.
 caller.call("create_pet");         // !! Uses the original caller, not the one 
                                    // just above !!
                                    // So the pet name set above will be unknown.
@@ -99,7 +109,7 @@ caller.call("create_pet");         // !! Uses the original caller, not the one
 Keep and use the returned caller instead:
 
 ```java
-Moxter.MoxCaller caller = mx.caller()
+MoxCaller caller = mx.caller()
                             .withVar("p.name", "Doris");
 caller.call("create_pet");  // The pet name set above will be known.
 ```
@@ -107,15 +117,30 @@ caller.call("create_pet");  // The pet name set above will be known.
 Because each configuration method returns a new caller, you can also reuse a base caller for separate configurations:
 
 ```java
-Moxter.MoxCaller base = mx.caller();
+MoxCaller mxc = mx.caller();
 
-Moxter.MoxCaller dorisCall = base.withVar("p.name", "Doris");
-Moxter.MoxCaller rexCall = base.withVar("p.name", "Rex");
+// Store re-used variables in callers:
+MoxCaller mxcDoris = base.withVar("p.name", "Doris"); 
+MoxCaller mxcNemo  = base.withVar("p.name", "Nemo");
 
-dorisCall.call("create_pet");
-rexCall.call("create_pet");
+// Assuming using moxtures that all expose the p.name variable:
+// Adopt Doris 
+mxcDoris.call("create_pet");
+mxcDoris.call("adopt_pet");
+
+// Adopt Nemo
+mxcNemo.call("create_pet");
+mxcNemo.call("adopt_pet");
 ```
 
 This is what is referred to as "sticky callers"  (TODO see link to page)
 
 Since the base caller remains unchanged, you can also derive separate configurations from it without one call's options affecting another.
+
+!!! Note
+    As is standard for variable overriding, providing a variable before the call will overwrite any caller-stored version of it.
+    This means:
+    ```java
+    mxcDoris.withVar("p.name", "Nemo")
+            .call("adopt_pet");  // Will in fact adopt Nemo.
+    ```
