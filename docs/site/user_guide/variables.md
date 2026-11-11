@@ -4,7 +4,7 @@
 
 Variables make moxture calls dynamic and reusable. They enable data sharing between calls, such as capturing an ID from a `POST` response and using it in a subsequent `GET` or `DELETE` request.
 
-## 1. Interpolation in moxtures
+## Interpolation in moxtures
 
 ***Moxter*** supports `${variable_name}` interpolation inside YAML moxtures. Before a moxture is executed, the engine replaces placeholders with their values from the variable context.
 
@@ -18,7 +18,7 @@ Variables can be used in many moxture fields, for example:
 - **Headers**: `X-Pet-Type: ${type}`
 - **Expectations**: `$.name: "${pet_name}"`
 
-## 2. The Moxter Variable Context and its scopes
+## The Moxter Variable Context and its scopes
 The **Moxter Variable Context** holds the engine's global variables. Each moxture call also combines that context with moxture-local defaults and call-scope overrides. These three scopes determine variable visibility and precedence.
 
 ### The Global Scope
@@ -30,14 +30,14 @@ The Global Scope is tied to the Moxter engine instance. It acts as the persisten
 
 
 ### The Call Scope
-The Call Scope is transient. It is created at the start of a moxture call (`mx.caller().call()`) and destroyed when it finishes.
+The Call Scope is transient. It is created at the start of a moxture call (`mx.caller().call()`, where `mx` is a Moxter Engine) and destroyed when it finishes.
 
 - **Source**: combines defaults in the moxture's YAML `vars` block with overrides provided through the fluent API (`mx.caller().withVar(...)`).
 - **Lifetime**: exists only for the duration of a single moxture execution.  
 - **Purpose**: providing specific inputs for a call without polluting the global scope.
 
 
-## 3. How to set variables
+## How to set variables
 
 ### Extract from a return
 To capture data from a response and store it in the Global Scope, use the `save` block in the moxture YAML definition. By default, it uses JsonPath to extract values from the response body.
@@ -101,7 +101,7 @@ To provide default values that only exist within the **Call Scope** of a specifi
 
 
 ### Set upon a moxture call
-To inject or override values at runtime for a specific execution, use the fluent Caller API. These values are placed in the **Call Scope**.
+To inject or override values at runtime for a specific execution, use the [fluent Caller API](../call/moxcaller.md). These values are placed in the **Call Scope**.
 
 ```Java
 mx.caller()
@@ -126,7 +126,7 @@ mx.vars().put("default_owner_id", 1);
 ```
 
 
-## 4. Variable precedence
+## Variable precedence
 
 Variables can be defined at multiple scopes as we have seen. When the same variable name appears in more than one scope, ***Moxter*** resolves it using this precedence order:
 
@@ -164,7 +164,7 @@ With the examples given above, the resolved (or 'interpolated') moxture would he
     If a variable is missing, ***Moxter*** logs a warning and leaves its placeholder (for example, `${var_name}`) in place. The resulting request or assertion may then fail or behave unexpectedly.
 
 
-## 5. Accessing the variables in the Variable Context
+## Accessing the variables in the Variable Context
 
 While you often interact with variables inside your YAML moxtures, you may find yourself needing to pull these variables back into your Java code, perhaps to perform a custom assertion for example, or manually having to set variables for the purpose of a specific test configuration.
 
@@ -238,7 +238,7 @@ Since the Global Scope persists for the lifetime of the engine instance by defau
     If you use a shared engine across multiple tests, it is highly recommended calling `mx.vars().clear()` in an `@AfterEach` method. This prevents state leaking where variables from one test will be available (and set) to another, possibly and silently messing up that test's context.
 
 
-## 6. A word of caution
+## A word of caution
 
 The Global Scope is what makes Moxter simple for complex integration scenarios. By allowing variables to persist across different moxture calls, you can build elaborate end-to-end flows without manually passing IDs or tokens between Java methods.
 

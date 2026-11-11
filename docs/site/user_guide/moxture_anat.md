@@ -4,34 +4,10 @@
 # ![](../../img/moxter_userguide.png) Anatomy of a moxture
 </div>
 
-## 1. In a nutshell
-
-A ***moxture*** is a declarative YAML blueprint for a tailored HTTP or STOMP request, with added capabilities. It can be called directly from a *JUnit* test or chained with other moxtures to form multi-step test scenarios.
-
-These calls run in-process within your *Spring* application context: HTTP moxtures are dispatched to *MockMvc*, and STOMP moxtures to [*MockWebs*](../mockwebs.md).
-
-Beyond describing standard request parameters, a ***moxture*** provides configuration for built-in logic such as: 
-
-- **declarative assertions**: define what success looks like (status codes, full/partial/surgical JSON matching...) directly in the YAML.
-- **variable extraction**: extract fields from a response and save them into variables for subsequent steps.
-- **inheritance**: build new moxtures on top of existing ones to reduce repetition
-- and more 
-
-***Moxtures*** are ultimately called from within a *JUnit* test, in the following fashion:
-
-```java
-// Example: Creating a pet and asserting the returned name
-mx.caller()
-  .withVar("p.name", "Rex")         // Inject variables into the YAML
-  .call("create_pet")               // Trigger the call
-  .assertBody("$.name")             // Verify the outcome
-     .isEqualTo("Rex");
-```
-
-<!-- All features regarding calling ***moxtures*** will be examined in detail in the [Calling moxtures](../calling_moxtures.md) chapter. -->
 
 
-## 2. YAML overview
+
+## YAML overview
 
 ```yaml
 moxtures:
@@ -119,10 +95,10 @@ moxtures:
 
 ```
 
-For a detailed explanation on each item, please refer to the chapter [Reference](../moxture/reference.md)
+For a detailed explanation on each item, please refer to the chapter [Reference](../../reference/moxture.md)
 
 
-## 3. Variable interpolation
+## Variable interpolation
 
 Many fields in a ***moxture*** support dynamic placeholders using the `${variable_name}` syntax.
 
@@ -131,5 +107,5 @@ This allows you to inject data into calls at runtime—such as tokens, keys, or 
 ***Moxter*** resolves these placeholders immediately before executing the ***moxture***. The scope and management of these variables is explored in further detail in the [Variables](../variables/variables.md) chapter.
 
 
-## 4. Group moxtures
+## Group moxtures
 Group moxtures allow you to chain several interactions into a single named sequence. This is the primary tool for building business test scenarios.

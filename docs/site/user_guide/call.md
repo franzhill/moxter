@@ -1,5 +1,5 @@
 <div class="moxter-userguide-title" markdown="1">
-# ![](../../img/moxter_userguide.png) Overview of the Moxture call sequence
+# ![](../../img/moxter_userguide.png)The Moxture call sequence overview
 </div>
 
 ## The MoxCaller
@@ -13,30 +13,31 @@ Configuration for your moxture call is performed on the `MoxCaller` before execu
 
 ```java
 ...
-// The local Moxter Engine
+// Build the local Moxter Engine
 Moxter mx = Moxter.forTestClass(MyTest.class)
                   .mockMvc(mockMvc)
                   .build();
 
 @Test
 void myTest() {
-    mx.caller().call("my_moxture");
+    mx.caller()              // a MoxCaller
+      .call("my_moxture");   // call by moxture name
 }
 ```
 
 ## How Moxter processes the call
 
-When a moxture gets `call`ed, ***Moxter*** performs the following steps
+When a moxture gets `call`ed, ***Moxter*** performs the following steps.
 
 ### 1. Resolution (finding the moxture)
 
-***Moxter*** uses the test class to locate the moxture definitions on the classpath. By default, it searches the configured moxture hierarchy, starting from the test class's location.
+***Moxter*** starts by locating the called moxture. It searches up the moxture hierarchy, starting from the class provided to the engine at build time.
 
-See [Moxture File Resolution](../../user_guide/moxture/moxture_file.md) for the lookup rules.
+See [Moxture File Resolution](../../user_guide/moxture/moxture_file.md) for a detailed explanation of the lookup process.
 
 ### 2. Linking (inheritance resolution)
 
-Once the moxture is found, the engine resolves inheritance declared with `extends` or `basedOn`. Child values take precedence, with merge behavior depending on the property: maps such as `headers`, `query`, and `vars` are shallow-merged; lists such as `save` and `moxtures` are replaced by the child. The resulting moxture representation is called the "linked moxture".
+Once the moxture is located, the engine resolves inheritance declared with `extends` or `basedOn`. Child values take precedence, with merge behavior depending on the property: maps such as `headers`, `query`, and `vars` are shallow-merged; lists such as `save` and `moxtures` are replaced by the child. The resulting moxture representation is called the "linked moxture".
 
 For JSON `body`, object values are recursively merged, so a child can override or add nested fields. Array and scalar body values are replaced by the child.
 

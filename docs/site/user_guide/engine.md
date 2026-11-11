@@ -1,5 +1,5 @@
 <div class="moxter-userguide-title" markdown="1">
-# ![](../../img/moxter_reference.png) Building the execution engine
+# ![](../../img/moxter_userguide.png) Building the execution engine
 </div>
 
 To use ***Moxter***, you must instantiate the engine within your *Spring Boot* test classes. The engine acts as the coordinator between your YAML moxtures and the Spring *MockMvc* environment (or *MockWebs* for websocket interaction).

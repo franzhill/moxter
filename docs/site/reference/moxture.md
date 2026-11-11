@@ -3,22 +3,22 @@
 # ![](../img/moxter_reference.png) Moxture file reference
 </div>
 
-## 1. Root level
+## Root level
 
-### .templates
+### `.templates`
 - **Type**: Map of named structured YAML fragments
 - **Optional**: yes
 
 Named templates are inserted into the rest of the file via the `__template__` directive.
 
-### vars
+### `vars`
 - **Type**: `Object`
 - **Optional**: yes
 
 Global variables available to all moxtures in the file.
 Global `vars` may contain arbitrary values. 
 
-### moxtures
+### `moxtures`
 - **Type**: List of moxture definitions
 - **Optional**: yes
 - **Supports variable interpolation**: no
@@ -26,18 +26,18 @@ Global `vars` may contain arbitrary values.
 The list of moxture definitions (single and group moxtures).
 
 
-## 2. Single moxture
+## Single moxture
 
 An entry in the above `moxtures` list.
 
-### name
+### `name`
 - **Type**: `String`
 - **Optional**: no
 - **Supports variable interpolation**: no
 
 The name used to refer to this moxture. Used in `extends`, `basedOn`, a group moxture's `moxtures` list, or when calling a moxture from a *JUnit* test.
 
-### extends
+### `extends`
 - **Alias**: basedOn
 - **Type**: `String`
 - **Optional**: yes
@@ -53,14 +53,14 @@ Inheritance is resolved during the loading phase (prior variable interpolation),
 
 See chapter [Extending moxtures](../extending_moxtures.md).
 
-### basedOn
+### `basedOn`
 - **Alias**: extends
 - **Type**: `String`
 - **Optional**: yes
 - **Supports variable interpolation**: no
 
 
-### options.verbose
+### `options.verbose`
 - **Type**: `Boolean`
 - **Optional**: yes
 - **Default value**: false
@@ -68,7 +68,7 @@ See chapter [Extending moxtures](../extending_moxtures.md).
 
 Enables extensive console feedback for a specific call. When enabled, the engine bypasses standard logger thresholds to print the full request and response envelopes. 
 
-### options.allowFailure
+### `options.allowFailure`
 - **Type**: `Boolean`
 - **Optional**: yes
 - **Default value**: false
@@ -76,7 +76,7 @@ Enables extensive console feedback for a specific call. When enabled, the engine
 
 Determines whether a failure should stop execution of the JUnit test. If set to `true`, execution or expectation failures are logged as warnings and execution continues. On a group moxture, this also lets the group continue after a child fails.
 
-### protocol
+### `protocol`
 - **Type**: `String`
 - **Optional**: yes
 - **Default value**: `HTTP`
@@ -85,7 +85,7 @@ Determines whether a failure should stop execution of the JUnit test. If set to 
 
 Defines the underlying execution engine. `HTTP` and `HTTPS` dispatch the request to **MockMvc**; `STOMP` routes it through **MockWebs**.
 
-### method
+### `method`
 - **Type**: `String`
 - **Optional**: yes
 - **Default value**: `GET` (for HTTP)
@@ -95,14 +95,14 @@ Defines the underlying execution engine. `HTTP` and `HTTPS` dispatch the request
 The HTTP method to perform. STOMP moxtures always send a `SEND` frame; this field does not select a STOMP action such as `SUBSCRIBE`.
 
 
-### endpoint
+### `endpoint`
 - **Type**: `String`
 - **Optional**: yes
 - **Supports variable interpolation**: yes
 
 The destination URI for the call. For HTTP moxtures, this is the relative path fed to the `MockMvc` builder. It supports full interpolation, allowing for dynamic paths like `/api/pets/${p.id}`.
 
-### headers
+### `headers`
 - **Type**: `Map` of `String`, `Number`, or `Boolean`
 - **Optional**: yes
 - **Default value**:
@@ -113,21 +113,21 @@ A collection of HTTP headers. While the keys are literal strings, the values sup
 For non-multipart HTTP calls with a body, the engine sets `Content-Type: application/json`. It does not add an `Accept` header automatically. This does not prevent the server from returning JSON; the server may return its default representation.
 
 
-### query
+### `query`
 - **Type**: `Map` of `String`, `Number`, or `Boolean`
 - **Optional**: yes
 - **Supports variable interpolation**: yes (values only)
 
 A map of query parameters appended to the URI (e.g., `?key=val`). Both keys and values are URL-encoded upon execution.
 
-### vars
+### `vars`
 - **Type**: `Map` of arbitrary values
 - **Optional**: yes
 - **Supports variable interpolation**: yes (values only)
 
 Definitions of variables local to the moxture. Values may be any YAML value. They shadow global variables and are often used to provide default values for the `body` or `endpoint`.
 
-### body
+### `body`
 - **Type**: Any JSON value
 - **Optional**: yes
 - **Supports variable interpolation**: yes (string values)
@@ -138,7 +138,7 @@ The engine resolves the payload in three ways:
 - **Inline JSON** (usually via the `|` literal block), or an
 - **External File** (a string starting with `classpath:path/to/file.json`).
 
-### multipart
+### `multipart`
 - **Type**: `List` of part objects
 - **Optional**: yes
 - **Default value**: `type: json`
@@ -146,14 +146,14 @@ The engine resolves the payload in three ways:
 
 Use this instead of `body` for an HTTP multipart request. Parts may specify `name`, `body`, `type` (`json`, `file`, or `text`), and `filename`. The default type is `json`. A `file` part reads its body from a classpath resource and uses the filename to determine its content type. Other types are sent with `application/json`; string bodies are sent as raw text, while other bodies are serialized as JSON.
 
-### save
+### `save`
 - **Type**: `Map` of `String`, `Number`, or `Boolean`
 - **Optional**: yes
 - **Supports variable interpolation**: yes (values)
 
 Extracts data from the response body and saves it as variables into the global context for use in subsequent steps. The **key** is the variable name; the **value** can be a **JsonPath** expression (e.g., `new_pet_id: "$.id"`) or a literal. JsonPath extraction occurs after the call and before expectations are treated; if extraction fails, ***Moxter*** logs a warning and saves the interpolated expression as a literal.
 
-### expect.status
+### `expect.status`
 - **Type**: `Null` | `Integer` | `List` | `String`
 - **Optional**: yes
 - **Default value**: No status check when omitted
@@ -161,7 +161,7 @@ Extracts data from the response body and saves it as variables into the global c
 
 The expected HTTP status code. Supports exact integers or numeric strings (`201`, `"201"`), a list of acceptable values (`[200, 201]`), and class wildcards (`"1xx"` through `"5xx"`).
 
-### expect.body.match
+### `expect.body.match`
 - **Type**: `Object`
 - **Optional**: yes
 - **Supports variable interpolation**: yes (within `content`)
@@ -186,14 +186,14 @@ Missing or mismatched expected values fail the comparison.
 - `ignorePaths` lists JsonPaths removed from both values before comparison; for example, use `$.timestamp` to ignore a generated timestamp.
 - Variable interpolation is supported within `content`, not in `mode` or `ignorePaths`.
 
-### expect.body.assert
+### `expect.body.assert`
 - **Type**: `Map`
 - **Optional**: yes
 - **Supports variable interpolation**: yes (values only)
 
 A map of **JsonPath** keys to expected values. It performs equality checks, interpolating values (but not JsonPath keys). With the default strict JsonPath configuration, a listed path must exist in the response body.
 
-### expect.stomp
+### `expect.stomp`
 - **Alias**: `broadcast`
 - **Type**: `Object` or a list containing at most one object
 - **Optional**: yes
@@ -226,9 +226,9 @@ This waits up to two seconds for a String broadcast on `/topic/orders` and saves
 
 
 
-## 3. Group moxtures
+## Group moxtures
 
-### moxtures
+### `moxtures`
 - **Type**: List of `String`s
 - **Optional**: yes
 - **Supports variable interpolation**: no

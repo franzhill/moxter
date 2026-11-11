@@ -17,10 +17,10 @@ moxtures:
     method: GET
     endpoint: /api/v1/status    # an endpoint of your API
     save:
-      version: "$.version"     # extract version from the JSON response body 
-                               # using jsonpath
+      version: "$.version"      # extract version from the JSON response body 
+                                # using jsonpath
     expect:
-      status: 200
+      status: 200               # verified automatically
 ```
 
 ## Call the moxture in a JUnit test
@@ -32,23 +32,25 @@ Now, in the JUnit we just need to call the moxture. We'll then assert the return
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-class HelloWorldTest {
+class HelloMoxterTest {
 
   private Moxter mx;
 
   @BeforeEach
   void setup(@Autowired MockMvc mockMvc) {
     mx = Moxter.forTestClass(getClass())
-                    .mockMvc(mockMvc)
-                    .build();
+               .mockMvc(mockMvc)
+               .build();
     }
 
     @Test
     void shouldReturnHealthyStatus() {
       mx.caller()
         .call("health_check");
-      // Perform assertions...  
+
+      // Perform assertions:
       assertThat(mx.vars().read("version").asString()).isEqualTo("v1");
+      // ...
     }
   }
 ```

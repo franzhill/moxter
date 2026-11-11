@@ -5,7 +5,7 @@
     <p class="moxter-hero__lead">Forget the pain. Ditch the boilerplate. Harness the power of YAML and bullet-proof your project with great test scenarios.</p>
     <div class="moxter-hero__actions">
       <a class="md-button md-button--primary" href="setting_up/">Get started</a>
-      <a class="md-button" href="user_guide/moxture/moxture_file/">Explore the reference</a>
+      <a class="md-button" href="user_guide/moxture_files">Explore the reference</a>
     </div>
   </div>
   <div class="moxter-hero__art">

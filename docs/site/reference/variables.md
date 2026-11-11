@@ -1,10 +1,10 @@
 
 <div class="moxter-userguide-title" markdown="1">
-# ![](../img/moxter_reference.png) Variables Reference
+# ![](../img/moxter_reference.png) Variables Context Reference
 </div>
 
 
-## .vars()
+## `.vars()`
 - **Called on**: a `Moxter` engine object.
 - **Return**: a `MoxVars` object
 
@@ -12,7 +12,7 @@ The entry point for managing and reading variables in the Moxter engine's global
 
 
 
-### .view()
+### `.view()`
 - **Called on**: a `MoxVars` object
 - **Return**: `Map<String, Object>`
 
@@ -28,7 +28,7 @@ Object myVar = varContext.get("my_variable");
 log.debug("Current variable context:\n{}", mapper.writeValueAsString(varContext));
 ```
 
-### .clear()
+### `.clear()`
 - **Called on**: a `MoxVars` object
 - **Return**: `void`
 
@@ -36,7 +36,7 @@ Wipes the engine variable context.
 An example of use is to call this in a `@AfterEach` method to ensure a clean state for the next test.
 
 
-### .put(String key, Object value)
+### `.put(String key, Object value)`
 - **Called on**: a `MoxVars` object
 - **Return**: `Object`
 
@@ -49,7 +49,7 @@ mx.vars().put("api_version", "v2");
 ```
 
 
-### .putIfAbsent(String key, Object value)
+### `.putIfAbsent(String key, Object value)`
 - **Called on**: a `MoxVars` object
 - **Return**: `boolean`
 
@@ -61,7 +61,7 @@ Example:
 boolean added = mx.vars().putIfAbsent("user", "A");
 ```
 
-### .read(String varName)
+### `.read(String varName)`
 - **Called on**: a `MoxVars` object
 - **Return**: a `VarReader` object
 
@@ -74,19 +74,19 @@ mx.vars().read("pet_id").asLong();
 ```
 See the [variable usage guide](../../user_guide/variables/variables.md).
 
-#### .isNull()
+#### `.isNull()`
 - **Called on**: a `VarReader` object
 - **Return**: `boolean`
 
 Returns true if the variable's stored value is null. `read()` throws if the variable is missing.
 
-#### .asObject()
+#### `.asObject()`
 - **Called on**: a `VarReader` object
 - **Return**: `Object`
 
 Returns the raw value as-is. For an existing variable, this is equivalent to `mx.vars().get(name)`. Unlike `read(name)`, `get(name)` returns `null` if the variable is missing.
 
-#### .asType(Class type)
+#### `.asType(Class type)`
 - **Called on**: a `VarReader` object
 - **Return**: an object of the specified type
 
@@ -98,31 +98,31 @@ Example:
 Long ownerId = mx.vars().read("owner_id").asType(Long.class);
 ```
 
-#### .asString()
+#### `.asString()`
 - **Called on**: a `VarReader` object
 - **Return**: `String`
 
 Returns the value as a String.
 
-#### .asLong()
+#### `.asLong()`
 - **Called on**: a `VarReader` object
 - **Return**: `Long`
 
 Converts a numeric value or numeric string to a `Long`. Returns `null` for a null value and throws if the value cannot be converted.
 
-#### .asInstant()
+#### `.asInstant()`
 - **Called on**: a `VarReader` object
 - **Return**: `java.time.Instant`
 
 Parses an ISO-8601 date-time string into an `Instant`.
 
-#### .asInstant(DateTimeFormatter formatter)
+#### `.asInstant(DateTimeFormatter formatter)`
 - **Called on**: a `VarReader` object
 - **Return**: `java.time.Instant`
 
 Parses a String variable using the provided custom DateTimeFormatter.
 
-#### .asList(Class elementType)
+#### `.asList(Class elementType)`
 - **Called on**: a `VarReader` object
 - **Return**: `List<T>`
 
@@ -134,7 +134,7 @@ Example:
 List<Long> ids = mx.vars().read("result_ids").asList(Long.class);
 ```
 
-#### .asJsonNode()
+#### `.asJsonNode()`
 - **Called on**: a `VarReader` object
 - **Return**: `JsonNode`
 

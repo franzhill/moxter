@@ -6,44 +6,7 @@ The `MoxCaller` is the base object for configuring and executing a moxture call.
 
 For the detailed technical overview of the call sequence, see [Calling a Moxture](basics.md).
 
-## Immutabilty
 
-A `MoxCaller` is immutable. A call-option method such as `.withVar(...)` returns a new `MoxCaller`. It does not modify the caller you invoked it on.
-
-If you discard the returned caller, the option is not applied:
-
-```java
-Moxter.MoxCaller caller = mx.caller();
-
-caller.withVar("p.name", "Doris"); // Returnes a new caller (which gets discarded)
-caller.call("create_pet");         // !! Uses the original caller, not the one 
-                                   // just above !!
-                                   // So the pet name set above will be unknown.
-```
-
-Keep and use the returned caller instead:
-
-```java
-Moxter.MoxCaller caller = mx.caller()
-                            .withVar("p.name", "Doris");
-caller.call("create_pet");  // The pet name set above will be known.
-```
-
-Because each configuration method returns a new caller, you can also reuse a base caller for separate configurations:
-
-```java
-Moxter.MoxCaller base = mx.caller();
-
-Moxter.MoxCaller dorisCall = base.withVar("p.name", "Doris");
-Moxter.MoxCaller rexCall = base.withVar("p.name", "Rex");
-
-dorisCall.call("create_pet");
-rexCall.call("create_pet");
-```
-
-This is what is referred to as "sticky callers"  (TODO see link to page)
-
-Since the base caller remains unchanged, you can also derive separate configurations from it without one call's options affecting another.
 
 ## Execute a moxture
 
@@ -117,3 +80,42 @@ mx.caller()
 | `.call(String moxtureName)` | `Moxter.MoxtureResult` | Execute the moxture and return its result. |
 
 The expectation builder also provides `.call(String moxtureName)` as a shortcut, returning a `Moxter.MoxtureResult` without first calling `.and()`.
+
+## Immutability
+
+A `MoxCaller` is immutable. A call-option method such as `.withVar(...)` returns a new `MoxCaller`. It does not modify the caller you invoked it on.
+
+If you discard the returned caller, the option is not applied:
+
+```java
+Moxter.MoxCaller caller = mx.caller();
+
+caller.withVar("p.name", "Doris"); // Returnes a new caller (which gets discarded)
+caller.call("create_pet");         // !! Uses the original caller, not the one 
+                                   // just above !!
+                                   // So the pet name set above will be unknown.
+```
+
+Keep and use the returned caller instead:
+
+```java
+Moxter.MoxCaller caller = mx.caller()
+                            .withVar("p.name", "Doris");
+caller.call("create_pet");  // The pet name set above will be known.
+```
+
+Because each configuration method returns a new caller, you can also reuse a base caller for separate configurations:
+
+```java
+Moxter.MoxCaller base = mx.caller();
+
+Moxter.MoxCaller dorisCall = base.withVar("p.name", "Doris");
+Moxter.MoxCaller rexCall = base.withVar("p.name", "Rex");
+
+dorisCall.call("create_pet");
+rexCall.call("create_pet");
+```
+
+This is what is referred to as "sticky callers"  (TODO see link to page)
+
+Since the base caller remains unchanged, you can also derive separate configurations from it without one call's options affecting another.
