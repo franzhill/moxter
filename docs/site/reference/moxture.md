@@ -146,6 +146,28 @@ The engine resolves the payload in three ways:
 
 Use this instead of `body` for an HTTP multipart request. Parts may specify `name`, `body`, `type` (`json`, `file`, or `text`), and `filename`. The default type is `json`. A `file` part reads its body from a classpath resource and uses the filename to determine its content type. Other types are sent with `application/json`; string bodies are sent as raw text, while other bodies are serialized as JSON.
 
+```yaml
+moxtures:
+  - name: submit_pet_profile
+    method: POST
+    endpoint: /api/pets
+    multipart:
+      - name: pet
+        type: json
+        body:
+          name: "${petName}"
+          species: dog
+      - name: photo
+        type: file
+        filename: "${petName}-photo.jpg"
+        body: classpath:fixtures/pet-photo.jpg
+      - name: adoption_note
+        type: text
+        body: Ready for adoption
+```
+
+Place the referenced file on the test classpath. Relative file paths are resolved from the directory containing the moxture definition; a path starting with `/` is resolved from the classpath root. The `classpath:` prefix is optional.
+
 ### `save`
 - **Type**: `Map` of `String`, `Number`, or `Boolean`
 - **Optional**: yes

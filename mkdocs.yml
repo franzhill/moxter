@@ -114,13 +114,9 @@ nav:
       - Expectations: user_guide/expectations.md
       - The MoxCaller: user_guide/moxcaller.md
     - Advanced:
-      - Group moxtures (chaining): user_guide/todo16.md
-      - Extending moxtures: 
-        - General: user_guide/extending_moxtures.md
-        - BasedOn: user_guide/todo17.md
-        - Payload inheritance: user_guide/todo18.md
-        - Factorize repeated lines with __template__: user_guide/todo19.md
-        - Multipart requests: user_guide/todo20.md
+      - Group moxtures (chaining): user_guide/group_moxtures.md
+      - Extending moxtures: user_guide/extending_moxtures.md
+      - Reuse YAML fragments: user_guide/fragments.md
 
 
       - user simulation: user_guide/call/user.md

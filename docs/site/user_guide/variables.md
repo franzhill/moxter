@@ -35,7 +35,7 @@ The Call Scope is transient. It is created at the start of a moxture call (`mx.c
 - **Source**: combines defaults in the moxture's YAML `vars` block with overrides provided through the fluent API (`mx.caller().withVar(...)`).
 - **Lifetime**: exists only for the duration of a single moxture execution.  
 - **Purpose**: providing specific inputs for a call without polluting the global scope.
-- **Group moxtures**: call-scoped variables are passed to the group's child moxtures.
+- **Group moxtures**: call-scoped variables are passed to the group's child moxtures. See [Group moxtures](group_moxtures.md) for details.
 
 
 ## How to set variables
