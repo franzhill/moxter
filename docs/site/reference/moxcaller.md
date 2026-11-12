@@ -132,7 +132,7 @@ Enables or disables detailed request and response output for this call.
 - **Required**: no
 - **Applicable**: all moxtures
 
-When enabled, execution and expectation failures are logged as warnings rather than failing the test. Use this only when a failure is acceptable.
+When enabled, execution and expectation failures are logged as warnings rather than failing the test.
 
 ## `.withJsonPathLax(boolean enabled)`
 

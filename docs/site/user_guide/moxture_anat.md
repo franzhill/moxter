@@ -111,3 +111,41 @@ This allows you to inject data into calls at runtime—such as tokens, keys, or 
 
 ## Group moxtures
 Group moxtures allow you to chain several interactions into a single named sequence. This is the primary tool for building business test scenarios.
+
+
+
+## IDE moxture syntax support
+
+To improve the development experience, ***Moxter*** provides a JSON schema. Configuring this in your IDE enables:
+
+- **Autocompletion**: Suggestions for valid YAML keys (e.g., `expect`, `save`, `options`).
+- **Validation**: Detection of typos or incorrect data types.
+- **Documentation**: Tooltips describing the purpose of each field.
+
+### Schema
+This is the schema that needs to be configured in your IDE: [Schema]({{ schema_path }}).
+
+Alternatively, you can retrieve it from the ***Moxter*** library JAR (`moxture-schema.json` at the root of the package).
+
+
+### Configuration
+#### IntelliJ IDEA
+IntelliJ provides native support for YAML schema mapping:
+
+- Open Settings (`Ctrl+Alt+S`) and navigate to `Languages & Frameworks > Schemas and DTDs > JSON Schema Mappings`.  
+- Click `+` to add a new mapping and name it "Moxter".
+- Paste the schema URL above into the `URL` field or provide it directly.
+- Set the `JSON Schema Version` to `JSON Schema version 7`.
+- In the `Files` section, add a path pattern to match your moxture files, such as:
+  - `src/test/resources/moxtures/*.yaml`
+  - `*moxtures.yaml`
+
+#### VSCode
+Using the Red Hat YAML extension (Identifier: `redhat.vscode-yaml`), update your `settings.json` file:
+
+```JSON
+"yaml.schemas": {
+  "{{ schema_url }}": ["*moxtures.yaml", "moxtures/*.yaml"]
+}
+```
+

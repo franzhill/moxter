@@ -35,6 +35,7 @@ The Call Scope is transient. It is created at the start of a moxture call (`mx.c
 - **Source**: combines defaults in the moxture's YAML `vars` block with overrides provided through the fluent API (`mx.caller().withVar(...)`).
 - **Lifetime**: exists only for the duration of a single moxture execution.  
 - **Purpose**: providing specific inputs for a call without polluting the global scope.
+- **Group moxtures**: call-scoped variables are passed to the group's child moxtures.
 
 
 ## How to set variables
@@ -103,16 +104,39 @@ To provide default values that only exist within the **Call Scope** of a specifi
 ```
 
 
-### Set upon a moxture call
+### Provide at moxture call time
 To inject or override values at runtime for a specific execution, use the [fluent Caller API](../call/moxcaller.md). These values are placed in the **Call Scope**.
 
+Use `.withVar()` for one value and `.withVars()` to provide several values from a map:
+
 ```Java
-mx.caller()
-  .withVar("p.name" , "Beethoven")  # Override a moxture local (= default)
-                                    # variable
-  .withVar("species", "Dog")        # Provide a non defaulted variable
-  .call("create_pet");
+...
+class PetTest {
+    // Local Moxter Engine
+    Moxter mx = Moxter. ...  .build();
+
+    @Test
+    void myTest() {
+        mx.caller()                         // Get a MoxCaller
+          .withVar("p.name" , "Beethoven")  // Provide a value for an expected moxture input
+          .withVar("species", "Dog")        // Override a defaulted value
+          .call("create_pet");  
+
+        // Defaults can be re-used across calls.
+        Map<String, Object> defaults = Map.of(
+            "p.name", "Nemo",
+            "species", "clownfish",
+            "age", "unknown"
+        );
+
+        mx.caller()
+        .withVars(defaults)
+        .withVar("age", "1")  // Override the value from the default map for this call
+        .call("create_pet");
+...
 ```
+
+When a variable is supplied more than once in the same caller chain, the last value wins.
 
 
 ### Set as global in the Moxter engine
@@ -120,12 +144,14 @@ mx.caller()
 To define constant-like values or environment-level defaults that should be available to every moxture call, add them to the engine's global context.
 
 ```Java
-mx = Moxter.forTestClass(MyTest.class)
-        .mockMvc(mockMvc)
-        .build();
+...
+    mx = Moxter.forTestClass(MyTest.class)
+            .mockMvc(mockMvc)
+            .build();
 
-mx.vars().put("api_version", "v1");
-mx.vars().put("default_owner_id", 1);
+    mx.vars().put("api_version", "v1");
+    mx.vars().put("default_owner_id", 1);
+...
 ```
 
 
@@ -143,7 +169,7 @@ Values captured by `save` and values added with `mx.vars().put(...)` share the s
 
 Within a moxture inheritance chain, a child moxture's `vars` override the inherited parent `vars`'s value for the same key.
 
-Within a same moxture call,  if one same variable is supplied more than once through `withVar(...)`, the last supplied value wins.
+Within the same caller chain, if a variable is supplied more than once through `.withVars(...)` or `.withVar(...)`, the last supplied value wins.
 
 
 

@@ -111,26 +111,21 @@ nav:
       - The Moxter engine: user_guide/engine.md
       - The moxture call sequence: user_guide/call.md
       - Variables: user_guide/variables.md
-      - Providing variables: user_guide/variables_2.md
       - Expectations: user_guide/expectations.md
       - The MoxCaller: user_guide/moxcaller.md
     - Advanced:
-      # TODO move somewhere else
-      - Syntax Validator & Autocomplete: user_guide/moxture/yaml_validation.md
-
-        # Document execution modifiers like "lax mode."
-        # Explain what lax mode does (e.g., skipping certain strict validations or ignoring
-        # unmapped fields) and how to toggle it via the fluent caller.
-      - lax mode etc.: user_guide/call/todo15.md
-      - user simulation: user_guide/call/user.md
-      - Authentication & CSRF: user_guide/call/todo14.md
+      - Group moxtures (chaining): user_guide/todo16.md
       - Extending moxtures: 
         - General: user_guide/extending_moxtures.md
         - BasedOn: user_guide/todo17.md
         - Payload inheritance: user_guide/todo18.md
         - Factorize repeated lines with __template__: user_guide/todo19.md
         - Multipart requests: user_guide/todo20.md
-      - Group moxtures (chaining): user_guide/todo16.md
+
+
+      - user simulation: user_guide/call/user.md
+      - Authentication & CSRF: user_guide/call/todo14.md
+
       - Websocket requests with MockWebs: user_guide/mockwebs.md
       - Troubleshooting: user_guide/todo22.md
       - Logging & diagnostics: user_guide/todo23.md

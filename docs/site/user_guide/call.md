@@ -13,16 +13,17 @@ Configuration for your moxture call is performed on the `MoxCaller` before execu
 
 ```java
 ...
-// Build the local Moxter Engine
-Moxter mx = Moxter.forTestClass(MyTest.class)
-                  .mockMvc(mockMvc)
-                  .build();
+class PetTest {
+    // Build the local Moxter Engine
+    Moxter mx = Moxter.forTestClass(MyTest.class)
+                      .mockMvc(mockMvc)
+                      .build();
 
-@Test
-void myTest() {
-    mx.caller()              // a MoxCaller
-      .call("my_moxture");   // call by moxture name
-}
+    @Test
+    void myTest() {
+        mx.caller()              // get a MoxCaller
+        .call("my_moxture");   // call by moxture name
+    }
 ```
 
 ## How Moxter processes the call
