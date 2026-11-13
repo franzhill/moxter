@@ -51,7 +51,7 @@ YAML lets you give a block a name with `&` ('anchor') and reuse it with `*`. The
 
 ```yaml
 .templates:
-  template_1: &audit_params    # anchor ('pointer') to this bit of YAML under this key.
+  template_1: &audit_params    # anchor ('pointer') to this bit of YAML.
     clinicId: north-clinic
     auditID: Nov2026
     locale: en-GB

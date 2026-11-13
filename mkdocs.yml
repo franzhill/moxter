@@ -117,10 +117,7 @@ nav:
       - Group moxtures (chaining): user_guide/group_moxtures.md
       - Extending moxtures: user_guide/extending_moxtures.md
       - Reuse YAML fragments: user_guide/fragments.md
-
-
-      - user simulation: user_guide/call/user.md
-      - Authentication & CSRF: user_guide/call/todo14.md
+      - Authentication & CSRF: user_guide/authentication_csrf.md
 
       - Websocket requests with MockWebs: user_guide/mockwebs.md
       - Troubleshooting: user_guide/todo22.md
@@ -134,7 +131,7 @@ nav:
         - Use beforeAll and AfterAll moxtures: user_guide/todo25.md
         - Use lax mode for teardowns: user_guide/todo26.md
         - Use sticky callers: user_guide/cookbook/sticky_callers.md
-        - Simulating interaction between several users: user_guide/todo27.md
+        - Simulating interaction between several users: user_guide/call/authentication_csrf.md#override-the-identity-for-one-call
         # tests should not dirty. Start from scatch every time. Use BeforeAll/BeforeEach
         - Good practises: user_guide/todo28.md
         - Organizing your moxture files: user_guide/todo29.md
